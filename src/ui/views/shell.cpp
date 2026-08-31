@@ -34,6 +34,7 @@ const NavItem kNav[] = {
     {Page::Autopilot, Icon::Bolt, "Autopilot"},
     {Page::Whitelist, Icon::Shield, "Whitelist"},
     {Page::Vault, Icon::Key, "Vault"},
+    {Page::CreateAccount, Icon::Plus, "Create"},
     {Page::History, Icon::Clock, "History"},
     {Page::Settings, Icon::Gear, "Settings"},
 };
@@ -545,6 +546,7 @@ void drawShell(AppState& state, Controller& controller) {
         case Page::Autopilot: drawAutopilot(state, controller); break;
         case Page::Whitelist: drawWhitelist(state, controller); break;
         case Page::Vault: drawVaultView(state, controller); break;
+        case Page::CreateAccount: drawCreateAccount(state, controller); break;
         case Page::History: drawHistory(state, controller); break;
         case Page::Settings: drawSettings(state, controller); break;
         case Page::Setup: drawSetup(state, controller); break;

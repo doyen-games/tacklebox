@@ -116,6 +116,26 @@ look again. The suspended-rule banner shows the pinned vs observed hashes.
   selection mode: a transaction is built and broadcast through one node, and
   the guard's hash pins are verified with a fresh fetch regardless of which
   node answered.
+- Reads fail over across the enabled endpoint pool: a node that answers
+  nothing gets a 60-second cooldown and the next node is tried. Transaction
+  **broadcasts never auto-retry on another node** - a lost response is not
+  proof of a lost transaction, and re-broadcasting elsewhere could
+  double-execute. Offline autopilot runs are deferred with a short backoff
+  and recorded as such.
+
+## Autopilot standby (opt-in, off by default)
+
+With `Autopilot standby` enabled in Security settings, locking the wallet
+hides the UI and clears every on-screen snapshot, but keeps the decrypted
+vault in this process's memory so schedules can keep signing through their
+pinned auto-sign rules. State this plainly: **during standby, malware able to
+read this process's memory could reach your keys** - that is the trade you
+opt into for unattended autopilot. Every standby run still passes the full
+guard (pinned rule, fresh hash verification, no critical risk), results are
+logged silently to each schedule, and the lock screen shows a standby badge.
+Panic lock (Ctrl+Shift+L), mobile background lock and quitting always wipe
+keys from memory regardless of this setting.
+
 - The price oracle is **display-only by design**: prices render on the
   dashboard and nowhere else - the guard, risk analyzer, autopilot amounts
   and signing paths never read them, so a lying oracle can mislead your eyes

@@ -6,6 +6,7 @@
 #include <algorithm>
 
 #include "chain/netreg.hpp"
+#include "core/autostart.hpp"
 #include "core/paths.hpp"
 #include "core/util.hpp"
 #include "ui/app_ui.hpp"
@@ -665,6 +666,13 @@ void drawSecurity(AppState& state, Controller& controller) {
     changed |= toggle("Lock when the app goes to background", &prefs.lockOnBackground,
                       "On phones and tablets the OS can suspend the app for days; this "
                       "seals the vault the moment it leaves the foreground");
+    vspace(4);
+    changed |= toggle("Autopilot standby (run schedules while locked)", &prefs.autopilotStandby,
+                      "TRADE-OFF: locking then hides the UI but keeps the decrypted vault "
+                      "in this process's memory so schedules keep signing - malware that "
+                      "can read process memory could reach the keys during standby. Off = "
+                      "locking always wipes keys from memory. Panic lock (Ctrl+Shift+L) "
+                      "and quitting always wipe, either way");
     vspace(6);
 
     ImGui::PushFont(fonts().uiMedium, kText);
@@ -834,12 +842,55 @@ void drawAbout(AppState& state) {
 
 }  // namespace
 
+// Startup registration + the switchboard for every preemptive API call, so
+// idle network/CPU cost is entirely the user's choice.
+void drawStartupBackground(AppState& state, Controller& controller) {
+    if (!beginCard("startup")) {
+        endCard();
+        return;
+    }
+    sectionTitle("Startup & background activity");
+    if (autostartSupported()) {
+        bool open = autostartEnabled();
+        if (toggle("Open TackleBox at login", &open,
+                   "Registers this executable with the OS (Windows Run key / "
+                   "launch agent / autostart entry). The vault still opens locked")) {
+            std::string error;
+            if (!setAutostart(open, &error))
+                controller.toast(Toast::Error, "Autostart: " + error);
+            else
+                controller.toast(Toast::Success,
+                                 open ? "TackleBox will open at login"
+                                      : "Autostart removed");
+        }
+        vspace(6);
+    }
+    subtext("Each background fetch class can be switched off; manual refresh "
+            "buttons always work regardless.");
+    SecurityPrefs prefs = state.vault.security;
+    bool changed = false;
+    changed |= toggle("Auto-refresh account data & balances", &prefs.bgAccountRefresh,
+                      "Refetches the active account and its tokens when the data "
+                      "goes stale");
+    vspace(4);
+    changed |= toggle("Auto-refresh pinned queries", &prefs.bgPinnedRefresh,
+                      "Runs each pinned dashboard query on its own timer");
+    vspace(4);
+    changed |= toggle("Auto-refresh token prices", &prefs.bgPriceRefresh,
+                      "Refetches oracle prices once a minute while the dashboard "
+                      "is open (the first fill still happens)");
+    if (changed) controller.updateSecurity(prefs);
+    endCard();
+}
+
 void drawSettings(AppState& state, Controller& controller) {
     heading("Settings");
     vspace(8);
     drawNetworks(state, controller);
     vspace(12);
     drawSecurity(state, controller);
+    vspace(12);
+    drawStartupBackground(state, controller);
     vspace(12);
     drawLinkSessions(state, controller);
     vspace(12);

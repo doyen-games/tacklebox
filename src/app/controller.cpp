@@ -86,15 +86,21 @@ void Controller::tick() {
 void Controller::shutdown() {
     link_->stopAll();
     broker_.cancelAll();
-    if (state_.unlocked) {
+    // Always seal: in autopilot standby the vault is still open in memory
+    // even though the UI shows locked.
+    {
         std::lock_guard<std::mutex> lock(vaultMutex_);
         vault_.lock();
     }
+    state_.standbyLocked = false;
 }
 
 // --- snapshot ----------------------------------------------------------------
 
 void Controller::refreshSnapshot() {
+    // Standby lock: the vault is open in memory for schedules only. The UI
+    // snapshot stays sealed and the unlocked flag must not flip back on.
+    if (state_.standbyLocked) return;
     std::lock_guard<std::mutex> lock(vaultMutex_);
     VaultSnapshot snap;
     snap.keys = vault_.keys();
@@ -161,6 +167,15 @@ void Controller::unlockVault(const std::string& password) {
         SecureBytes pw(password);
         dk::Result<void> result = [&]() -> dk::Result<void> {
             std::lock_guard<std::mutex> lock(vaultMutex_);
+            if (vault_.unlocked()) {
+                // Standby lock: the vault never closed, so only the password
+                // needs verifying against the on-disk envelope.
+                Vault probe;
+                auto verified = probe.unlock(pw);
+                probe.lock();
+                if (!verified) return dk::err(verified.error());
+                return {};
+            }
             return vault_.unlock(pw);
         }();
         runner_.postMain([this, result] {
@@ -169,6 +184,7 @@ void Controller::unlockVault(const std::string& password) {
                 state_.unlockError = result.error().message;
                 return;
             }
+            state_.standbyLocked = false;
             refreshSnapshot();
             // Return to the chain + account in use last time.
             std::string lastAccount, lastChain;
@@ -197,16 +213,23 @@ void Controller::unlockVault(const std::string& password) {
     });
 }
 
-void Controller::lockVault() {
+void Controller::lockVault(bool hard) {
+    // Autopilot standby: with the pref on and live schedules, a normal lock
+    // hides the UI but keeps the vault open in memory so schedules keep
+    // running. Panic lock, background lock and shutdown always seal.
+    bool standby = false;
     {
         std::lock_guard<std::mutex> lock(vaultMutex_);
-        vault_.lock();
+        if (!hard && vault_.unlocked() && vault_.security().autopilotStandby)
+            for (const auto& schedule : vault_.schedules())
+                if (schedule.enabled) standby = true;
+        if (!standby) vault_.lock();
     }
+    state_.standbyLocked = standby;
     state_.unlocked = false;
     state_.vault = VaultSnapshot{};
     state_.accountData.clear();
     state_.pinnedData.clear();
-    state_.schedulesInFlight.clear();
     state_.signPrompt.reset();
     state_.pluginPrompt.reset();
     state_.contracts = ContractsViewState{};
@@ -215,6 +238,7 @@ void Controller::lockVault() {
     state_.msig = MsigViewState{};
     state_.deploy = DeployViewState{};
     state_.page = Page::Dashboard;
+    if (!standby) state_.schedulesInFlight.clear();
     link_->sync();
 }
 
@@ -601,6 +625,8 @@ void Controller::refreshAccount(bool force) {
     std::string key = state_.accountKey(*account);
     AccountData& data = state_.accountData[key];
     if (data.loading) return;
+    // Background-activity policy: only user-triggered refreshes when off.
+    if (!force && data.loaded && !state_.vault.security.bgAccountRefresh) return;
     if (!force && data.loaded && nowSec() - data.snap.fetchedAt < 30) return;
 
     auto svc = service(account->chainId);
@@ -649,6 +675,9 @@ void Controller::refreshPrices(bool force) {
     const NetworkDef* network = state_.currentNetwork();
     if (!network || network->oracle.provider == static_cast<int>(OracleProvider::Off))
         return;
+    // Background-activity policy: the first fill still happens; only the
+    // periodic refetch loop is silenced.
+    if (!force && state_.prices.fetchedAt && !state_.vault.security.bgPriceRefresh) return;
     if (state_.prices.loading) return;
     if (!force && state_.prices.fetchedAt && nowSec() - state_.prices.fetchedAt < 60)
         return;
@@ -1067,23 +1096,28 @@ std::unique_ptr<dk::Session> Controller::makeSession(const AccountRef& account) 
 }
 
 void Controller::transactAsync(const AccountRef account, dk::TransactArgs args,
-                               const std::string& flowName, bool* busyFlag) {
+                               const std::string& flowName, bool* busyFlag,
+                               std::function<void(bool, std::string)> onDone) {
     if (account.watch || account.pubKey.empty()) {
         toast(Toast::Warn, "This is a watch-only account; add its key to sign");
+        if (onDone) onDone(false, "watch-only account");
         return;
     }
     if (busyFlag) *busyFlag = true;
-    runner_.run([this, account, args = std::move(args), flowName, busyFlag] {
+    runner_.run([this, account, args = std::move(args), flowName, busyFlag,
+                 onDone = std::move(onDone)] {
         auto session = makeSession(account);
         if (!session) {
-            runner_.postMain([this, busyFlag] {
+            runner_.postMain([this, busyFlag, onDone] {
                 if (busyFlag) *busyFlag = false;
                 toast(Toast::Error, "Could not build a session for this account");
+                if (onDone) onDone(false, "no session");
             });
             return;
         }
         auto result = session->transact(args);
-        runner_.postMain([this, busyFlag, flowName, result = std::move(result)] {
+        runner_.postMain([this, busyFlag, flowName, onDone,
+                          result = std::move(result)] {
             if (busyFlag) *busyFlag = false;
             state_.pipelineStatus.clear();
             if (!result) {
@@ -1091,6 +1125,7 @@ void Controller::transactAsync(const AccountRef account, dk::TransactArgs args,
                     toast(Toast::Info, flowName + " rejected");
                 else
                     toast(Toast::Error, flowName + " failed: " + result.error().message);
+                if (onDone) onDone(false, result.error().message);
                 return;
             }
             std::string txId;
@@ -1100,6 +1135,176 @@ void Controller::transactAsync(const AccountRef account, dk::TransactArgs args,
                   flowName + " confirmed" + (txId.empty() ? "" : "  " + middleEllipsis(txId, 10, 6)));
             refreshSnapshot();  // audit entry / rule counters changed
             refreshAccount(true);
+            if (onDone) onDone(true, txId);
+        });
+    });
+}
+
+void Controller::createAccount(const NewAccountSpec& spec) {
+    const AccountRef* creatorPtr = state_.currentAccount();
+    const NetworkDef* network = state_.currentNetwork();
+    if (!creatorPtr || !network) {
+        toast(Toast::Error, "Select the creating account first");
+        return;
+    }
+    const AccountRef creator = *creatorPtr;
+    if (creator.watch) {
+        toast(Toast::Warn, "The selected account is watch-only; it cannot pay for creation");
+        return;
+    }
+    std::string nameError = acct::validateAccountName(spec.name);
+    if (!nameError.empty()) {
+        toast(Toast::Error, nameError);
+        return;
+    }
+    for (const auto& existing : state_.vault.accounts)
+        if (existing.chainId == creator.chainId && existing.actor == spec.name) {
+            toast(Toast::Warn, spec.name + " is already a wallet account here");
+            return;
+        }
+    if (spec.ramBytes < 1024) {
+        toast(Toast::Error, "A new account needs at least 1024 bytes of RAM");
+        return;
+    }
+
+    // Mint the default keys now so their pubs go into the authorities. On a
+    // failed broadcast the keys stay vaulted (deleting could orphan an
+    // account if the failure was only a lost response).
+    acct::AuthorityDraft owner = spec.owner;
+    acct::AuthorityDraft active = spec.active;
+    std::string activeVaultKey;  // pub the wallet account will sign with
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        if (spec.generateOwnerKey) {
+            auto pub = vault_.generateKey(spec.name + " owner");
+            if (!pub) {
+                toast(Toast::Error, "Key generation failed: " + pub.error().message);
+                return;
+            }
+            owner.keys.push_back({*pub, 1});
+        }
+        if (spec.generateActiveKey) {
+            auto pub = vault_.generateKey(spec.name + " active");
+            if (!pub) {
+                toast(Toast::Error, "Key generation failed: " + pub.error().message);
+                return;
+            }
+            active.keys.push_back({*pub, 1});
+            activeVaultKey = *pub;
+        }
+        (void)vault_.save();
+    }
+    if (activeVaultKey.empty()) {
+        // No generated active key: sign with a vault key already listed.
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        for (const auto& entry : active.keys)
+            if (!vault_.wifFor(entry.pub).empty()) activeVaultKey = entry.pub;
+    }
+    refreshSnapshot();
+
+    std::string authError;
+    auto ownerAuth = acct::makeAuthority(owner, &authError);
+    if (!ownerAuth) {
+        toast(Toast::Error, "Owner authority: " + authError);
+        return;
+    }
+    auto activeAuth = acct::makeAuthority(active, &authError);
+    if (!activeAuth) {
+        toast(Toast::Error, "Active authority: " + authError);
+        return;
+    }
+
+    json auth = json::array({{{"actor", creator.actor}, {"permission", creator.permission}}});
+    json actions = json::array();
+    actions.push_back({{"account", "eosio"},
+                       {"name", "newaccount"},
+                       {"authorization", auth},
+                       {"data",
+                        {{"creator", creator.actor},
+                         {"name", spec.name},
+                         {"owner", *ownerAuth},
+                         {"active", *activeAuth}}}});
+    actions.push_back({{"account", "eosio"},
+                       {"name", "buyrambytes"},
+                       {"authorization", auth},
+                       {"data",
+                        {{"payer", creator.actor},
+                         {"receiver", spec.name},
+                         {"bytes", spec.ramBytes}}}});
+    auto cpu = acct::formatStake(spec.cpuStake.empty() ? "0" : spec.cpuStake,
+                                 network->coreSymbol);
+    auto net = acct::formatStake(spec.netStake.empty() ? "0" : spec.netStake,
+                                 network->coreSymbol);
+    if (!cpu || !net) {
+        toast(Toast::Error, "Stake amounts must be plain numbers");
+        return;
+    }
+    bool anyStake = std::strtod(cpu->c_str(), nullptr) > 0 ||
+                    std::strtod(net->c_str(), nullptr) > 0;
+    if (anyStake)
+        actions.push_back({{"account", "eosio"},
+                           {"name", "delegatebw"},
+                           {"authorization", auth},
+                           {"data",
+                            {{"from", creator.actor},
+                             {"receiver", spec.name},
+                             {"stake_net_quantity", *net},
+                             {"stake_cpu_quantity", *cpu},
+                             {"transfer", spec.transferStake}}}});
+
+    dk::TransactArgs args;
+    args.actions = actions;
+    const std::string chainId = creator.chainId;
+    const std::string name = spec.name;
+    transactAsync(creator, std::move(args), "Create " + name, &state_.busyCreateAccount,
+                  [this, chainId, name, activeVaultKey](bool ok, std::string) {
+                      if (!ok) {
+                          toast(Toast::Info,
+                                "Generated keys stay in the vault; retry when ready");
+                          return;
+                      }
+                      // Port-in pipeline: the new account becomes a wallet
+                      // account immediately, signing with its active key.
+                      {
+                          std::lock_guard<std::mutex> lock(vaultMutex_);
+                          if (!vault_.unlocked()) return;
+                          vault_.addAccount({chainId, name, "active", activeVaultKey,
+                                             activeVaultKey.empty()});
+                          vault_.setLastAccount(chainId + "|" + name + "|active");
+                          (void)vault_.save();
+                      }
+                      refreshSnapshot();
+                      for (size_t i = 0; i < state_.vault.accounts.size(); ++i) {
+                          const AccountRef& a = state_.vault.accounts[i];
+                          if (a.chainId == chainId && a.actor == name &&
+                              a.permission == "active")
+                              state_.selectedAccount = static_cast<int>(i);
+                      }
+                      state_.page = Page::Dashboard;
+                      toast(Toast::Success, name + " added to this wallet");
+                  });
+}
+
+void Controller::checkAccountName(const std::string& name,
+                                  std::function<void(bool, std::string)> done) {
+    const NetworkDef* network = state_.currentNetwork();
+    if (!network) {
+        done(false, "no network selected");
+        return;
+    }
+    auto svc = service(network->chainId);
+    if (!svc) {
+        done(false, "no chain service");
+        return;
+    }
+    runner_.run([this, svc, name, done = std::move(done)] {
+        auto exists = svc->accountExists(name);
+        runner_.postMain([done = std::move(done), exists] {
+            if (!exists)
+                done(false, exists.error().message);
+            else
+                done(*exists, "");
         });
     });
 }
@@ -2070,6 +2275,7 @@ void Controller::removePinnedQuery(const std::string& id) {
 
 void Controller::refreshPinnedQueries() {
     if (!state_.unlocked) return;
+    if (!state_.vault.security.bgPinnedRefresh) return;
     const AccountRef* account = state_.currentAccount();
     for (const auto& query : state_.vault.pinnedQueries) {
         // Chain-scoped pins refresh only while their chain is active.
@@ -2138,22 +2344,30 @@ void Controller::runScheduleNow(const std::string& id) {
     if (state_.schedulesInFlight.count(id)) return;
     state_.schedulesInFlight.insert(id);
 
-    // Resolve the signing account: exact permission match first.
+    // Resolve the signing account from the authoritative vault (the UI
+    // snapshot is empty in autopilot standby): exact permission match first.
     AccountRef account;
     bool haveAccount = false;
-    for (const auto& a : state_.vault.accounts) {
-        if (a.chainId != schedule.chainId || a.actor != schedule.actor) continue;
-        if (!haveAccount || a.permission == schedule.permission) {
-            account = a;
-            haveAccount = true;
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        for (const auto& a : vault_.accounts()) {
+            if (a.chainId != schedule.chainId || a.actor != schedule.actor) continue;
+            if (!haveAccount || a.permission == schedule.permission) {
+                account = a;
+                haveAccount = true;
+            }
         }
     }
-    auto finish = [this, id](const std::string& result) {
+    // Offline/dead-endpoint runs retry on a short backoff instead of
+    // sleeping a whole interval; everything else waits its normal turn.
+    auto finish = [this, id](const std::string& result, bool backoff = false) {
         {
             std::lock_guard<std::mutex> lock(vaultMutex_);
             if (Schedule* s = vault_.schedule(id)) {
                 s->lastRunAt = nowSec();
-                s->nextRunAt = nowSec() + s->intervalSec;
+                int64_t wait = s->intervalSec;
+                if (backoff) wait = std::min<int64_t>(wait, 300);
+                s->nextRunAt = nowSec() + wait;
                 s->lastResult = result;
                 (void)vault_.save();
             }
@@ -2161,13 +2375,17 @@ void Controller::runScheduleNow(const std::string& id) {
         state_.schedulesInFlight.erase(id);
         refreshSnapshot();
     };
+    // Locked-screen runs stay silent; results land in each schedule's log.
+    auto say = [this](Toast::Kind kind, const std::string& text) {
+        if (state_.unlocked) toast(kind, text);
+    };
     if (!haveAccount || account.watch || account.pubKey.empty()) {
         finish("skipped: no signing account in the vault for " + schedule.actor);
-        toast(Toast::Warn, "Schedule '" + schedule.label + "' has no signing account");
+        say(Toast::Warn, "Schedule '" + schedule.label + "' has no signing account");
         return;
     }
 
-    runner_.run([this, account, schedule, finish] {
+    runner_.run([this, account, schedule, finish, say] {
         // Resolve dynamic pieces against live chain state, on this worker.
         json data = schedule.data;
         autopilot::TemplateContext context;
@@ -2186,19 +2404,23 @@ void Controller::runScheduleNow(const std::string& id) {
             auto balance = svc->fetchBalance(contract, account.actor,
                                              schedule.amountTokenCode);
             if (!balance) {
-                runner_.postMain([this, finish, schedule, err = balance.error().message] {
-                    finish("skipped: balance fetch failed - " + err);
-                    toast(Toast::Warn, "Autopilot '" + schedule.label +
-                                           "' skipped: " + err);
+                bool offline = balance.error().kind == dk::ErrorKind::Transport;
+                runner_.postMain([finish, say, schedule, offline,
+                                  err = balance.error().message] {
+                    finish(offline ? "deferred (offline): " + err
+                                   : "skipped: balance fetch failed - " + err,
+                           offline);
+                    say(Toast::Warn, "Autopilot '" + schedule.label +
+                                         "' " + (offline ? "deferred: " : "skipped: ") + err);
                 });
                 return;
             }
             auto amount = autopilot::computePercentAmount(*balance, schedule.amountPercent,
                                                           schedule.amountReserve);
             if (!amount) {
-                runner_.postMain([this, finish, schedule, err = amount.error().message] {
+                runner_.postMain([finish, say, schedule, err = amount.error().message] {
                     finish("skipped: " + err);
-                    toast(Toast::Info, "Autopilot '" + schedule.label + "' skipped: " + err);
+                    say(Toast::Info, "Autopilot '" + schedule.label + "' skipped: " + err);
                 });
                 return;
             }
@@ -2227,7 +2449,7 @@ void Controller::runScheduleNow(const std::string& id) {
         t_scheduledSign = true;
         auto result = session->transact(args);
         t_scheduledSign = false;
-        runner_.postMain([this, schedule, finish, sent = context.amount,
+        runner_.postMain([this, schedule, finish, say, sent = context.amount,
                           result = std::move(result)] {
             state_.pipelineStatus.clear();
             if (result) {
@@ -2238,22 +2460,36 @@ void Controller::runScheduleNow(const std::string& id) {
                     "signed " + (txId.empty() ? "ok" : middleEllipsis(txId, 10, 6));
                 if (!sent.empty()) summary += " - sent " + sent;
                 finish(summary);
-                toast(Toast::Success, "Autopilot ran '" + schedule.label + "'" +
-                                          (sent.empty() ? "" : " (" + sent + ")"));
-                refreshAccount(true);
+                say(Toast::Success, "Autopilot ran '" + schedule.label + "'" +
+                                        (sent.empty() ? "" : " (" + sent + ")"));
+                if (state_.unlocked) refreshAccount(true);
+            } else if (result.error().kind == dk::ErrorKind::Transport) {
+                // Offline or every endpoint dark: retry soon, not next cycle.
+                finish("deferred (offline): " + result.error().message, true);
+                say(Toast::Warn,
+                    "Autopilot '" + schedule.label + "' deferred: no reachable endpoint");
             } else {
                 finish("blocked: " + result.error().message);
-                toast(Toast::Warn,
-                      "Autopilot '" + schedule.label + "' " + result.error().message);
+                say(Toast::Warn,
+                    "Autopilot '" + schedule.label + "' " + result.error().message);
             }
         });
     });
 }
 
 void Controller::tickSchedules() {
-    if (!state_.unlocked) return;
+    // Schedules run while the UI is unlocked OR in autopilot standby (locked
+    // screen, vault open in memory). Read from the authoritative vault so the
+    // standby path needs no UI snapshot.
+    if (!state_.unlocked && !state_.standbyLocked) return;
+    std::vector<Schedule> schedules;
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        schedules = vault_.schedules();
+    }
     int64_t now = nowSec();
-    for (const auto& schedule : state_.vault.schedules) {
+    for (const auto& schedule : schedules) {
         if (!schedule.enabled || schedule.nextRunAt == 0) continue;
         if (state_.schedulesInFlight.count(schedule.id)) continue;
         bool due = schedule.nextRunAt <= now;

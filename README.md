@@ -52,6 +52,21 @@ bottom tab bar + sheet modals on phones - try them anywhere with
   can be a fixed X or Y% of the live balance of any token (recomputed each
   run with exact floor math, optional reserve kept untouched), and memos/
   fields accept {actor} {amount} {balance} {date} {time} placeholders.
+- **Create account** - register brand-new on-chain accounts: owner and active
+  keys are minted straight into the vault by default (or pick vault keys /
+  paste externals), authorities take extra keys, account@permission entries
+  (one-click `@eosio.code`) and thresholds, the creator buys RAM and can
+  delegate CPU/NET (optionally gifted) - and the finished account is added to
+  this wallet and selected automatically.
+- **Startup & background control** - optional launch-at-login (OS-level Run
+  key / launch agent / autostart entry), and a switch per background fetch
+  class (account data, pinned queries, prices) so idle network and CPU cost
+  is your call. Endpoint pools fail over automatically: a dead node is cooled
+  down for a minute and the next enabled node answers; offline autopilot runs
+  retry on a short backoff instead of skipping their slot.
+- **Autopilot standby (opt-in)** - locking can keep schedules running behind
+  the lock screen. Explicit trade-off, off by default: standby holds the
+  decrypted vault in process memory; panic lock and quitting always wipe.
 - **First-run guide + Anchor migration** - create or import a vault, pick the
   chains to enable, paste keys exported from Anchor (one per line), and
   TackleBox discovers every account those keys control across the enabled

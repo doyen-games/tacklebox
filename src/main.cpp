@@ -206,7 +206,7 @@ int main(int argc, char** argv) {
                         // Mobile lifecycle: the OS may snapshot the screen and
                         // keep the process for days. Seal immediately.
                         if (state.unlocked && state.vault.security.lockOnBackground) {
-                            controller.lockVault();
+                            controller.lockVault(true);  // mobile: always seal
                             tb::Log::info("locked on background transition");
                         }
                         break;

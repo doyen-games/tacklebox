@@ -12,6 +12,7 @@
 
 #include <dwarfkit/session.hpp>
 
+#include "app/account_util.hpp"
 #include "app/state.hpp"
 #include "core/task_runner.hpp"
 
@@ -36,7 +37,10 @@ public:
     // --- vault --------------------------------------------------------------
     void createVault(const std::string& password);
     void unlockVault(const std::string& password);
-    void lockVault();
+    // hard=true always seals the vault (panic, background, shutdown).
+    // Otherwise, with SecurityPrefs.autopilotStandby and enabled schedules,
+    // the UI locks while the vault stays open in memory so autopilot runs on.
+    void lockVault(bool hard = false);
     void changePassword(const std::string& current, const std::string& next,
                         std::function<void(bool, std::string)> done);
     // Verify the vault password (per-sign confirmation). Callback on main.
@@ -59,6 +63,26 @@ public:
     // Chain-first navigation: look at a chain (with or without an account on
     // it); remembers the choice and picks that chain's last-used account.
     void selectChain(const std::string& chainId);
+
+    // --- on-chain account creation ------------------------------------------
+    // One permission of the new account. Keys listed by public key; the
+    // generate flags below add freshly-minted vault keys at submit time.
+    struct NewAccountSpec {
+        std::string name;
+        acct::AuthorityDraft owner, active;
+        bool generateOwnerKey = true;   // mint + append a key to owner
+        bool generateActiveKey = true;  // mint + append a key to active
+        int64_t ramBytes = 4096;
+        std::string cpuStake, netStake;  // human amounts ("1.0"); empty/0 = skip
+        bool transferStake = false;      // delegatebw transfer flag (gift)
+    };
+    // Build newaccount + buyrambytes (+ delegatebw), sign through the guard
+    // as the selected account, then port the new account straight into the
+    // vault as a wallet account and select it.
+    void createAccount(const NewAccountSpec& spec);
+    // Availability probe; callback (exists, error) on main.
+    void checkAccountName(const std::string& name,
+                          std::function<void(bool, std::string)> done);
 
     // Setup wizard / Anchor migration.
     // Replace the preset-enabled set: upsert `enable`, drop known presets not
@@ -224,7 +248,8 @@ private:
                      const std::string& summary, const std::string& verdict, bool approved,
                      const std::string& txId);
     void transactAsync(const AccountRef account, dwarfkit::TransactArgs args,
-                       const std::string& flowName, bool* busyFlag);
+                       const std::string& flowName, bool* busyFlag,
+                       std::function<void(bool, std::string)> onDone = {});
 
     AppState& state_;
     TaskRunner& runner_;

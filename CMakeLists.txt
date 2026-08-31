@@ -115,6 +115,7 @@ add_library(tacklebox_core STATIC
   src/core/paths.cpp
   src/core/rng.cpp
   src/core/secure.cpp
+  src/core/autostart.cpp
   src/core/task_runner.cpp
   src/core/util.cpp
   src/vault/cipher.cpp
@@ -126,6 +127,7 @@ add_library(tacklebox_core STATIC
   src/chain/netreg.cpp
   src/chain/prices.cpp
   src/chain/service.cpp
+  src/app/account_util.cpp
   src/app/autopilot_util.cpp
   src/app/bridge.cpp
   src/app/link.cpp
@@ -168,6 +170,7 @@ set(TB_APP_SOURCES
   src/ui/views/assets.cpp
   src/ui/views/autopilot.cpp
   src/ui/views/contracts.cpp
+  src/ui/views/createaccount.cpp
   src/ui/views/dashboard.cpp
   src/ui/views/explore.cpp
   src/ui/views/governance.cpp
@@ -240,6 +243,7 @@ endif()
 if(TB_BUILD_TESTS)
   enable_testing()
   add_executable(tacklebox_tests
+    tests/test_account.cpp
     tests/main.cpp
     tests/test_autopilot.cpp
     tests/test_cipher.cpp

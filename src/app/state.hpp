@@ -27,6 +27,7 @@ enum class Page {
     Autopilot,
     Whitelist,
     Vault,
+    CreateAccount,  // on-chain account creation + port-in pipeline
     History,
     Settings,
     Setup,  // first-run guide: chains -> keys -> account discovery
@@ -238,6 +239,10 @@ struct AppState {
     std::string unlockError;
     bool busyTransfer = false;
     bool busyContract = false;
+    bool busyCreateAccount = false;
+    // UI locked while the vault stays open in memory for autopilot schedules
+    // (SecurityPrefs.autopilotStandby). Cleared by unlock, panic and shutdown.
+    bool standbyLocked = false;
     bool busyEsr = false;
     bool busyRule = false;
     int workerPending = 0;  // mirrored from TaskRunner for the activity spinner

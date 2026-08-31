@@ -329,6 +329,16 @@ const Step kSteps[] = {
          showShellPage(state, c, Page::Dashboard);
          state.signPrompt = makeSignPrompt(state);
      }},
+    {"17-createaccount",
+     [](AppState& s, Controller& c) { showShellPage(s, c, Page::CreateAccount); }},
+    {"18-settings-policies",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Settings);
+         // One network keeps the networks card short so the scroll lands on
+         // the security policy + startup/background cards.
+         if (s.vault.networks.size() > 1) s.vault.networks.resize(1);
+         g_pageScroll = ::ui::S(1360.0f);
+     }},
 };
 constexpr int kStepCount = static_cast<int>(sizeof(kSteps) / sizeof(kSteps[0]));
 constexpr int kSettleFrames = 6;

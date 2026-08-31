@@ -95,6 +95,7 @@ void drawDashboard(AppState& state, Controller& controller) {
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 8);
     if (iconButton("##refresh", Icon::Refresh, "Refresh account data")) {
         controller.refreshAccount(true);
+        controller.refreshPrices(true);
         controller.noteActivity();
     }
     if (account->watch) {

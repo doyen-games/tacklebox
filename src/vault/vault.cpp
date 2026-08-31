@@ -274,7 +274,11 @@ json Vault::serializePayload() const {
                   {"clipboardClearSec", security_.clipboardClearSec},
                   {"blockOnCriticalRisk", security_.blockOnCriticalRisk},
                   {"useResourceProvider", security_.useResourceProvider},
-                  {"lockOnBackground", security_.lockOnBackground}}}};
+                  {"lockOnBackground", security_.lockOnBackground},
+                  {"autopilotStandby", security_.autopilotStandby},
+                  {"bgAccountRefresh", security_.bgAccountRefresh},
+                  {"bgPinnedRefresh", security_.bgPinnedRefresh},
+                  {"bgPriceRefresh", security_.bgPriceRefresh}}}};
 }
 
 Result<void> Vault::parsePayload(const json& p) {
@@ -382,6 +386,10 @@ Result<void> Vault::parsePayload(const json& p) {
         security_.blockOnCriticalRisk = s.value("blockOnCriticalRisk", true);
         security_.useResourceProvider = s.value("useResourceProvider", false);
         security_.lockOnBackground = s.value("lockOnBackground", true);
+        security_.autopilotStandby = s.value("autopilotStandby", false);
+        security_.bgAccountRefresh = s.value("bgAccountRefresh", true);
+        security_.bgPinnedRefresh = s.value("bgPinnedRefresh", true);
+        security_.bgPriceRefresh = s.value("bgPriceRefresh", true);
     }
     return {};
 }

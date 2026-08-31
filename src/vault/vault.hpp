@@ -152,6 +152,14 @@ struct SecurityPrefs {
     bool blockOnCriticalRisk = true; // critical risk flags force hold-to-sign
     bool useResourceProvider = false;  // fuel-style cosigning (may quote fees)
     bool lockOnBackground = true;    // mobile: lock the instant the app hides
+    // Locking the UI keeps the vault open in memory so autopilot schedules
+    // keep running behind the lock screen. Panic lock always seals fully.
+    bool autopilotStandby = false;
+    // Preemptive API activity, each class separately switchable so idle
+    // network/CPU use is the user's call. Manual refreshes always work.
+    bool bgAccountRefresh = true;  // refetch stale account data + balances
+    bool bgPinnedRefresh = true;   // pinned dashboard queries on their timers
+    bool bgPriceRefresh = true;    // price oracle refetch on its TTL
 };
 
 // A saved table query rendered on the dashboard.

@@ -97,35 +97,82 @@ int ChainService::recentQueries(NodeType type) {
     return static_cast<int>(window.size());
 }
 
+bool ChainService::inCooldown(const std::string& url, int64_t now) const {
+    auto it = failedUntil_.find(url);
+    return it != failedUntil_.end() && it->second > now;
+}
+
+void ChainService::markEndpointFailed(const std::string& url) {
+    constexpr int kEndpointCooldownSec = 60;
+    std::lock_guard<std::mutex> lock(mutex_);
+    failedUntil_[url] = nowSec() + kEndpointCooldownSec;
+}
+
+std::vector<std::string> ChainService::candidateUrls(NodeType type) {
+    std::string preferred = pickUrl(type);  // records the query + applies policy
+    if (preferred.empty()) return {};
+    std::lock_guard<std::mutex> lock(mutex_);
+    int64_t now = nowSec();
+    std::vector<std::string> healthy{preferred}, coolingDown;
+    for (const Endpoint* node : net_.list(type).enabledSorted()) {
+        if (node->url == preferred) continue;
+        (inCooldown(node->url, now) ? coolingDown : healthy).push_back(node->url);
+    }
+    // The preferred pick goes first even when cooling down (it may be the
+    // only node); every other cooling node is tried last, not never.
+    healthy.insert(healthy.end(), coolingDown.begin(), coolingDown.end());
+    return healthy;
+}
+
 Result<json> ChainService::rpcCall(const std::string& path, const json& params) {
-    std::string url = pickUrl(NodeType::Rpc);
-    if (url.empty())
+    auto candidates = candidateUrls(NodeType::Rpc);
+    if (candidates.empty())
         return dwarfkit::err(ErrorKind::Transport, "no enabled RPC endpoint for " + net_.name);
-    return clientFor(url)->call({.path = path, .params = params});
+    Result<json> last = dwarfkit::err(ErrorKind::Transport, "unreachable");
+    for (const auto& url : candidates) {
+        last = clientFor(url)->call({.path = path, .params = params});
+        // Only transport-level failures justify moving to another node;
+        // chain-level errors (asserts, missing rows) would repeat anywhere.
+        if (last || last.error().kind != ErrorKind::Transport) return last;
+        markEndpointFailed(url);
+        Log::info("rpc failover: %s unreachable, trying next node", url.c_str());
+    }
+    return last;
 }
 
 Result<json> ChainService::getJson(NodeType type, const std::string& path) {
-    std::string base = pickUrl(type);
-    if (base.empty())
+    auto candidates = candidateUrls(type);
+    if (candidates.empty())
         return dwarfkit::err(ErrorKind::Unsupported,
                              std::string("no enabled ") + nodeTypeName(type) +
                                  " endpoint for " + net_.name);
-    while (!base.empty() && base.back() == '/') base.pop_back();
-    dwarfkit::FetchRequest request;
-    request.url = base + path;
-    request.method = "GET";
-    auto response = fetch_->fetch(request);
-    if (!response) return dwarfkit::err(response.error());
-    if (response->status != 200)
-        return dwarfkit::err(ErrorKind::Api,
-                             std::string(nodeTypeName(type)) + " answered HTTP " +
-                                 std::to_string(response->status),
-                             response->status);
-    json parsed = json::parse(response->body, nullptr, false);
-    if (parsed.is_discarded())
-        return dwarfkit::err(ErrorKind::Api, std::string(nodeTypeName(type)) +
-                                                 " returned malformed JSON");
-    return parsed;
+    Result<json> last = dwarfkit::err(ErrorKind::Transport, "unreachable");
+    for (std::string base : candidates) {
+        while (!base.empty() && base.back() == '/') base.pop_back();
+        dwarfkit::FetchRequest request;
+        request.url = base + path;
+        request.method = "GET";
+        auto response = fetch_->fetch(request);
+        if (!response) {
+            // No HTTP answer at all: a dead node - cool it down and fail over.
+            last = dwarfkit::err(response.error());
+            markEndpointFailed(base);
+            Log::info("%s failover: %s unreachable, trying next node", nodeTypeName(type),
+                      base.c_str());
+            continue;
+        }
+        if (response->status != 200)
+            return dwarfkit::err(ErrorKind::Api,
+                                 std::string(nodeTypeName(type)) + " answered HTTP " +
+                                     std::to_string(response->status),
+                                 response->status);
+        json parsed = json::parse(response->body, nullptr, false);
+        if (parsed.is_discarded())
+            return dwarfkit::err(ErrorKind::Api, std::string(nodeTypeName(type)) +
+                                                     " returned malformed JSON");
+        return parsed;
+    }
+    return last;
 }
 
 Result<AccountSnapshot> ChainService::fetchAccount(const std::string& actor) {

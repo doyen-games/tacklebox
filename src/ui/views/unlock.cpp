@@ -49,6 +49,16 @@ void drawUnlock(AppState& state, Controller& controller) {
     float top = min.y + size.y * 0.24f;
     wordmark(centerX, top);
 
+    // Autopilot standby: the UI is locked while schedules keep running.
+    if (state.standbyLocked) {
+        ImGui::PushFont(fonts().uiSemi, kTextSm);
+        const char* note = "AUTOPILOT STANDBY - SCHEDULES STILL RUNNING";
+        ImVec2 noteSize = ImGui::CalcTextSize(note);
+        dl->AddText({centerX - noteSize.x * 0.5f, top + 92.0f},
+                    col::alpha(col::Warn, 0.95f), note);
+        ImGui::PopFont();
+    }
+
     // Card with the password prompt.
     float cardW = std::min(380.0f, size.x - 36.0f);
     ImGui::SetCursorScreenPos({centerX - cardW * 0.5f, top + 130.0f});

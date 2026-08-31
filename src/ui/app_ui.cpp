@@ -54,10 +54,10 @@ void drawApp(AppState& state, Controller& controller) {
     drawToasts(state);
 
     if (ImGui::IsKeyPressed(ImGuiKey_F12, false)) state.showDiagnostics = !state.showDiagnostics;
-    // Panic key: instant lock.
+    // Panic key: instant HARD lock - standby never applies here.
     if (state.unlocked && ImGui::IsKeyPressed(ImGuiKey_L, false) &&
         ImGui::GetIO().KeyCtrl && ImGui::GetIO().KeyShift) {
-        controller.lockVault();
+        controller.lockVault(true);
         controller.toast(Toast::Info, "Vault locked");
     }
 }

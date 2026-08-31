@@ -158,10 +158,21 @@ private:
     Result<json> getUrlJson(const std::string& url);
     // Pooled client per base URL (round-robin picks vary per request).
     std::shared_ptr<dwarfkit::APIClient> clientFor(const std::string& url);
-    // POST an RPC call to a policy-picked node.
+    // POST an RPC call to a policy-picked node, failing over across the
+    // enabled pool on transport errors.
     Result<json> rpcCall(const std::string& path, const json& params);
-    // GET <picked base><path> for the REST-style node types.
+    // GET <picked base><path> for the REST-style node types, with the same
+    // failover behavior.
     Result<json> getJson(NodeType type, const std::string& path);
+    // Enabled URLs in the order the policy wants them tried this request:
+    // preferred pick first, then the remaining fallbacks. Nodes inside their
+    // failure cooldown sort last instead of being dropped, so a fully-dark
+    // pool still gets retried rather than erroring out instantly.
+    std::vector<std::string> candidateUrls(NodeType type);
+    // Record a transport-level failure: the node is deprioritized for
+    // kEndpointCooldownSec so live traffic stops hammering a dead endpoint.
+    void markEndpointFailed(const std::string& url);
+    bool inCooldown(const std::string& url, int64_t now) const;
 
     mutable std::mutex mutex_;
     NetworkDef net_;
@@ -172,6 +183,7 @@ private:
     // Selection runtime: rotation counters + query timestamps per node type.
     size_t rrCounter_[4] = {0, 0, 0, 0};
     std::deque<int64_t> queryTimes_[4];
+    std::map<std::string, int64_t> failedUntil_;  // url -> cooldown expiry
 };
 
 }  // namespace tb

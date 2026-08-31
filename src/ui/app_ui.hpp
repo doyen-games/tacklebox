@@ -26,6 +26,7 @@ void drawTransfer(AppState& state, Controller& controller);
 void drawContracts(AppState& state, Controller& controller);
 void drawWhitelist(AppState& state, Controller& controller);
 void drawVaultView(AppState& state, Controller& controller);
+void drawCreateAccount(AppState& state, Controller& controller);
 void drawHistory(AppState& state, Controller& controller);
 void drawSettings(AppState& state, Controller& controller);
 
