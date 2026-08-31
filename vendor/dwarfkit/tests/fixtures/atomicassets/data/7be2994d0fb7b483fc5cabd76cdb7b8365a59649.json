@@ -1,0 +1,82 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v1/template_buyoffers/284083",
+        "params": {
+            "method": "GET",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "market_contract": "atomicmarket",
+            "assets_contract": "atomicassets",
+            "buyoffer_id": "284083",
+            "seller": null,
+            "buyer": "e1uvu.wam",
+            "price": {
+                "token_contract": "eosio.token",
+                "token_symbol": "WAX",
+                "token_precision": 8,
+                "amount": "600000000"
+            },
+            "assets": [],
+            "maker_marketplace": "nft.hive",
+            "taker_marketplace": null,
+            "collection": {
+                "collection_name": "bcbrawlers",
+                "name": "Brawlers",
+                "img": "QmZ4J4MF3aoBXJAeUkLT7VFRLVxEWe3UzqEhM6LvwAtW2K",
+                "images": "{\"banner_1920x500\":\"QmYhtLSQJ8LyJkDgPovtms4xhAyH4mvxFoFpjehTLL5Wcn\",\"logo_512x512\":\"QmUbNrzxBMtTvSPgJ2ixnmHXMYX3oXrWeLhztMwaK1jEsQ/BRAWLERS/LOGO/PNGs/Brawlers_Logo_Secondary_onBlack.png\"}",
+                "author": "bcbrawlers",
+                "allow_notify": true,
+                "authorized_accounts": [
+                    "bcbrawlers",
+                    "config.nft",
+                    "sales.nft",
+                    "unbox.nft",
+                    "premint.nft",
+                    "dk2ausetup11",
+                    "drops.nft",
+                    "craft.nft",
+                    "redeem.nft",
+                    "4je.m.wam",
+                    "official.wax",
+                    "neftyblocksd",
+                    "yih3q.c.wam",
+                    "neftyblocksp",
+                    "twitchreward"
+                ],
+                "notify_accounts": [
+                    "dslnft.wax"
+                ],
+                "market_fee": 0.05,
+                "created_at_block": "156476764",
+                "created_at_time": "1639693390000"
+            },
+            "template": {
+                "template_id": "443565",
+                "max_supply": "0",
+                "is_transferable": true,
+                "is_burnable": true,
+                "issued_supply": "865119",
+                "immutable_data": {
+                    "img": "QmbAK7Z8kKFo87HPzG9HkKr7d7qAP2W4Pcbx77hqHbm1cS",
+                    "name": "Gold",
+                    "legal": "™ & © Wax Studios",
+                    "description": "Gold can be used to craft, upgrade and trade."
+                },
+                "created_at_time": "1645479145500",
+                "created_at_block": "168044773"
+            },
+            "updated_at_block": "295642399",
+            "updated_at_time": "1709293813500",
+            "created_at_block": "295414480",
+            "created_at_time": "1709179854000",
+            "state": 1
+        },
+        "query_time": 1756585626228
+    },
+    "text": "{\"success\":true,\"data\":{\"market_contract\":\"atomicmarket\",\"assets_contract\":\"atomicassets\",\"buyoffer_id\":\"284083\",\"seller\":null,\"buyer\":\"e1uvu.wam\",\"price\":{\"token_contract\":\"eosio.token\",\"token_symbol\":\"WAX\",\"token_precision\":8,\"amount\":\"600000000\"},\"assets\":[],\"maker_marketplace\":\"nft.hive\",\"taker_marketplace\":null,\"collection\":{\"collection_name\":\"bcbrawlers\",\"name\":\"Brawlers\",\"img\":\"QmZ4J4MF3aoBXJAeUkLT7VFRLVxEWe3UzqEhM6LvwAtW2K\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmYhtLSQJ8LyJkDgPovtms4xhAyH4mvxFoFpjehTLL5Wcn\\\",\\\"logo_512x512\\\":\\\"QmUbNrzxBMtTvSPgJ2ixnmHXMYX3oXrWeLhztMwaK1jEsQ/BRAWLERS/LOGO/PNGs/Brawlers_Logo_Secondary_onBlack.png\\\"}\",\"author\":\"bcbrawlers\",\"allow_notify\":true,\"authorized_accounts\":[\"bcbrawlers\",\"config.nft\",\"sales.nft\",\"unbox.nft\",\"premint.nft\",\"dk2ausetup11\",\"drops.nft\",\"craft.nft\",\"redeem.nft\",\"4je.m.wam\",\"official.wax\",\"neftyblocksd\",\"yih3q.c.wam\",\"neftyblocksp\",\"twitchreward\"],\"notify_accounts\":[\"dslnft.wax\"],\"market_fee\":0.05,\"created_at_block\":\"156476764\",\"created_at_time\":\"1639693390000\"},\"template\":{\"template_id\":\"443565\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"865119\",\"immutable_data\":{\"img\":\"QmbAK7Z8kKFo87HPzG9HkKr7d7qAP2W4Pcbx77hqHbm1cS\",\"name\":\"Gold\",\"legal\":\"™ & © Wax Studios\",\"description\":\"Gold can be used to craft, upgrade and trade.\"},\"created_at_time\":\"1645479145500\",\"created_at_block\":\"168044773\"},\"updated_at_block\":\"295642399\",\"updated_at_time\":\"1709293813500\",\"created_at_block\":\"295414480\",\"created_at_time\":\"1709179854000\",\"state\":1},\"query_time\":1756585626228}"
+}

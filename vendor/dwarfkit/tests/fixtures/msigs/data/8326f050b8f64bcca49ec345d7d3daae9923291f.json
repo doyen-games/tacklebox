@@ -1,0 +1,18 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_activity",
+        "params": {
+            "method": "POST",
+            "body": "{\"account\":\"bob\",\"limit\":5,\"action_type\":\"proposed\"}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "account": "bob",
+        "activity": [],
+        "more": false,
+        "total": 0
+    },
+    "text": "{\"account\":\"bob\",\"activity\":[],\"more\":false,\"total\":0}"
+}

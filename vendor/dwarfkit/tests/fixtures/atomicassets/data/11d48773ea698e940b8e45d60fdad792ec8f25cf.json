@@ -1,0 +1,31 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/templates/taco/750150/logs",
+        "params": {
+            "method": "POST",
+            "body": "{\"limit\":\"10\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "log_id": "85495019341",
+                "name": "lognewtempl",
+                "data": {
+                    "max_supply": 0,
+                    "authorized_creator": "mkt.taco"
+                },
+                "txid": "2f22b0efae90088a27ab73cde9ebde2ef98d5146b8cb95e8f7f9fd48a7f65db7",
+                "created_at_block": "269559081",
+                "created_at_time": "1696250743500"
+            }
+        ],
+        "query_time": 1756585609649
+    },
+    "text": "{\"success\":true,\"data\":[{\"log_id\":\"85495019341\",\"name\":\"lognewtempl\",\"data\":{\"max_supply\":0,\"authorized_creator\":\"mkt.taco\"},\"txid\":\"2f22b0efae90088a27ab73cde9ebde2ef98d5146b8cb95e8f7f9fd48a7f65db7\",\"created_at_block\":\"269559081\",\"created_at_time\":\"1696250743500\"}],\"query_time\":1756585609649}"
+}

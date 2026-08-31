@@ -1,0 +1,18 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"json\":false,\"limit\":1,\"code\":\"eosio\",\"table\":\"producers\",\"upper_bound\":\"teamgreymass\",\"scope\":\"eosio\",\"key_type\":\"name\"}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            "4088104288104208824e410e445a8342000389244a0a7736386bc6bc88c3ee4964121467370bdf6e58ed43a625027135763c011168747470733a2f2f696e6469612e636f6d0000000000000000000000000000"
+        ],
+        "more": true,
+        "next_key": "595056278176303696"
+    },
+    "text": "{\"rows\":[\"4088104288104208824e410e445a8342000389244a0a7736386bc6bc88c3ee4964121467370bdf6e58ed43a625027135763c011168747470733a2f2f696e6469612e636f6d0000000000000000000000000000\"],\"more\":true,\"next_key\":\"595056278176303696\"}"
+}

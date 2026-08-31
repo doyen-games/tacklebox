@@ -1,0 +1,16 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"json\":false,\"limit\":1,\"code\":\"eosio\",\"table\":\"producers\",\"lower_bound\":\"foo\",\"upper_bound\":\"foo\",\"scope\":\"eosio\",\"key_type\":\"name\"}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [],
+        "more": false,
+        "next_key": ""
+    },
+    "text": "{\"rows\":[],\"more\":false,\"next_key\":\"\"}"
+}

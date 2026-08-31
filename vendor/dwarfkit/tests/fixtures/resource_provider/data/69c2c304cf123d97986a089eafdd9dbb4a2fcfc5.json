@@ -1,0 +1,57 @@
+{
+    "request": {
+        "path": "https://jungle4.greymass.com/v1/resource_provider/request_transaction",
+        "params": {
+            "method": "POST",
+            "body": "{\"request\":\"esr://gmNgZMpmmJs5N_XYZWdNBiBgZFjWZML8yiAUyA7XtTl7ltHAiePmwVLfxyBZhgkbT1nABBo2ToyLVes9ZckKlmJgcfUPBtHi5RmJRWnZmSUKmcUKJRmpCkmpxSUKNsZAsxkA\",\"signer\":{\"actor\":\"wharfkit1113\",\"permission\":\"test\"}}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "code": 200,
+        "data": {
+            "request": [
+                "transaction",
+                {
+                    "expiration": "2026-02-24T01:35:39",
+                    "ref_block_num": 26013,
+                    "ref_block_prefix": 692310982,
+                    "max_net_usage_words": 0,
+                    "max_cpu_usage_ms": 0,
+                    "delay_sec": 0,
+                    "context_free_actions": [],
+                    "actions": [
+                        {
+                            "account": "greymassnoop",
+                            "name": "noop",
+                            "authorization": [
+                                {
+                                    "actor": "greymassfuel",
+                                    "permission": "cosign"
+                                }
+                            ],
+                            "data": ""
+                        },
+                        {
+                            "account": "eosio.token",
+                            "name": "transfer",
+                            "authorization": [
+                                {
+                                    "actor": "wharfkit1113",
+                                    "permission": "test"
+                                }
+                            ],
+                            "data": "304208d9c1754de380b1915e5d268dca390500000000000004454f53000000001777686172666b6974206973207468652062657374203c33"
+                        }
+                    ],
+                    "transaction_extensions": []
+                }
+            ],
+            "signatures": [
+                "SIG_K1_KZX8Ymu1N2vVfej8Tmt253oXhYRjQiwUPz4dUAQFwPzzRiqA9V9Yeo9aYz2RrcpM4D8gzC6XMVAdoaxxtQTgeHjHjPTP61"
+            ],
+            "version": null
+        }
+    },
+    "text": "{\"code\":200,\"data\":{\"request\":[\"transaction\",{\"expiration\":\"2026-02-24T01:35:39\",\"ref_block_num\":26013,\"ref_block_prefix\":692310982,\"max_net_usage_words\":0,\"max_cpu_usage_ms\":0,\"delay_sec\":0,\"context_free_actions\":[],\"actions\":[{\"account\":\"greymassnoop\",\"name\":\"noop\",\"authorization\":[{\"actor\":\"greymassfuel\",\"permission\":\"cosign\"}],\"data\":\"\"},{\"account\":\"eosio.token\",\"name\":\"transfer\",\"authorization\":[{\"actor\":\"wharfkit1113\",\"permission\":\"test\"}],\"data\":\"304208d9c1754de380b1915e5d268dca390500000000000004454f53000000001777686172666b6974206973207468652062657374203c33\"}],\"transaction_extensions\":[]}],\"signatures\":[\"SIG_K1_KZX8Ymu1N2vVfej8Tmt253oXhYRjQiwUPz4dUAQFwPzzRiqA9V9Yeo9aYz2RrcpM4D8gzC6XMVAdoaxxtQTgeHjHjPTP61\"],\"version\":null}}"
+}

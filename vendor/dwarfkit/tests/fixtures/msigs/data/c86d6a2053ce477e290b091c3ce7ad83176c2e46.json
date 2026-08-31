@@ -1,0 +1,63 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_proposal",
+        "params": {
+            "method": "POST",
+            "body": "{\"proposer\":\"uma\",\"proposal_name\":\"tomorrow\"}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "actions_count": 1,
+        "cancelled_at": null,
+        "cancelled_by": null,
+        "cancelled_trx_id": null,
+        "created_at": "2025-11-24T01:21:09.500",
+        "created_block": 200020,
+        "created_trx_id": "d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3",
+        "executed_at": null,
+        "executed_by": null,
+        "executed_trx_id": null,
+        "expiration": "2025-11-25T01:16:09.500",
+        "globalseq": 2003,
+        "proposal_name": "tomorrow",
+        "proposer": "uma",
+        "provided_approvals": [
+            {
+                "actor": "xavier",
+                "permission": "active"
+            },
+            {
+                "actor": "yolanda",
+                "permission": "active"
+            }
+        ],
+        "requested_approvals": [
+            {
+                "actor": "xavier",
+                "permission": "active"
+            },
+            {
+                "actor": "yolanda",
+                "permission": "active"
+            },
+            {
+                "actor": "zara",
+                "permission": "active"
+            }
+        ],
+        "status": "proposed",
+        "transaction": {
+            "actions": [
+                {
+                    "account": "eosio",
+                    "data": "",
+                    "name": "updateauth"
+                }
+            ],
+            "expiration": "2025-12-22T00:00:00"
+        }
+    },
+    "text": "{\"actions_count\":1,\"cancelled_at\":null,\"cancelled_by\":null,\"cancelled_trx_id\":null,\"created_at\":\"2025-11-24T01:21:09.500\",\"created_block\":200020,\"created_trx_id\":\"d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3\",\"executed_at\":null,\"executed_by\":null,\"executed_trx_id\":null,\"expiration\":\"2025-11-25T01:16:09.500\",\"globalseq\":2003,\"proposal_name\":\"tomorrow\",\"proposer\":\"uma\",\"provided_approvals\":[{\"actor\":\"xavier\",\"permission\":\"active\"},{\"actor\":\"yolanda\",\"permission\":\"active\"}],\"requested_approvals\":[{\"actor\":\"xavier\",\"permission\":\"active\"},{\"actor\":\"yolanda\",\"permission\":\"active\"},{\"actor\":\"zara\",\"permission\":\"active\"}],\"status\":\"proposed\",\"transaction\":{\"actions\":[{\"account\":\"eosio\",\"data\":\"\",\"name\":\"updateauth\"}],\"expiration\":\"2025-12-22T00:00:00\"}}"
+}

@@ -1,0 +1,44 @@
+{
+    "request": {
+        "path": "https://jungle4.greymass.com/v1/chain/get_info",
+        "params": {
+            "method": "POST"
+        }
+    },
+    "headers": {
+        "access-control-allow-headers": "X-Requested-With,Accept,Content-Type,Origin",
+        "access-control-allow-methods": "GET, POST, OPTIONS",
+        "access-control-allow-origin": "*",
+        "connection": "close",
+        "content-length": "964",
+        "content-type": "application/json",
+        "date": "Fri, 10 Mar 2023 06:01:23 GMT",
+        "host": "jungle4.greymass.com",
+        "server": "nginx/1.18.0 (Ubuntu)",
+        "x-cached": "MISS"
+    },
+    "status": 200,
+    "json": {
+        "server_version": "905c5cc9",
+        "chain_id": "73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d",
+        "head_block_num": 65385534,
+        "last_irreversible_block_num": 65385198,
+        "last_irreversible_block_id": "03e5b2ee6296499509516ff34ef3ea0607af9c175408cc51793b3b13fc2e6401",
+        "head_block_id": "03e5b43ef62292fc555cf26377c6a0f2d2b2cff54bfccfc4be71936b7e30e117",
+        "head_block_time": "2023-03-10T06:01:23.500",
+        "head_block_producer": "eoseouldotio",
+        "virtual_block_cpu_limit": 200000000,
+        "virtual_block_net_limit": 1048576000,
+        "block_cpu_limit": 200000,
+        "block_net_limit": 1048576,
+        "server_version_string": "v3.1.3",
+        "fork_db_head_block_num": 65385534,
+        "fork_db_head_block_id": "03e5b43ef62292fc555cf26377c6a0f2d2b2cff54bfccfc4be71936b7e30e117",
+        "server_full_version_string": "v3.1.3-905c5cc900b4e88aed4ab6912009127bf9f4f140",
+        "total_cpu_weight": "120460835024450",
+        "total_net_weight": "117529184466041",
+        "earliest_available_block_num": 65205247,
+        "last_irreversible_block_time": "2023-03-10T05:58:35.500"
+    },
+    "text": "{\"server_version\":\"905c5cc9\",\"chain_id\":\"73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d\",\"head_block_num\":65385534,\"last_irreversible_block_num\":65385198,\"last_irreversible_block_id\":\"03e5b2ee6296499509516ff34ef3ea0607af9c175408cc51793b3b13fc2e6401\",\"head_block_id\":\"03e5b43ef62292fc555cf26377c6a0f2d2b2cff54bfccfc4be71936b7e30e117\",\"head_block_time\":\"2023-03-10T06:01:23.500\",\"head_block_producer\":\"eoseouldotio\",\"virtual_block_cpu_limit\":200000000,\"virtual_block_net_limit\":1048576000,\"block_cpu_limit\":200000,\"block_net_limit\":1048576,\"server_version_string\":\"v3.1.3\",\"fork_db_head_block_num\":65385534,\"fork_db_head_block_id\":\"03e5b43ef62292fc555cf26377c6a0f2d2b2cff54bfccfc4be71936b7e30e117\",\"server_full_version_string\":\"v3.1.3-905c5cc900b4e88aed4ab6912009127bf9f4f140\",\"total_cpu_weight\":\"120460835024450\",\"total_net_weight\":\"117529184466041\",\"earliest_available_block_num\":65205247,\"last_irreversible_block_time\":\"2023-03-10T05:58:35.500\"}"
+}

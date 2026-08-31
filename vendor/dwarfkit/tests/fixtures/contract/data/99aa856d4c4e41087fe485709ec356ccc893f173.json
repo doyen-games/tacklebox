@@ -1,0 +1,18 @@
+{
+    "request": {
+        "path": "https://jungle4.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"table\":\"delband\",\"code\":\"eosio\",\"scope\":\"teamgreymass\",\"limit\":1,\"key_type\":\"name\",\"json\":false}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            "80b1915e5d268dca80b1915e5d268dca102700000000000004454f5300000000102700000000000004454f5300000000"
+        ],
+        "more": false,
+        "next_key": ""
+    },
+    "text": "{\"rows\":[\"80b1915e5d268dca80b1915e5d268dca102700000000000004454f5300000000102700000000000004454f5300000000\"],\"more\":false,\"next_key\":\"\"}"
+}

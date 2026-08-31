@@ -1,0 +1,19 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v2/sales/_count",
+        "params": {
+            "method": "POST",
+            "body": "{\"collection_name\":\"taco,alien.worlds\",\"buyer\":\"taco\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": "482",
+        "query_time": 1756585624457
+    },
+    "text": "{\"success\":true,\"data\":\"482\",\"query_time\":1756585624457}"
+}

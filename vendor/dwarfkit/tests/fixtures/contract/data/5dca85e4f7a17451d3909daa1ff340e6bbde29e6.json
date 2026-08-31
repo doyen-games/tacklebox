@@ -1,0 +1,17 @@
+{
+    "request": {
+        "path": "https://jungle4.greymass.com/v1/chain/get_raw_abi",
+        "params": {
+            "method": "POST",
+            "body": "{\"account_name\":\"abcabcabc333\"}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "account_name": "abcabcabc333",
+        "code_hash": "bd288915b11aceba37d0aed6441dc55418e2ea372e4edefa76f5d137dbd98c3f",
+        "abi_hash": "908e079610cee2bdd38870195f5de416eb0ed0f7511eb2e4b8ada78372613ad6",
+        "abi": "DmVvc2lvOjphYmkvMS4yAAUGY3VzdG9tAAIHbWVzc2FnZQZzdHJpbmcFZXh0cmEGc3RyaW5nC2N1c3RvbXZhbHVlAAEHbWVzc2FnZQZzdHJpbmcJbmFtZXZhbHVlAAEHbWVzc2FnZQRuYW1lC251bWJlcnZhbHVlAAEHbWVzc2FnZQRuYW1lC3JldHVybnZhbHVlAAEHbWVzc2FnZQRuYW1lBACUjmZLmrFGC2N1c3RvbXZhbHVlAAAAUDqaraSZCW5hbWV2YWx1ZQAAlI5mX3WkngtudW1iZXJ2YWx1ZQAAlI5mz6uzugtyZXR1cm52YWx1ZQAAAAAAAAQAlI5mS5qxRgZjdXN0b20AAFA6mq2kmQRuYW1lAJSOZl91pJ4GdWludDY0AJSOZs+rs7oGc3RyaW5nAA=="
+    },
+    "text": "{\"account_name\":\"abcabcabc333\",\"code_hash\":\"bd288915b11aceba37d0aed6441dc55418e2ea372e4edefa76f5d137dbd98c3f\",\"abi_hash\":\"908e079610cee2bdd38870195f5de416eb0ed0f7511eb2e4b8ada78372613ad6\",\"abi\":\"DmVvc2lvOjphYmkvMS4yAAUGY3VzdG9tAAIHbWVzc2FnZQZzdHJpbmcFZXh0cmEGc3RyaW5nC2N1c3RvbXZhbHVlAAEHbWVzc2FnZQZzdHJpbmcJbmFtZXZhbHVlAAEHbWVzc2FnZQRuYW1lC251bWJlcnZhbHVlAAEHbWVzc2FnZQRuYW1lC3JldHVybnZhbHVlAAEHbWVzc2FnZQRuYW1lBACUjmZLmrFGC2N1c3RvbXZhbHVlAAAAUDqaraSZCW5hbWV2YWx1ZQAAlI5mX3WkngtudW1iZXJ2YWx1ZQAAlI5mz6uzugtyZXR1cm52YWx1ZQAAAAAAAAQAlI5mS5qxRgZjdXN0b20AAFA6mq2kmQRuYW1lAJSOZl91pJ4GdWludDY0AJSOZs+rs7oGc3RyaW5nAA==\"}"
+}

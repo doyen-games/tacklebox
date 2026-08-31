@@ -1,0 +1,258 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_proposals",
+        "params": {
+            "method": "POST",
+            "body": "{}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "more": true,
+        "proposals": [
+            {
+                "actions_count": 1,
+                "approvals_received": 3,
+                "approvals_required": 3,
+                "created_at": "2027-12-12T12:22:21.500",
+                "created_trx_id": "a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6",
+                "expiration": "2027-12-16T00:14:01.500",
+                "globalseq": 4006,
+                "proposal_name": "longapproval",
+                "proposer": "mega",
+                "status": "proposed"
+            },
+            {
+                "actions_count": 15,
+                "approvals_received": 1,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:21:31.500",
+                "created_trx_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+                "expiration": "2027-12-16T00:14:01.500",
+                "globalseq": 4005,
+                "proposal_name": "batch",
+                "proposer": "zara",
+                "status": "proposed"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 1,
+                "approvals_required": 1,
+                "created_at": "2027-12-12T12:20:41.500",
+                "created_trx_id": "a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4",
+                "expiration": "2027-12-16T00:14:01.500",
+                "globalseq": 4004,
+                "proposal_name": "flipflop",
+                "proposer": "yolanda",
+                "status": "proposed"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 0,
+                "approvals_required": 1,
+                "created_at": "2027-12-12T12:19:51.500",
+                "created_trx_id": "a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3",
+                "expiration": "2027-12-16T00:14:01.500",
+                "globalseq": 4003,
+                "proposal_name": "flipflop",
+                "proposer": "yolanda",
+                "status": "proposed"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 1,
+                "approvals_required": 1,
+                "created_at": "2027-12-12T12:19:01.500",
+                "created_trx_id": "a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2",
+                "expiration": "2027-12-16T00:14:01.500",
+                "globalseq": 4002,
+                "proposal_name": "flipflop",
+                "proposer": "yolanda",
+                "status": "proposed"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 8,
+                "approvals_required": 12,
+                "created_at": "2027-12-12T12:18:11.500",
+                "created_trx_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "expiration": "2027-12-16T00:14:01.500",
+                "globalseq": 4001,
+                "proposal_name": "bigmultisig",
+                "proposer": "xavier",
+                "status": "proposed"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:38:11.500",
+                "created_trx_id": "d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3029,
+                "proposal_name": "prop3",
+                "proposer": "zach",
+                "status": "cancelled"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:37:21.500",
+                "created_trx_id": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3028,
+                "proposal_name": "prop2",
+                "proposer": "zach",
+                "status": "cancelled"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:36:31.500",
+                "created_trx_id": "d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3027,
+                "proposal_name": "prop2",
+                "proposer": "zach",
+                "status": "cancelled"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:35:41.500",
+                "created_trx_id": "d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3026,
+                "proposal_name": "prop2",
+                "proposer": "zach",
+                "status": "cancelled"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:34:51.500",
+                "created_trx_id": "d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3025,
+                "proposal_name": "prop2",
+                "proposer": "zach",
+                "status": "cancelled"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:34:01.500",
+                "created_trx_id": "d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3024,
+                "proposal_name": "prop25",
+                "proposer": "zach",
+                "status": "executed"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:33:11.500",
+                "created_trx_id": "cfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3023,
+                "proposal_name": "prop24",
+                "proposer": "zach",
+                "status": "executed"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:32:21.500",
+                "created_trx_id": "cececececececececececececececececececececececececececececececece",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3022,
+                "proposal_name": "prop23",
+                "proposer": "zach",
+                "status": "executed"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:31:31.500",
+                "created_trx_id": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3021,
+                "proposal_name": "prop22",
+                "proposer": "zach",
+                "status": "executed"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:30:41.500",
+                "created_trx_id": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3020,
+                "proposal_name": "prop21",
+                "proposer": "zach",
+                "status": "executed"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:29:51.500",
+                "created_trx_id": "cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcb",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3019,
+                "proposal_name": "prop2",
+                "proposer": "zach",
+                "status": "executed"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:29:01.500",
+                "created_trx_id": "cacacacacacacacacacacacacacacacacacacacacacacacacacacacacacacaca",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3018,
+                "proposal_name": "prop1",
+                "proposer": "zach",
+                "status": "executed"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:28:11.500",
+                "created_trx_id": "c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3017,
+                "proposal_name": "prop1",
+                "proposer": "zach",
+                "status": "executed"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:27:21.500",
+                "created_trx_id": "c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3016,
+                "proposal_name": "prop1",
+                "proposer": "zach",
+                "status": "executed"
+            }
+        ],
+        "total": 57
+    },
+    "text": "{\"more\":true,\"proposals\":[{\"actions_count\":1,\"approvals_received\":3,\"approvals_required\":3,\"created_at\":\"2027-12-12T12:22:21.500\",\"created_trx_id\":\"a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6\",\"expiration\":\"2027-12-16T00:14:01.500\",\"globalseq\":4006,\"proposal_name\":\"longapproval\",\"proposer\":\"mega\",\"status\":\"proposed\"},{\"actions_count\":15,\"approvals_received\":1,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:21:31.500\",\"created_trx_id\":\"a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5\",\"expiration\":\"2027-12-16T00:14:01.500\",\"globalseq\":4005,\"proposal_name\":\"batch\",\"proposer\":\"zara\",\"status\":\"proposed\"},{\"actions_count\":1,\"approvals_received\":1,\"approvals_required\":1,\"created_at\":\"2027-12-12T12:20:41.500\",\"created_trx_id\":\"a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4\",\"expiration\":\"2027-12-16T00:14:01.500\",\"globalseq\":4004,\"proposal_name\":\"flipflop\",\"proposer\":\"yolanda\",\"status\":\"proposed\"},{\"actions_count\":1,\"approvals_received\":0,\"approvals_required\":1,\"created_at\":\"2027-12-12T12:19:51.500\",\"created_trx_id\":\"a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3\",\"expiration\":\"2027-12-16T00:14:01.500\",\"globalseq\":4003,\"proposal_name\":\"flipflop\",\"proposer\":\"yolanda\",\"status\":\"proposed\"},{\"actions_count\":1,\"approvals_received\":1,\"approvals_required\":1,\"created_at\":\"2027-12-12T12:19:01.500\",\"created_trx_id\":\"a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2\",\"expiration\":\"2027-12-16T00:14:01.500\",\"globalseq\":4002,\"proposal_name\":\"flipflop\",\"proposer\":\"yolanda\",\"status\":\"proposed\"},{\"actions_count\":1,\"approvals_received\":8,\"approvals_required\":12,\"created_at\":\"2027-12-12T12:18:11.500\",\"created_trx_id\":\"a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"expiration\":\"2027-12-16T00:14:01.500\",\"globalseq\":4001,\"proposal_name\":\"bigmultisig\",\"proposer\":\"xavier\",\"status\":\"proposed\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:38:11.500\",\"created_trx_id\":\"d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3029,\"proposal_name\":\"prop3\",\"proposer\":\"zach\",\"status\":\"cancelled\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:37:21.500\",\"created_trx_id\":\"d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3028,\"proposal_name\":\"prop2\",\"proposer\":\"zach\",\"status\":\"cancelled\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:36:31.500\",\"created_trx_id\":\"d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3027,\"proposal_name\":\"prop2\",\"proposer\":\"zach\",\"status\":\"cancelled\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:35:41.500\",\"created_trx_id\":\"d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3026,\"proposal_name\":\"prop2\",\"proposer\":\"zach\",\"status\":\"cancelled\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:34:51.500\",\"created_trx_id\":\"d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3025,\"proposal_name\":\"prop2\",\"proposer\":\"zach\",\"status\":\"cancelled\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:34:01.500\",\"created_trx_id\":\"d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3024,\"proposal_name\":\"prop25\",\"proposer\":\"zach\",\"status\":\"executed\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:33:11.500\",\"created_trx_id\":\"cfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3023,\"proposal_name\":\"prop24\",\"proposer\":\"zach\",\"status\":\"executed\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:32:21.500\",\"created_trx_id\":\"cececececececececececececececececececececececececececececececece\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3022,\"proposal_name\":\"prop23\",\"proposer\":\"zach\",\"status\":\"executed\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:31:31.500\",\"created_trx_id\":\"cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3021,\"proposal_name\":\"prop22\",\"proposer\":\"zach\",\"status\":\"executed\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:30:41.500\",\"created_trx_id\":\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3020,\"proposal_name\":\"prop21\",\"proposer\":\"zach\",\"status\":\"executed\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:29:51.500\",\"created_trx_id\":\"cbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcbcb\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3019,\"proposal_name\":\"prop2\",\"proposer\":\"zach\",\"status\":\"executed\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:29:01.500\",\"created_trx_id\":\"cacacacacacacacacacacacacacacacacacacacacacacacacacacacacacacaca\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3018,\"proposal_name\":\"prop1\",\"proposer\":\"zach\",\"status\":\"executed\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:28:11.500\",\"created_trx_id\":\"c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3017,\"proposal_name\":\"prop1\",\"proposer\":\"zach\",\"status\":\"executed\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:27:21.500\",\"created_trx_id\":\"c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3016,\"proposal_name\":\"prop1\",\"proposer\":\"zach\",\"status\":\"executed\"}],\"total\":57}"
+}

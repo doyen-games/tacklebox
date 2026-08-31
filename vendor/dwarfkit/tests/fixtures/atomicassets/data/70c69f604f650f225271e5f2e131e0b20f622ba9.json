@@ -1,0 +1,285 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/burns/taco",
+        "params": {
+            "method": "POST",
+            "body": "{}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "collections": [
+                {
+                    "collection": {
+                        "contract": "atomicassets",
+                        "collection_name": "taco",
+                        "name": "Taco",
+                        "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                        "author": "taco",
+                        "allow_notify": true,
+                        "authorized_accounts": [
+                            "taco",
+                            "atomicdropsx",
+                            "atomicpacksx",
+                            "neftyblocksd",
+                            "s.taco",
+                            "blend.nefty",
+                            "blenderizerx",
+                            "g.taco",
+                            "brigade.taco",
+                            "b.taco",
+                            "mkt.taco",
+                            "acr.taco",
+                            "takitakiboom",
+                            "l.taco",
+                            "worker.taco",
+                            "tacotacopool",
+                            "primarysale1",
+                            "combz.taco",
+                            "v.taco"
+                        ],
+                        "notify_accounts": [
+                            "g.taco",
+                            "brigade.taco",
+                            "stake.taco",
+                            "swap.taco",
+                            "blend.nefty",
+                            "neftyblocksd",
+                            "neftyblocksp",
+                            "rent.taco",
+                            "a.taco"
+                        ],
+                        "market_fee": 0.06,
+                        "data": {
+                            "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                            "url": "https://tacocrypto.io",
+                            "name": "Taco",
+                            "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                            "socials": "{\"twitter\":\"tacowax\",\"discord\":\"https://discord.gg/tacocrypto\",\"medium\":\"https://medium.com/@taco.wax\",\"youtube\":\"\",\"telegram\":\"tacowax\",\"facebook\":\"tacowax\"}",
+                            "description": "Gaming, Utility & DeFi. Taco is the ultimate Web3 project on the WAX Blockchain, combining a smart wallet app for crypto, an NFT-based P2E gaming platform and its own metaverse, the Taco Universe.\n\nWhitepaper: https://taco-2.gitbook.io/whitepaper\n\nDiscord: https://discord.gg/tacocrypto\n\nTwitter: https://twitter.com/tacowax\n\nMedium: https://medium.com/@taco.wax",
+                            "creator_info": "{\"country\":\"IT\",\"address\":\"\",\"city\":\"Rome\",\"zip\":\"\",\"company\":\"TACO S.R.L.S.\",\"name\":\"Federico\",\"registration_number\":\"IT16340041009\"}"
+                        },
+                        "created_at_time": "1623106508500",
+                        "created_at_block": "123329591"
+                    },
+                    "assets": "550"
+                },
+                {
+                    "collection": {
+                        "contract": "atomicassets",
+                        "collection_name": "nftgholdings",
+                        "name": "NFTG Holdings",
+                        "img": "QmR67eaYtBQhsRNRgtAyy6VbX4bFKSRxMgK4CiwvUqwSk9",
+                        "author": "nftgholdings",
+                        "allow_notify": true,
+                        "authorized_accounts": [
+                            "nftgholdings",
+                            "neftyblocksd"
+                        ],
+                        "notify_accounts": [],
+                        "market_fee": 0.15,
+                        "data": {
+                            "img": "QmR67eaYtBQhsRNRgtAyy6VbX4bFKSRxMgK4CiwvUqwSk9",
+                            "url": "https://www.nftgholdins.com",
+                            "name": "NFTG Holdings",
+                            "socials": "{\"twitter\":\"\",\"discord\":\"\",\"medium\":\"\",\"youtube\":\"\",\"telegram\":\"\",\"facebook\":\"\"}",
+                            "creator_info": "{\"address\":\"\",\"company\":\"\",\"name\":\"\",\"registration_number\":\"\"}"
+                        },
+                        "created_at_time": "1694975252500",
+                        "created_at_block": "267008155"
+                    },
+                    "assets": "50"
+                },
+                {
+                    "collection": {
+                        "contract": "atomicassets",
+                        "collection_name": "alien.worlds",
+                        "name": "Alien Worlds",
+                        "img": "QmZBpRKm5qigpfDdYgxtcefZ7Cn3GeWHCMBEsk6wYXP4gg",
+                        "author": "federation",
+                        "allow_notify": true,
+                        "authorized_accounts": [
+                            "federation",
+                            "open.worlds",
+                            "terra.worlds",
+                            "m.federation",
+                            "s.federation",
+                            "uspts.worlds",
+                            "awlndratings",
+                            "nftmt.worlds",
+                            "lore.worlds",
+                            "mint.worlds"
+                        ],
+                        "notify_accounts": [
+                            "federation",
+                            "m.federation",
+                            "awlndratings"
+                        ],
+                        "market_fee": 0.01,
+                        "data": {
+                            "img": "QmZBpRKm5qigpfDdYgxtcefZ7Cn3GeWHCMBEsk6wYXP4gg",
+                            "url": "https://alienworlds.io",
+                            "name": "Alien Worlds",
+                            "images": "{\"banner_1920x500\":\"QmXkNxYHBYx8wJ9SmsEVLoFw4wUXKMD2PuG4xVxTeZrLZA\",\"logo_512x512\":\"QmZBpRKm5qigpfDdYgxtcefZ7Cn3GeWHCMBEsk6wYXP4gg\"}",
+                            "socials": "{\"twitter\":\"\",\"medium\":\"\",\"facebook\":\"\",\"github\":\"\",\"discord\":\"\",\"youtube\":\"\",\"telegram\":\"\"}",
+                            "description": "Alien Worlds is a Digital Item Metaverse in Faraway Space. Own land on distant planets, explore and find strange artefacts, mine for Trilium with hyper-advanced tools or fight using alien weapons.",
+                            "creator_info": "{\"country\":\"\",\"address\":\"\",\"city\":\"\",\"zip\":\"\",\"company\":\"\",\"name\":\"\",\"registration_number\":\"\"}"
+                        },
+                        "created_at_time": "1596576277500",
+                        "created_at_block": "70292143"
+                    },
+                    "assets": "42"
+                },
+                {
+                    "collection": {
+                        "contract": "atomicassets",
+                        "collection_name": "farmersworld",
+                        "name": "Farmers World",
+                        "img": "QmX79zrJsk4DbWQ3krgu41pX3fdvEvWjkMXiNCKpxFXSgj",
+                        "author": ".jieg.wam",
+                        "allow_notify": true,
+                        "authorized_accounts": [
+                            ".jieg.wam",
+                            "farmersworld",
+                            "atomicdropsx",
+                            "atomicpacksx",
+                            "neftyblocksd"
+                        ],
+                        "notify_accounts": [],
+                        "market_fee": 0.05,
+                        "data": {
+                            "img": "QmX79zrJsk4DbWQ3krgu41pX3fdvEvWjkMXiNCKpxFXSgj",
+                            "url": "https://farmersworld.io",
+                            "name": "Farmers World",
+                            "description": "Farmers World is the first farming game to function on the NFTs platform. Pick for yourself suitable tools, exploit various resources, buy land to build enormous farms, and enjoy the fascinating experiences of a farmer working in Farmers World’s Ecosystem. \n\nhttps://farmersworld.medium.com https://twitter.com/FarmersWorldNFT\nhttps://discord.gg/V2pdyGdB9V https://fb.com/farmersworld.nft https://fb.com/groups/farmersworld.nft\n https://t.me/farmersworldofficial"
+                        },
+                        "created_at_time": "1623323058000",
+                        "created_at_block": "123762633"
+                    },
+                    "assets": "7"
+                },
+                {
+                    "collection": {
+                        "contract": "atomicassets",
+                        "collection_name": "cryptoqueenz",
+                        "name": "Crypto Goddess",
+                        "img": "QmNwHG2W2MpjFCE6oQMmwD1G2Vs2mrJcTQC9guUgkvDRBc",
+                        "author": "lamba.wam",
+                        "allow_notify": true,
+                        "authorized_accounts": [
+                            "lamba.wam"
+                        ],
+                        "notify_accounts": [],
+                        "market_fee": 0.15,
+                        "data": {
+                            "img": "QmNwHG2W2MpjFCE6oQMmwD1G2Vs2mrJcTQC9guUgkvDRBc",
+                            "url": "https://t.me/joinchat/2gj6E0sFlaM3ODRi",
+                            "name": "Crypto Goddess",
+                            "description": "Lady of digital art, steal your mind and your heart."
+                        },
+                        "created_at_time": "1624809787000",
+                        "created_at_block": "126735277"
+                    },
+                    "assets": "1"
+                },
+                {
+                    "collection": {
+                        "contract": "atomicassets",
+                        "collection_name": "unlinked",
+                        "name": "Unlinked",
+                        "img": "QmaUCCtENe4cbryfcyyKpk7Wsytz1CttuFPQCBXAa3PqDY",
+                        "author": "unlinked",
+                        "allow_notify": true,
+                        "authorized_accounts": [
+                            "unlinked",
+                            "atomicdropsx",
+                            "blend.nefty",
+                            "c.unlinked",
+                            "atomicpacksx",
+                            "neftyblocksd",
+                            "b.unlinked"
+                        ],
+                        "notify_accounts": [
+                            "c.unlinked",
+                            "s.unlinked",
+                            "b.unlinked"
+                        ],
+                        "market_fee": 0.05,
+                        "data": {
+                            "img": "QmaUCCtENe4cbryfcyyKpk7Wsytz1CttuFPQCBXAa3PqDY",
+                            "url": "https://unlinked.io",
+                            "name": "Unlinked",
+                            "images": "{\"banner_1920x500\":\"QmUXpheVdhcB9jGCK6Xigq2NVQpm96VQ8VTb8MMFn8Nc91\",\"logo_512x512\":\"QmVhfeBw8GNQBtZ9wH1eYbyEdcr5Z2XmycJc5VhzuyzGeH\"}",
+                            "socials": "{\"twitter\":\"\",\"medium\":\"\",\"facebook\":\"\",\"github\":\"\",\"discord\":\"\",\"youtube\":\"\",\"telegram\":\"\"}",
+                            "description": "In the late 22nd century, a hyper-connected solar system is in chaos: the teleportation infrastructure that connect every aspect of people's lives has been cut off. \n\nAs mankind and its satellite colonies struggle to adapt to a new, fragmented reality, multiple factions have emerged, each seeking to restore the portals for their own ambitions.\n\nAs disorder reigns, the only way to get by is as a Sharper: an expert card player, taking on other players for resources, money and your survival.\n\n\nJoin the metaverse, and build your life in a world on the Edge: \n\nDiscord: https://discord.gg/unlinked\n\nWebsite: https://unlinked.io\n\nTwitter: https://twitter.com/Unlinked_Wax",
+                            "creator_info": "{\"country\":\"\",\"address\":\"\",\"city\":\"\",\"zip\":\"\",\"company\":\"\",\"name\":\"\",\"registration_number\":\"\"}"
+                        },
+                        "created_at_time": "1641834018000",
+                        "created_at_block": "160757701"
+                    },
+                    "assets": "1"
+                }
+            ],
+            "templates": [
+                {
+                    "collection_name": "taco",
+                    "template_id": "429541",
+                    "assets": "406"
+                },
+                {
+                    "collection_name": "taco",
+                    "template_id": "659923",
+                    "assets": "132"
+                },
+                {
+                    "collection_name": "nftgholdings",
+                    "template_id": "747093",
+                    "assets": "50"
+                },
+                {
+                    "collection_name": "alien.worlds",
+                    "template_id": "19649",
+                    "assets": "42"
+                },
+                {
+                    "collection_name": "taco",
+                    "template_id": "654234",
+                    "assets": "10"
+                },
+                {
+                    "collection_name": "farmersworld",
+                    "template_id": "260676",
+                    "assets": "7"
+                },
+                {
+                    "collection_name": "taco",
+                    "template_id": "610242",
+                    "assets": "1"
+                },
+                {
+                    "collection_name": "unlinked",
+                    "template_id": "432790",
+                    "assets": "1"
+                },
+                {
+                    "collection_name": "cryptoqueenz",
+                    "template_id": "201368",
+                    "assets": "1"
+                },
+                {
+                    "collection_name": "taco",
+                    "template_id": "610246",
+                    "assets": "1"
+                }
+            ],
+            "assets": 651
+        },
+        "query_time": 1756585622248
+    },
+    "text": "{\"success\":true,\"data\":{\"collections\":[{\"collection\":{\"contract\":\"atomicassets\",\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"data\":{\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"url\":\"https://tacocrypto.io\",\"name\":\"Taco\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"socials\":\"{\\\"twitter\\\":\\\"tacowax\\\",\\\"discord\\\":\\\"https://discord.gg/tacocrypto\\\",\\\"medium\\\":\\\"https://medium.com/@taco.wax\\\",\\\"youtube\\\":\\\"\\\",\\\"telegram\\\":\\\"tacowax\\\",\\\"facebook\\\":\\\"tacowax\\\"}\",\"description\":\"Gaming, Utility & DeFi. Taco is the ultimate Web3 project on the WAX Blockchain, combining a smart wallet app for crypto, an NFT-based P2E gaming platform and its own metaverse, the Taco Universe.\\n\\nWhitepaper: https://taco-2.gitbook.io/whitepaper\\n\\nDiscord: https://discord.gg/tacocrypto\\n\\nTwitter: https://twitter.com/tacowax\\n\\nMedium: https://medium.com/@taco.wax\",\"creator_info\":\"{\\\"country\\\":\\\"IT\\\",\\\"address\\\":\\\"\\\",\\\"city\\\":\\\"Rome\\\",\\\"zip\\\":\\\"\\\",\\\"company\\\":\\\"TACO S.R.L.S.\\\",\\\"name\\\":\\\"Federico\\\",\\\"registration_number\\\":\\\"IT16340041009\\\"}\"},\"created_at_time\":\"1623106508500\",\"created_at_block\":\"123329591\"},\"assets\":\"550\"},{\"collection\":{\"contract\":\"atomicassets\",\"collection_name\":\"nftgholdings\",\"name\":\"NFTG Holdings\",\"img\":\"QmR67eaYtBQhsRNRgtAyy6VbX4bFKSRxMgK4CiwvUqwSk9\",\"author\":\"nftgholdings\",\"allow_notify\":true,\"authorized_accounts\":[\"nftgholdings\",\"neftyblocksd\"],\"notify_accounts\":[],\"market_fee\":0.15,\"data\":{\"img\":\"QmR67eaYtBQhsRNRgtAyy6VbX4bFKSRxMgK4CiwvUqwSk9\",\"url\":\"https://www.nftgholdins.com\",\"name\":\"NFTG Holdings\",\"socials\":\"{\\\"twitter\\\":\\\"\\\",\\\"discord\\\":\\\"\\\",\\\"medium\\\":\\\"\\\",\\\"youtube\\\":\\\"\\\",\\\"telegram\\\":\\\"\\\",\\\"facebook\\\":\\\"\\\"}\",\"creator_info\":\"{\\\"address\\\":\\\"\\\",\\\"company\\\":\\\"\\\",\\\"name\\\":\\\"\\\",\\\"registration_number\\\":\\\"\\\"}\"},\"created_at_time\":\"1694975252500\",\"created_at_block\":\"267008155\"},\"assets\":\"50\"},{\"collection\":{\"contract\":\"atomicassets\",\"collection_name\":\"alien.worlds\",\"name\":\"Alien Worlds\",\"img\":\"QmZBpRKm5qigpfDdYgxtcefZ7Cn3GeWHCMBEsk6wYXP4gg\",\"author\":\"federation\",\"allow_notify\":true,\"authorized_accounts\":[\"federation\",\"open.worlds\",\"terra.worlds\",\"m.federation\",\"s.federation\",\"uspts.worlds\",\"awlndratings\",\"nftmt.worlds\",\"lore.worlds\",\"mint.worlds\"],\"notify_accounts\":[\"federation\",\"m.federation\",\"awlndratings\"],\"market_fee\":0.01,\"data\":{\"img\":\"QmZBpRKm5qigpfDdYgxtcefZ7Cn3GeWHCMBEsk6wYXP4gg\",\"url\":\"https://alienworlds.io\",\"name\":\"Alien Worlds\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXkNxYHBYx8wJ9SmsEVLoFw4wUXKMD2PuG4xVxTeZrLZA\\\",\\\"logo_512x512\\\":\\\"QmZBpRKm5qigpfDdYgxtcefZ7Cn3GeWHCMBEsk6wYXP4gg\\\"}\",\"socials\":\"{\\\"twitter\\\":\\\"\\\",\\\"medium\\\":\\\"\\\",\\\"facebook\\\":\\\"\\\",\\\"github\\\":\\\"\\\",\\\"discord\\\":\\\"\\\",\\\"youtube\\\":\\\"\\\",\\\"telegram\\\":\\\"\\\"}\",\"description\":\"Alien Worlds is a Digital Item Metaverse in Faraway Space. Own land on distant planets, explore and find strange artefacts, mine for Trilium with hyper-advanced tools or fight using alien weapons.\",\"creator_info\":\"{\\\"country\\\":\\\"\\\",\\\"address\\\":\\\"\\\",\\\"city\\\":\\\"\\\",\\\"zip\\\":\\\"\\\",\\\"company\\\":\\\"\\\",\\\"name\\\":\\\"\\\",\\\"registration_number\\\":\\\"\\\"}\"},\"created_at_time\":\"1596576277500\",\"created_at_block\":\"70292143\"},\"assets\":\"42\"},{\"collection\":{\"contract\":\"atomicassets\",\"collection_name\":\"farmersworld\",\"name\":\"Farmers World\",\"img\":\"QmX79zrJsk4DbWQ3krgu41pX3fdvEvWjkMXiNCKpxFXSgj\",\"author\":\".jieg.wam\",\"allow_notify\":true,\"authorized_accounts\":[\".jieg.wam\",\"farmersworld\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\"],\"notify_accounts\":[],\"market_fee\":0.05,\"data\":{\"img\":\"QmX79zrJsk4DbWQ3krgu41pX3fdvEvWjkMXiNCKpxFXSgj\",\"url\":\"https://farmersworld.io\",\"name\":\"Farmers World\",\"description\":\"Farmers World is the first farming game to function on the NFTs platform. Pick for yourself suitable tools, exploit various resources, buy land to build enormous farms, and enjoy the fascinating experiences of a farmer working in Farmers World’s Ecosystem. \\n\\nhttps://farmersworld.medium.com https://twitter.com/FarmersWorldNFT\\nhttps://discord.gg/V2pdyGdB9V https://fb.com/farmersworld.nft https://fb.com/groups/farmersworld.nft\\n https://t.me/farmersworldofficial\"},\"created_at_time\":\"1623323058000\",\"created_at_block\":\"123762633\"},\"assets\":\"7\"},{\"collection\":{\"contract\":\"atomicassets\",\"collection_name\":\"cryptoqueenz\",\"name\":\"Crypto Goddess\",\"img\":\"QmNwHG2W2MpjFCE6oQMmwD1G2Vs2mrJcTQC9guUgkvDRBc\",\"author\":\"lamba.wam\",\"allow_notify\":true,\"authorized_accounts\":[\"lamba.wam\"],\"notify_accounts\":[],\"market_fee\":0.15,\"data\":{\"img\":\"QmNwHG2W2MpjFCE6oQMmwD1G2Vs2mrJcTQC9guUgkvDRBc\",\"url\":\"https://t.me/joinchat/2gj6E0sFlaM3ODRi\",\"name\":\"Crypto Goddess\",\"description\":\"Lady of digital art, steal your mind and your heart.\"},\"created_at_time\":\"1624809787000\",\"created_at_block\":\"126735277\"},\"assets\":\"1\"},{\"collection\":{\"contract\":\"atomicassets\",\"collection_name\":\"unlinked\",\"name\":\"Unlinked\",\"img\":\"QmaUCCtENe4cbryfcyyKpk7Wsytz1CttuFPQCBXAa3PqDY\",\"author\":\"unlinked\",\"allow_notify\":true,\"authorized_accounts\":[\"unlinked\",\"atomicdropsx\",\"blend.nefty\",\"c.unlinked\",\"atomicpacksx\",\"neftyblocksd\",\"b.unlinked\"],\"notify_accounts\":[\"c.unlinked\",\"s.unlinked\",\"b.unlinked\"],\"market_fee\":0.05,\"data\":{\"img\":\"QmaUCCtENe4cbryfcyyKpk7Wsytz1CttuFPQCBXAa3PqDY\",\"url\":\"https://unlinked.io\",\"name\":\"Unlinked\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmUXpheVdhcB9jGCK6Xigq2NVQpm96VQ8VTb8MMFn8Nc91\\\",\\\"logo_512x512\\\":\\\"QmVhfeBw8GNQBtZ9wH1eYbyEdcr5Z2XmycJc5VhzuyzGeH\\\"}\",\"socials\":\"{\\\"twitter\\\":\\\"\\\",\\\"medium\\\":\\\"\\\",\\\"facebook\\\":\\\"\\\",\\\"github\\\":\\\"\\\",\\\"discord\\\":\\\"\\\",\\\"youtube\\\":\\\"\\\",\\\"telegram\\\":\\\"\\\"}\",\"description\":\"In the late 22nd century, a hyper-connected solar system is in chaos: the teleportation infrastructure that connect every aspect of people's lives has been cut off. \\n\\nAs mankind and its satellite colonies struggle to adapt to a new, fragmented reality, multiple factions have emerged, each seeking to restore the portals for their own ambitions.\\n\\nAs disorder reigns, the only way to get by is as a Sharper: an expert card player, taking on other players for resources, money and your survival.\\n\\n\\nJoin the metaverse, and build your life in a world on the Edge: \\n\\nDiscord: https://discord.gg/unlinked\\n\\nWebsite: https://unlinked.io\\n\\nTwitter: https://twitter.com/Unlinked_Wax\",\"creator_info\":\"{\\\"country\\\":\\\"\\\",\\\"address\\\":\\\"\\\",\\\"city\\\":\\\"\\\",\\\"zip\\\":\\\"\\\",\\\"company\\\":\\\"\\\",\\\"name\\\":\\\"\\\",\\\"registration_number\\\":\\\"\\\"}\"},\"created_at_time\":\"1641834018000\",\"created_at_block\":\"160757701\"},\"assets\":\"1\"}],\"templates\":[{\"collection_name\":\"taco\",\"template_id\":\"429541\",\"assets\":\"406\"},{\"collection_name\":\"taco\",\"template_id\":\"659923\",\"assets\":\"132\"},{\"collection_name\":\"nftgholdings\",\"template_id\":\"747093\",\"assets\":\"50\"},{\"collection_name\":\"alien.worlds\",\"template_id\":\"19649\",\"assets\":\"42\"},{\"collection_name\":\"taco\",\"template_id\":\"654234\",\"assets\":\"10\"},{\"collection_name\":\"farmersworld\",\"template_id\":\"260676\",\"assets\":\"7\"},{\"collection_name\":\"taco\",\"template_id\":\"610242\",\"assets\":\"1\"},{\"collection_name\":\"unlinked\",\"template_id\":\"432790\",\"assets\":\"1\"},{\"collection_name\":\"cryptoqueenz\",\"template_id\":\"201368\",\"assets\":\"1\"},{\"collection_name\":\"taco\",\"template_id\":\"610246\",\"assets\":\"1\"}],\"assets\":651},\"query_time\":1756585622248}"
+}

@@ -1,0 +1,72 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/schemas/taco/cmbz.res/logs",
+        "params": {
+            "method": "POST",
+            "body": "{\"limit\":\"10\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "log_id": "84816464313",
+                "name": "createschema",
+                "data": {
+                    "schema_format": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "name": "img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "video",
+                            "type": "string"
+                        },
+                        {
+                            "name": "value",
+                            "type": "string"
+                        },
+                        {
+                            "name": "resource",
+                            "type": "string"
+                        },
+                        {
+                            "name": "description",
+                            "type": "string"
+                        }
+                    ],
+                    "authorized_creator": "mkt.taco"
+                },
+                "txid": "0a5a2eadf2895c5dc05627c7cc37e672786bc687f0fbef3d557583744de0a2d0",
+                "created_at_block": "267116358",
+                "created_at_time": "1695029354000"
+            },
+            {
+                "log_id": "84880405836",
+                "name": "extendschema",
+                "data": {
+                    "authorized_editor": "mkt.taco",
+                    "schema_format_extension": [
+                        {
+                            "name": "size",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "txid": "e75a8d7faf3a1980a673efd198655236a471aeb3fc9d15214d55affeb340b370",
+                "created_at_block": "267322204",
+                "created_at_time": "1695132283500"
+            }
+        ],
+        "query_time": 1756585609148
+    },
+    "text": "{\"success\":true,\"data\":[{\"log_id\":\"84816464313\",\"name\":\"createschema\",\"data\":{\"schema_format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"video\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"string\"},{\"name\":\"resource\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"}],\"authorized_creator\":\"mkt.taco\"},\"txid\":\"0a5a2eadf2895c5dc05627c7cc37e672786bc687f0fbef3d557583744de0a2d0\",\"created_at_block\":\"267116358\",\"created_at_time\":\"1695029354000\"},{\"log_id\":\"84880405836\",\"name\":\"extendschema\",\"data\":{\"authorized_editor\":\"mkt.taco\",\"schema_format_extension\":[{\"name\":\"size\",\"type\":\"string\"}]},\"txid\":\"e75a8d7faf3a1980a673efd198655236a471aeb3fc9d15214d55affeb340b370\",\"created_at_block\":\"267322204\",\"created_at_time\":\"1695132283500\"}],\"query_time\":1756585609148}"
+}

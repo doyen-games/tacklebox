@@ -1,0 +1,24 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/accounts",
+        "params": {
+            "method": "POST",
+            "body": "{\"collection_name\":\"taco,alien.worlds\",\"owner\":\"taco\",\"limit\":\"10\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "account": "taco",
+                "assets": "98"
+            }
+        ],
+        "query_time": 1756585606569
+    },
+    "text": "{\"success\":true,\"data\":[{\"account\":\"taco\",\"assets\":\"98\"}],\"query_time\":1756585606569}"
+}

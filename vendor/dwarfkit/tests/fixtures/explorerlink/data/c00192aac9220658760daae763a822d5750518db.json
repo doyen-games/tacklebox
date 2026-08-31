@@ -1,0 +1,38 @@
+{
+    "request": {
+        "path": "https://jungle4.greymass.com/v1/chain/send_transaction",
+        "params": {
+            "method": "POST",
+            "body": "{\"signatures\":[\"SIG_K1_KBNmc3RNNKphRabK4sLEQNdBnZTAdyQrT1WnYdVRGiRjxVC27rZUSwU5oSDCskFcDpk2TszA3thPFQh2oWTLTtGKgkKwTk\"],\"compression\":0,\"packed_context_free_data\":\"00\",\"packed_trx\":\"c9deaf631f93828e4207000000000100a6823403ea3055000000572d3ccdcd01504208d9c1754de3000000000090b1ca5a504208d9c1754de390b1cad9c1754de3010000000000000004454f53000000003977686172666b697420706c7567696e202d207265736f757263652070726f7669646572207465737420286d61784665653a20302e303030312900\"}"
+        }
+    },
+    "headers": {
+        "access-control-allow-headers": "X-Requested-With,Accept,Content-Type,Origin",
+        "access-control-allow-methods": "GET, POST, OPTIONS",
+        "access-control-allow-origin": "*",
+        "connection": "close",
+        "content-length": "407",
+        "content-type": "application/json",
+        "date": "Mon, 27 Feb 2023 00:43:54 GMT",
+        "server": "nginx/1.18.0 (Ubuntu)"
+    },
+    "status": 500,
+    "json": {
+        "code": 500,
+        "message": "Internal Service Error",
+        "error": {
+            "code": 3040005,
+            "name": "expired_tx_exception",
+            "what": "Expired Transaction",
+            "details": [
+                {
+                    "message": "expired transaction 7fc635f29aa77a6bb5a030f737858046bf29495f330ea826bb979a6b06b47aea, expiration 2022-12-31T07:03:37.000, block time 2023-02-27T00:43:55.000",
+                    "file": "producer_plugin.cpp",
+                    "line_number": 658,
+                    "method": "process_incoming_transaction_async"
+                }
+            ]
+        }
+    },
+    "text": "{\"code\":500,\"message\":\"Internal Service Error\",\"error\":{\"code\":3040005,\"name\":\"expired_tx_exception\",\"what\":\"Expired Transaction\",\"details\":[{\"message\":\"expired transaction 7fc635f29aa77a6bb5a030f737858046bf29495f330ea826bb979a6b06b47aea, expiration 2022-12-31T07:03:37.000, block time 2023-02-27T00:43:55.000\",\"file\":\"producer_plugin.cpp\",\"line_number\":658,\"method\":\"process_incoming_transaction_async\"}]}}"
+}

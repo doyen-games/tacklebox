@@ -1,0 +1,21 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v1/marketplaces/market.place",
+        "params": {
+            "method": "GET",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "marketplace_name": "market.place",
+            "creator": "fees.place",
+            "created_at_block": "70885367",
+            "created_at_time": "1596872896000"
+        },
+        "query_time": 1756585626476
+    },
+    "text": "{\"success\":true,\"data\":{\"marketplace_name\":\"market.place\",\"creator\":\"fees.place\",\"created_at_block\":\"70885367\",\"created_at_time\":\"1596872896000\"},\"query_time\":1756585626476}"
+}

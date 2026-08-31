@@ -1,0 +1,18 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_approver_proposals",
+        "params": {
+            "method": "POST",
+            "body": "{\"approver\":\"bob\",\"status\":\"proposed\",\"limit\":5,\"offset\":1}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "approver": "bob",
+        "more": false,
+        "proposals": [],
+        "total": 1
+    },
+    "text": "{\"approver\":\"bob\",\"more\":false,\"proposals\":[],\"total\":1}"
+}

@@ -1,0 +1,18 @@
+{
+    "request": {
+        "path": "https://jungle4.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"table\":\"producers\",\"code\":\"eosio\",\"scope\":\"eosio\",\"limit\":1,\"lower_bound\":\"lioninjungle\",\"upper_bound\":\"lioninjungle\",\"key_type\":\"name\",\"json\":false}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            "a0229bfa4d37a98b14d43e13995320440002e90bbadddf5f7e944c2abb3b93560d6617da4ff8e98a2f3f995b809d84cddf97011668747470733a2f2f63727970746f6c696f6e732e696f0c0f0000405ae1522704060000000001000000010002e90bbadddf5f7e944c2abb3b93560d6617da4ff8e98a2f3f995b809d84cddf970100"
+        ],
+        "more": false,
+        "next_key": ""
+    },
+    "text": "{\"rows\":[\"a0229bfa4d37a98b14d43e13995320440002e90bbadddf5f7e944c2abb3b93560d6617da4ff8e98a2f3f995b809d84cddf97011668747470733a2f2f63727970746f6c696f6e732e696f0c0f0000405ae1522704060000000001000000010002e90bbadddf5f7e944c2abb3b93560d6617da4ff8e98a2f3f995b809d84cddf970100\"],\"more\":false,\"next_key\":\"\"}"
+}

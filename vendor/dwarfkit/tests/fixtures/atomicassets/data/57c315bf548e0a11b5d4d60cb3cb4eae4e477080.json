@@ -1,0 +1,115 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/templates/taco/750150",
+        "params": {
+            "method": "GET",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "contract": "atomicassets",
+            "template_id": "750150",
+            "is_transferable": true,
+            "is_burnable": true,
+            "issued_supply": "2256",
+            "max_supply": "0",
+            "collection": {
+                "collection_name": "taco",
+                "name": "Taco",
+                "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                "author": "taco",
+                "allow_notify": true,
+                "authorized_accounts": [
+                    "taco",
+                    "atomicdropsx",
+                    "atomicpacksx",
+                    "neftyblocksd",
+                    "s.taco",
+                    "blend.nefty",
+                    "blenderizerx",
+                    "g.taco",
+                    "brigade.taco",
+                    "b.taco",
+                    "mkt.taco",
+                    "acr.taco",
+                    "takitakiboom",
+                    "l.taco",
+                    "worker.taco",
+                    "tacotacopool",
+                    "primarysale1",
+                    "combz.taco",
+                    "v.taco"
+                ],
+                "notify_accounts": [
+                    "g.taco",
+                    "brigade.taco",
+                    "stake.taco",
+                    "swap.taco",
+                    "blend.nefty",
+                    "neftyblocksd",
+                    "neftyblocksp",
+                    "rent.taco",
+                    "a.taco"
+                ],
+                "market_fee": 0.06,
+                "created_at_block": "123329591",
+                "created_at_time": "1623106508500"
+            },
+            "schema": {
+                "schema_name": "pack",
+                "format": [
+                    {
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "img",
+                        "type": "image"
+                    },
+                    {
+                        "name": "description",
+                        "type": "string"
+                    },
+                    {
+                        "name": "series",
+                        "type": "uint64"
+                    },
+                    {
+                        "name": "type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "website",
+                        "type": "string"
+                    },
+                    {
+                        "name": "size",
+                        "type": "string"
+                    },
+                    {
+                        "name": "acr_owner",
+                        "type": "string"
+                    }
+                ],
+                "created_at_block": "128484359",
+                "created_at_time": "1625685127500"
+            },
+            "immutable_data": {
+                "img": "QmNy1x3rSAcQNNgB9eJqMJKGPbfQrwn97piiVy525zpnWa",
+                "name": "Combz Single Pack",
+                "size": "single",
+                "type": "Combz",
+                "description": "This pack contains 1 Spacecomb NFT"
+            },
+            "created_at_time": "1696250743500",
+            "created_at_block": "269559081",
+            "name": "Combz Single Pack"
+        },
+        "query_time": 1756585609469
+    },
+    "text": "{\"success\":true,\"data\":{\"contract\":\"atomicassets\",\"template_id\":\"750150\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"2256\",\"max_supply\":\"0\",\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"pack\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"uint64\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"website\",\"type\":\"string\"},{\"name\":\"size\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"128484359\",\"created_at_time\":\"1625685127500\"},\"immutable_data\":{\"img\":\"QmNy1x3rSAcQNNgB9eJqMJKGPbfQrwn97piiVy525zpnWa\",\"name\":\"Combz Single Pack\",\"size\":\"single\",\"type\":\"Combz\",\"description\":\"This pack contains 1 Spacecomb NFT\"},\"created_at_time\":\"1696250743500\",\"created_at_block\":\"269559081\",\"name\":\"Combz Single Pack\"},\"query_time\":1756585609469}"
+}

@@ -1,0 +1,89 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_activity",
+        "params": {
+            "method": "POST",
+            "body": "{\"account\":\"alice\",\"limit\":10}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "account": "alice",
+        "activity": [
+            {
+                "action": "proposed",
+                "globalseq": 1033,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:46:09.500"
+            },
+            {
+                "action": "proposed",
+                "globalseq": 1029,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:43:39.500"
+            },
+            {
+                "action": "proposed",
+                "globalseq": 1025,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:41:59.500"
+            },
+            {
+                "action": "executed",
+                "globalseq": 1019,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:41:09.500"
+            },
+            {
+                "action": "proposed",
+                "globalseq": 1019,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:38:39.500"
+            },
+            {
+                "action": "cancelled",
+                "globalseq": 1013,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:37:49.500"
+            },
+            {
+                "action": "proposed",
+                "globalseq": 1013,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:36:09.500"
+            },
+            {
+                "action": "proposed",
+                "globalseq": 1007,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:30:19.500"
+            },
+            {
+                "action": "proposed",
+                "globalseq": 1003,
+                "proposal_name": "newperm",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:21:59.500"
+            },
+            {
+                "action": "executed",
+                "globalseq": 1001,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:18:39.500"
+            }
+        ],
+        "more": true,
+        "total": 11
+    },
+    "text": "{\"account\":\"alice\",\"activity\":[{\"action\":\"proposed\",\"globalseq\":1033,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:46:09.500\"},{\"action\":\"proposed\",\"globalseq\":1029,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:43:39.500\"},{\"action\":\"proposed\",\"globalseq\":1025,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:41:59.500\"},{\"action\":\"executed\",\"globalseq\":1019,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:41:09.500\"},{\"action\":\"proposed\",\"globalseq\":1019,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:38:39.500\"},{\"action\":\"cancelled\",\"globalseq\":1013,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:37:49.500\"},{\"action\":\"proposed\",\"globalseq\":1013,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:36:09.500\"},{\"action\":\"proposed\",\"globalseq\":1007,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:30:19.500\"},{\"action\":\"proposed\",\"globalseq\":1003,\"proposal_name\":\"newperm\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:21:59.500\"},{\"action\":\"executed\",\"globalseq\":1001,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:18:39.500\"}],\"more\":true,\"total\":11}"
+}

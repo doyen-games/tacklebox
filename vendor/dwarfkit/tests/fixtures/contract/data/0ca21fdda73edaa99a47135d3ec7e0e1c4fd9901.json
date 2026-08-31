@@ -1,0 +1,86 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_by_scope",
+        "params": {
+            "method": "POST",
+            "body": "{\"code\":\"eosio.msig\",\"table\":\"proposal\",\"limit\":10,\"lower_bound\":\"1charcha.ftw\"}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            {
+                "code": "eosio.msig",
+                "scope": "1charcha.ftw",
+                "table": "proposal",
+                "payer": "1charcha.ftw",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "1cjfya.ftw",
+                "table": "proposal",
+                "payer": "1cjfya.ftw",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "1farah.ftw",
+                "table": "proposal",
+                "payer": "1farah.ftw",
+                "count": 3
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "1luntxd.ftw",
+                "table": "proposal",
+                "payer": "1luntxd.ftw",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "1muarte.ftw",
+                "table": "proposal",
+                "payer": "1muarte.ftw",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "1mycrypto213",
+                "table": "proposal",
+                "payer": "1mycrypto213",
+                "count": 2
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "1plsd.ftw",
+                "table": "proposal",
+                "payer": "1plsd.ftw",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "1rtkjeosdac1",
+                "table": "proposal",
+                "payer": "1rtkjeosdac1",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "1shahram.ftw",
+                "table": "proposal",
+                "payer": "1shahram.ftw",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "1slapaho.ftw",
+                "table": "proposal",
+                "payer": "1slapaho.ftw",
+                "count": 1
+            }
+        ],
+        "more": "1stdwn33.ftw"
+    },
+    "text": "{\"rows\":[{\"code\":\"eosio.msig\",\"scope\":\"1charcha.ftw\",\"table\":\"proposal\",\"payer\":\"1charcha.ftw\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"1cjfya.ftw\",\"table\":\"proposal\",\"payer\":\"1cjfya.ftw\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"1farah.ftw\",\"table\":\"proposal\",\"payer\":\"1farah.ftw\",\"count\":3},{\"code\":\"eosio.msig\",\"scope\":\"1luntxd.ftw\",\"table\":\"proposal\",\"payer\":\"1luntxd.ftw\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"1muarte.ftw\",\"table\":\"proposal\",\"payer\":\"1muarte.ftw\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"1mycrypto213\",\"table\":\"proposal\",\"payer\":\"1mycrypto213\",\"count\":2},{\"code\":\"eosio.msig\",\"scope\":\"1plsd.ftw\",\"table\":\"proposal\",\"payer\":\"1plsd.ftw\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"1rtkjeosdac1\",\"table\":\"proposal\",\"payer\":\"1rtkjeosdac1\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"1shahram.ftw\",\"table\":\"proposal\",\"payer\":\"1shahram.ftw\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"1slapaho.ftw\",\"table\":\"proposal\",\"payer\":\"1slapaho.ftw\",\"count\":1}],\"more\":\"1stdwn33.ftw\"}"
+}

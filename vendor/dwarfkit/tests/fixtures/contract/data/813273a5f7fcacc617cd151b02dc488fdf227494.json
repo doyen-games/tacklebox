@@ -1,0 +1,30 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_by_scope",
+        "params": {
+            "method": "POST",
+            "body": "{\"code\":\"eosio.msig\",\"table\":\"proposal\",\"limit\":2,\"lower_bound\":\"12235213.ftw\"}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            {
+                "code": "eosio.msig",
+                "scope": "12235213.ftw",
+                "table": "proposal",
+                "payer": "12235213.ftw",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "123ahmet.ftw",
+                "table": "proposal",
+                "payer": "123ahmet.ftw",
+                "count": 2
+            }
+        ],
+        "more": "123gehed1234"
+    },
+    "text": "{\"rows\":[{\"code\":\"eosio.msig\",\"scope\":\"12235213.ftw\",\"table\":\"proposal\",\"payer\":\"12235213.ftw\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"123ahmet.ftw\",\"table\":\"proposal\",\"payer\":\"123ahmet.ftw\",\"count\":2}],\"more\":\"123gehed1234\"}"
+}

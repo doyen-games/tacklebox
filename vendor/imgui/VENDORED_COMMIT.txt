@@ -1,0 +1,3 @@
+Vendored snapshot of Dear ImGui (https://github.com/ocornut/imgui).
+Upstream commit: 0af8f475d1cf8b98d603702059c0c73deeb81ac2 (1.93.0 WIP, non-docking)
+No local modifications.

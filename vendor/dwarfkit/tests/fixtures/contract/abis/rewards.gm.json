@@ -1,0 +1,215 @@
+{
+    "version": "eosio::abi/1.2",
+    "types": [],
+    "structs": [
+        {
+            "name": "adduser",
+            "base": "",
+            "fields": [
+                {
+                    "name": "account",
+                    "type": "name"
+                },
+                {
+                    "name": "weight",
+                    "type": "uint16"
+                }
+            ]
+        },
+        {
+            "name": "claim",
+            "base": "",
+            "fields": [
+                {
+                    "name": "account",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset?"
+                }
+            ]
+        },
+        {
+            "name": "config",
+            "base": "",
+            "fields": [
+                {
+                    "name": "token_symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "oracle_account",
+                    "type": "name"
+                },
+                {
+                    "name": "oracle_pairs",
+                    "type": "oracle_pair[]"
+                }
+            ]
+        },
+        {
+            "name": "configure",
+            "base": "",
+            "fields": [
+                {
+                    "name": "token_symbol",
+                    "type": "symbol"
+                },
+                {
+                    "name": "oracle_account",
+                    "type": "name"
+                },
+                {
+                    "name": "oracle_pairs",
+                    "type": "oracle_pair[]"
+                }
+            ]
+        },
+        {
+            "name": "deluser",
+            "base": "",
+            "fields": [
+                {
+                    "name": "account",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "oracle_pair",
+            "base": "",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "name"
+                },
+                {
+                    "name": "precision",
+                    "type": "uint16"
+                }
+            ]
+        },
+        {
+            "name": "price_info",
+            "base": "",
+            "fields": [
+                {
+                    "name": "pair",
+                    "type": "string"
+                },
+                {
+                    "name": "price",
+                    "type": "float64"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "time_point"
+                }
+            ]
+        },
+        {
+            "name": "receipt",
+            "base": "",
+            "fields": [
+                {
+                    "name": "account",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                },
+                {
+                    "name": "ticker",
+                    "type": "price_info[]"
+                }
+            ]
+        },
+        {
+            "name": "updateuser",
+            "base": "",
+            "fields": [
+                {
+                    "name": "account",
+                    "type": "name"
+                },
+                {
+                    "name": "weight",
+                    "type": "uint16"
+                }
+            ]
+        },
+        {
+            "name": "user_row",
+            "base": "",
+            "fields": [
+                {
+                    "name": "account",
+                    "type": "name"
+                },
+                {
+                    "name": "weight",
+                    "type": "uint16"
+                },
+                {
+                    "name": "balance",
+                    "type": "asset"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "adduser",
+            "type": "adduser",
+            "ricardian_contract": "---\nspec_version: \"0.2.0\"\ntitle: Add user\nsummary: 'Add new user {{nowrap account}}'\nicon: https://almost.digital/images/misc_icon.png#6f5ea978b04d03e018b379a2bac4c10b5a8fe0cd5e6e15c88828dc986be96cff\n---\n\n{{account}} is added to the rewards sharing list with weight {{weight}}."
+        },
+        {
+            "name": "claim",
+            "type": "claim",
+            "ricardian_contract": "---\nspec_version: \"0.2.0\"\ntitle: Claim\nsummary: 'Claim rewards for {{nowrap account}}'\nicon: https://almost.digital/images/claim_icon.png#bb597f4acc1305925912e18e7b4cf708d1faec2aa88b7a53d87969e045168ecf\n---\n\n{{#if_has_value amount}}\n    {{account}} claims {{amount}} from their rewards balance.\n{{else}}\n    {{account}} claims their entire rewards balance.\n{{/if_has_value}}"
+        },
+        {
+            "name": "configure",
+            "type": "configure",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "deluser",
+            "type": "deluser",
+            "ricardian_contract": "---\nspec_version: \"0.2.0\"\ntitle: Delete user\nsummary: 'Delete user {{nowrap account}}'\nicon: https://almost.digital/images/misc_icon.png#6f5ea978b04d03e018b379a2bac4c10b5a8fe0cd5e6e15c88828dc986be96cff\n---\n\n{{account}} is is removed from the rewards sharing list.\n\nUsers can only be removed if their rewards balance is zero."
+        },
+        {
+            "name": "receipt",
+            "type": "receipt",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "updateuser",
+            "type": "updateuser",
+            "ricardian_contract": "---\nspec_version: \"0.2.0\"\ntitle: Update user\nsummary: 'Update user {{nowrap account}}'\nicon: https://almost.digital/images/misc_icon.png#6f5ea978b04d03e018b379a2bac4c10b5a8fe0cd5e6e15c88828dc986be96cff\n---\n\n{{account}} is updated to have weight {{weight}}."
+        }
+    ],
+    "tables": [
+        {
+            "name": "config",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": [],
+            "type": "config"
+        },
+        {
+            "name": "users",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": [],
+            "type": "user_row"
+        }
+    ],
+    "ricardian_clauses": [],
+    "error_messages": [],
+    "abi_extensions": [],
+    "variants": [],
+    "action_results": []
+}

@@ -1,0 +1,30 @@
+# Build output
+/build/
+/build-*/
+cmake-build-*/
+
+# Generated QA screenshot decks (tacklebox --qa-shots)
+/qa-shots/
+
+# IDE / editor
+.vscode/
+.idea/
+.vs/
+*.swp
+
+# Android build output
+platform/android/.gradle/
+platform/android/local.properties
+platform/android/app/build/
+platform/android/app/.cxx/
+
+# OS cruft
+Thumbs.db
+.DS_Store
+
+# Local Claude Code settings
+.claude/settings.local.json
+
+# Safety net: never commit a vault or key material
+*.tbx
+*.wif

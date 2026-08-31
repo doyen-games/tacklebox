@@ -1,0 +1,29 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_approvals",
+        "params": {
+            "method": "POST",
+            "body": "{\"proposer\":\"dave\",\"proposal_name\":\"transfer\"}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "globalseq": 1026,
+        "more": false,
+        "proposal_name": "transfer",
+        "proposer": "dave",
+        "timeline": [
+            {
+                "action": "approve",
+                "actor": "eve",
+                "block_num": 100422,
+                "globalseq": 1026,
+                "permission": "active",
+                "timestamp": "2025-11-24T01:51:19.500"
+            }
+        ],
+        "total": 1
+    },
+    "text": "{\"globalseq\":1026,\"more\":false,\"proposal_name\":\"transfer\",\"proposer\":\"dave\",\"timeline\":[{\"action\":\"approve\",\"actor\":\"eve\",\"block_num\":100422,\"globalseq\":1026,\"permission\":\"active\",\"timestamp\":\"2025-11-24T01:51:19.500\"}],\"total\":1}"
+}

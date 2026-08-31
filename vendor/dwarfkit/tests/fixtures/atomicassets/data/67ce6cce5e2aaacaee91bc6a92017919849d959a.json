@@ -1,0 +1,26 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v1/stats/templates",
+        "params": {
+            "method": "POST",
+            "body": "{\"symbol\":\"WAX\",\"search\":\"alien.worlds\",\"collection_name\":\"alien.worlds\",\"limit\":\"10\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "symbol": {
+                "token_symbol": "WAX",
+                "token_contract": "eosio.token",
+                "token_precision": 8
+            },
+            "results": []
+        },
+        "query_time": 1756585630256
+    },
+    "text": "{\"success\":true,\"data\":{\"symbol\":{\"token_symbol\":\"WAX\",\"token_contract\":\"eosio.token\",\"token_precision\":8},\"results\":[]},\"query_time\":1756585630256}"
+}

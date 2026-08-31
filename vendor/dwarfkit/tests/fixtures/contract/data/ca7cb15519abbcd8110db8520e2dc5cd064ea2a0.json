@@ -1,0 +1,18 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"table\":\"producers\",\"code\":\"eosio\",\"scope\":\"eosio\",\"limit\":1,\"lower_bound\":\"teamgreymass\",\"upper_bound\":\"teamgreymass\",\"index_position\":\"primary\",\"key_type\":\"name\",\"json\":false}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            "80b1915e5d268dca1488736e3988e2430002727441e7cbd8988010f7feefdf2c6a77cf9ffec82b0f8b6662a9fe350082717d011468747470733a2f2f677265796d6173732e636f6d0000000080ec680e510106007c000001000000010002727441e7cbd8988010f7feefdf2c6a77cf9ffec82b0f8b6662a9fe350082717d0100"
+        ],
+        "more": false,
+        "next_key": ""
+    },
+    "text": "{\"rows\":[\"80b1915e5d268dca1488736e3988e2430002727441e7cbd8988010f7feefdf2c6a77cf9ffec82b0f8b6662a9fe350082717d011468747470733a2f2f677265796d6173732e636f6d0000000080ec680e510106007c000001000000010002727441e7cbd8988010f7feefdf2c6a77cf9ffec82b0f8b6662a9fe350082717d0100\"],\"more\":false,\"next_key\":\"\"}"
+}

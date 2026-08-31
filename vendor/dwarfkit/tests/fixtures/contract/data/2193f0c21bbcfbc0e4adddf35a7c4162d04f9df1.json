@@ -1,0 +1,30 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_by_scope",
+        "params": {
+            "method": "POST",
+            "body": "{\"code\":\"eosio.msig\",\"table\":\"proposal\",\"limit\":2,\"lower_bound\":\"11rippche24y\"}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            {
+                "code": "eosio.msig",
+                "scope": "11rippche24y",
+                "table": "proposal",
+                "payer": "11rippche24y",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "121moe.ftw",
+                "table": "proposal",
+                "payer": "121moe.ftw",
+                "count": 1
+            }
+        ],
+        "more": "12235213.ftw"
+    },
+    "text": "{\"rows\":[{\"code\":\"eosio.msig\",\"scope\":\"11rippche24y\",\"table\":\"proposal\",\"payer\":\"11rippche24y\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"121moe.ftw\",\"table\":\"proposal\",\"payer\":\"121moe.ftw\",\"count\":1}],\"more\":\"12235213.ftw\"}"
+}

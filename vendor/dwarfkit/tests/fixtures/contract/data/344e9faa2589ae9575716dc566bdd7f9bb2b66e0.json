@@ -1,0 +1,19 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"json\":false,\"limit\":2,\"table\":\"trending\",\"code\":\"decentiumorg\",\"scope\":\"decentiumorg\",\"key_type\":\"i64\",\"lower_bound\":\"7\",\"upper_bound\":\"10\"}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            "0700000000000000d39c010000000000401dbcd4733531559eb1ca804d97b1cab1e9ee5c000090dae5a9904a03d8ed9e037de7299c2746a272883515cf49645b77f24781d779e3ebb4f48a7f1def5b8b34000101000000e8030000000000000000",
+            "0800000000000000609a01000000000000000040810c0c980000000080142fe5176bef5c000090dae5a9904a039cf09f03b5e72feb9f600cb3a8ce8b3f7006a140eabcb089b0ec5b677bb6da9fc9544eb000010000000000000000000000000000"
+        ],
+        "more": true,
+        "next_key": "9"
+    },
+    "text": "{\"rows\":[\"0700000000000000d39c010000000000401dbcd4733531559eb1ca804d97b1cab1e9ee5c000090dae5a9904a03d8ed9e037de7299c2746a272883515cf49645b77f24781d779e3ebb4f48a7f1def5b8b34000101000000e8030000000000000000\",\"0800000000000000609a01000000000000000040810c0c980000000080142fe5176bef5c000090dae5a9904a039cf09f03b5e72feb9f600cb3a8ce8b3f7006a140eabcb089b0ec5b677bb6da9fc9544eb000010000000000000000000000000000\"],\"more\":true,\"next_key\":\"9\"}"
+}

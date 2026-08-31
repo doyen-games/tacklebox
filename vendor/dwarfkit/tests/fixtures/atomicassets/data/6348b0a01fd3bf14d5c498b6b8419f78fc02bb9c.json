@@ -1,0 +1,33 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v1/assets/1099922666976/sales",
+        "params": {
+            "method": "POST",
+            "body": "{}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "market_contract": "atomicmarket",
+                "sale_id": "150644145",
+                "auction_id": null,
+                "buyoffer_id": null,
+                "token_symbol": "WAX",
+                "token_precision": 8,
+                "token_contract": "eosio.token",
+                "price": "1830000000",
+                "seller": "gmube.wam",
+                "buyer": "taco",
+                "block_time": "1705575088000"
+            }
+        ],
+        "query_time": 1756585623642
+    },
+    "text": "{\"success\":true,\"data\":[{\"market_contract\":\"atomicmarket\",\"sale_id\":\"150644145\",\"auction_id\":null,\"buyoffer_id\":null,\"token_symbol\":\"WAX\",\"token_precision\":8,\"token_contract\":\"eosio.token\",\"price\":\"1830000000\",\"seller\":\"gmube.wam\",\"buyer\":\"taco\",\"block_time\":\"1705575088000\"}],\"query_time\":1756585623642}"
+}

@@ -1,0 +1,18 @@
+{
+  "request": {
+    "path": "http://localhost/v1/proposals/search_proposals",
+    "params": {
+      "method": "POST",
+      "body": "{\"query\":\"upgrade\",\"status\":\"executed\"}",
+      "headers": {}
+    }
+  },
+  "status": 200,
+  "json": {
+    "more": false,
+    "proposals": [],
+    "query": "upgrade",
+    "status": "executed",
+    "total": 0
+  }
+}

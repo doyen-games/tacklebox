@@ -1,0 +1,97 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_proposal",
+        "params": {
+            "method": "POST",
+            "body": "{\"proposer\":\"dave\",\"proposal_name\":\"transfer\"}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "actions_count": 1,
+        "cancelled_at": null,
+        "cancelled_by": null,
+        "cancelled_trx_id": null,
+        "created_at": "2025-11-24T01:51:09.500",
+        "created_block": 100420,
+        "created_trx_id": "0202020202020202020202020202020202020202020202020202020202020202",
+        "executed_at": null,
+        "executed_by": null,
+        "executed_trx_id": null,
+        "expiration": "2025-12-24T01:16:09.500",
+        "globalseq": 1026,
+        "proposal_name": "transfer",
+        "proposer": "dave",
+        "provided_approvals": [
+            {
+                "actor": "eve",
+                "permission": "active"
+            }
+        ],
+        "requested_approvals": [
+            {
+                "actor": "eve",
+                "permission": "active"
+            }
+        ],
+        "status": "proposed",
+        "transaction": {
+            "actions": [],
+            "expiration": "2025-12-22T00:00:00"
+        },
+        "version_history": [
+            {
+                "cancelled_at": null,
+                "cancelled_trx_id": null,
+                "created_at": "2025-11-22T01:17:49.500",
+                "created_trx_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+                "executed_at": null,
+                "executed_trx_id": null,
+                "globalseq": 1023,
+                "status": "expired"
+            },
+            {
+                "cancelled_at": null,
+                "cancelled_trx_id": null,
+                "created_at": "2025-11-24T01:48:39.500",
+                "created_trx_id": "fcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfc",
+                "executed_at": "2025-11-24T01:50:19.500",
+                "executed_trx_id": "0000000000000000000000000000000000000000000000000000000000000000",
+                "globalseq": 1020,
+                "status": "executed"
+            },
+            {
+                "cancelled_at": "2025-11-24T01:47:49.500",
+                "cancelled_trx_id": "0000000000000000000000000000000000000000000000000000000000000000",
+                "created_at": "2025-11-24T01:46:59.500",
+                "created_trx_id": "f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7",
+                "executed_at": null,
+                "executed_trx_id": null,
+                "globalseq": 1015,
+                "status": "cancelled"
+            },
+            {
+                "cancelled_at": null,
+                "cancelled_trx_id": null,
+                "created_at": "2025-11-22T01:16:09.500",
+                "created_trx_id": "f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0",
+                "executed_at": null,
+                "executed_trx_id": null,
+                "globalseq": 1008,
+                "status": "expired"
+            },
+            {
+                "cancelled_at": null,
+                "cancelled_trx_id": null,
+                "created_at": "2025-11-24T01:19:29.500",
+                "created_trx_id": "eaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaea",
+                "executed_at": "2025-11-24T01:21:09.500",
+                "executed_trx_id": "0000000000000000000000000000000000000000000000000000000000000000",
+                "globalseq": 1002,
+                "status": "executed"
+            }
+        ]
+    },
+    "text": "{\"actions_count\":1,\"cancelled_at\":null,\"cancelled_by\":null,\"cancelled_trx_id\":null,\"created_at\":\"2025-11-24T01:51:09.500\",\"created_block\":100420,\"created_trx_id\":\"0202020202020202020202020202020202020202020202020202020202020202\",\"executed_at\":null,\"executed_by\":null,\"executed_trx_id\":null,\"expiration\":\"2025-12-24T01:16:09.500\",\"globalseq\":1026,\"proposal_name\":\"transfer\",\"proposer\":\"dave\",\"provided_approvals\":[{\"actor\":\"eve\",\"permission\":\"active\"}],\"requested_approvals\":[{\"actor\":\"eve\",\"permission\":\"active\"}],\"status\":\"proposed\",\"transaction\":{\"actions\":[],\"expiration\":\"2025-12-22T00:00:00\"},\"version_history\":[{\"cancelled_at\":null,\"cancelled_trx_id\":null,\"created_at\":\"2025-11-22T01:17:49.500\",\"created_trx_id\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\"executed_at\":null,\"executed_trx_id\":null,\"globalseq\":1023,\"status\":\"expired\"},{\"cancelled_at\":null,\"cancelled_trx_id\":null,\"created_at\":\"2025-11-24T01:48:39.500\",\"created_trx_id\":\"fcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfc\",\"executed_at\":\"2025-11-24T01:50:19.500\",\"executed_trx_id\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"globalseq\":1020,\"status\":\"executed\"},{\"cancelled_at\":\"2025-11-24T01:47:49.500\",\"cancelled_trx_id\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"created_at\":\"2025-11-24T01:46:59.500\",\"created_trx_id\":\"f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7\",\"executed_at\":null,\"executed_trx_id\":null,\"globalseq\":1015,\"status\":\"cancelled\"},{\"cancelled_at\":null,\"cancelled_trx_id\":null,\"created_at\":\"2025-11-22T01:16:09.500\",\"created_trx_id\":\"f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0\",\"executed_at\":null,\"executed_trx_id\":null,\"globalseq\":1008,\"status\":\"expired\"},{\"cancelled_at\":null,\"cancelled_trx_id\":null,\"created_at\":\"2025-11-24T01:19:29.500\",\"created_trx_id\":\"eaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaea\",\"executed_at\":\"2025-11-24T01:21:09.500\",\"executed_trx_id\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"globalseq\":1002,\"status\":\"executed\"}]}"
+}

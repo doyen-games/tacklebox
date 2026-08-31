@@ -1,0 +1,157 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/accounts/taco/taco",
+        "params": {
+            "method": "GET",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "schemas": [
+                {
+                    "schema_name": "tool",
+                    "assets": "63"
+                },
+                {
+                    "schema_name": "brgd.equip",
+                    "assets": "14"
+                },
+                {
+                    "schema_name": "pack",
+                    "assets": "12"
+                },
+                {
+                    "schema_name": "item",
+                    "assets": "4"
+                },
+                {
+                    "schema_name": "ticket",
+                    "assets": "4"
+                },
+                {
+                    "schema_name": "venue",
+                    "assets": "1"
+                }
+            ],
+            "templates": [
+                {
+                    "template_id": "492337",
+                    "assets": "10"
+                },
+                {
+                    "template_id": "654285",
+                    "assets": "7"
+                },
+                {
+                    "template_id": "300074",
+                    "assets": "5"
+                },
+                {
+                    "template_id": "240413",
+                    "assets": "5"
+                },
+                {
+                    "template_id": "318784",
+                    "assets": "5"
+                },
+                {
+                    "template_id": "351469",
+                    "assets": "5"
+                },
+                {
+                    "template_id": "236135",
+                    "assets": "4"
+                },
+                {
+                    "template_id": "247143",
+                    "assets": "4"
+                },
+                {
+                    "template_id": "272862",
+                    "assets": "4"
+                },
+                {
+                    "template_id": "334676",
+                    "assets": "4"
+                },
+                {
+                    "template_id": "351725",
+                    "assets": "4"
+                },
+                {
+                    "template_id": "478795",
+                    "assets": "4"
+                },
+                {
+                    "template_id": "233143",
+                    "assets": "4"
+                },
+                {
+                    "template_id": "233843",
+                    "assets": "4"
+                },
+                {
+                    "template_id": "234091",
+                    "assets": "4"
+                },
+                {
+                    "template_id": "230232",
+                    "assets": "3"
+                },
+                {
+                    "template_id": "382248",
+                    "assets": "3"
+                },
+                {
+                    "template_id": "229926",
+                    "assets": "3"
+                },
+                {
+                    "template_id": "382250",
+                    "assets": "2"
+                },
+                {
+                    "template_id": "531613",
+                    "assets": "2"
+                },
+                {
+                    "template_id": "230115",
+                    "assets": "2"
+                },
+                {
+                    "template_id": "261887",
+                    "assets": "2"
+                },
+                {
+                    "template_id": "294830",
+                    "assets": "2"
+                },
+                {
+                    "template_id": "294831",
+                    "assets": "2"
+                },
+                {
+                    "template_id": "286365",
+                    "assets": "1"
+                },
+                {
+                    "template_id": "654240",
+                    "assets": "1"
+                },
+                {
+                    "template_id": "654236",
+                    "assets": "1"
+                },
+                {
+                    "template_id": "430517",
+                    "assets": "1"
+                }
+            ]
+        },
+        "query_time": 1756585606935
+    },
+    "text": "{\"success\":true,\"data\":{\"schemas\":[{\"schema_name\":\"tool\",\"assets\":\"63\"},{\"schema_name\":\"brgd.equip\",\"assets\":\"14\"},{\"schema_name\":\"pack\",\"assets\":\"12\"},{\"schema_name\":\"item\",\"assets\":\"4\"},{\"schema_name\":\"ticket\",\"assets\":\"4\"},{\"schema_name\":\"venue\",\"assets\":\"1\"}],\"templates\":[{\"template_id\":\"492337\",\"assets\":\"10\"},{\"template_id\":\"654285\",\"assets\":\"7\"},{\"template_id\":\"300074\",\"assets\":\"5\"},{\"template_id\":\"240413\",\"assets\":\"5\"},{\"template_id\":\"318784\",\"assets\":\"5\"},{\"template_id\":\"351469\",\"assets\":\"5\"},{\"template_id\":\"236135\",\"assets\":\"4\"},{\"template_id\":\"247143\",\"assets\":\"4\"},{\"template_id\":\"272862\",\"assets\":\"4\"},{\"template_id\":\"334676\",\"assets\":\"4\"},{\"template_id\":\"351725\",\"assets\":\"4\"},{\"template_id\":\"478795\",\"assets\":\"4\"},{\"template_id\":\"233143\",\"assets\":\"4\"},{\"template_id\":\"233843\",\"assets\":\"4\"},{\"template_id\":\"234091\",\"assets\":\"4\"},{\"template_id\":\"230232\",\"assets\":\"3\"},{\"template_id\":\"382248\",\"assets\":\"3\"},{\"template_id\":\"229926\",\"assets\":\"3\"},{\"template_id\":\"382250\",\"assets\":\"2\"},{\"template_id\":\"531613\",\"assets\":\"2\"},{\"template_id\":\"230115\",\"assets\":\"2\"},{\"template_id\":\"261887\",\"assets\":\"2\"},{\"template_id\":\"294830\",\"assets\":\"2\"},{\"template_id\":\"294831\",\"assets\":\"2\"},{\"template_id\":\"286365\",\"assets\":\"1\"},{\"template_id\":\"654240\",\"assets\":\"1\"},{\"template_id\":\"654236\",\"assets\":\"1\"},{\"template_id\":\"430517\",\"assets\":\"1\"}]},\"query_time\":1756585606935}"
+}

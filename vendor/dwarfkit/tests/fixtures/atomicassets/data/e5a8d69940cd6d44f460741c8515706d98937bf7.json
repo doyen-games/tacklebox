@@ -1,0 +1,232 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/burns",
+        "params": {
+            "method": "POST",
+            "body": "{\"collection_name\":\"thesvnthseal\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "account": "blend.nefty",
+                "assets": "5789"
+            },
+            {
+                "account": "atomicpacksx",
+                "assets": "2849"
+            },
+            {
+                "account": "atomiccsends",
+                "assets": "117"
+            },
+            {
+                "account": "yjgcm.wam",
+                "assets": "93"
+            },
+            {
+                "account": "thesvnthseal",
+                "assets": "29"
+            },
+            {
+                "account": "palb.wam",
+                "assets": "21"
+            },
+            {
+                "account": "rv3qw.wam",
+                "assets": "14"
+            },
+            {
+                "account": "3lzbc.wam",
+                "assets": "11"
+            },
+            {
+                "account": "e3hrk.wam",
+                "assets": "9"
+            },
+            {
+                "account": "wq2w.wam",
+                "assets": "9"
+            },
+            {
+                "account": "pzypy.wam",
+                "assets": "7"
+            },
+            {
+                "account": "oh.qq.wam",
+                "assets": "5"
+            },
+            {
+                "account": "hehys.wam",
+                "assets": "3"
+            },
+            {
+                "account": "pharotheron2",
+                "assets": "3"
+            },
+            {
+                "account": "circle.gm",
+                "assets": "2"
+            },
+            {
+                "account": "ez1qy.wam",
+                "assets": "2"
+            },
+            {
+                "account": "fasruhkazdi5",
+                "assets": "2"
+            },
+            {
+                "account": "fbjr.wam",
+                "assets": "2"
+            },
+            {
+                "account": "fyyn.wam",
+                "assets": "2"
+            },
+            {
+                "account": "gnuro.wam",
+                "assets": "2"
+            },
+            {
+                "account": "sk4hq.wam",
+                "assets": "2"
+            },
+            {
+                "account": "1azps.wam",
+                "assets": "1"
+            },
+            {
+                "account": "1bkb4.wam",
+                "assets": "1"
+            },
+            {
+                "account": "1s1r2.wam",
+                "assets": "1"
+            },
+            {
+                "account": "3.lb4.wam",
+                "assets": "1"
+            },
+            {
+                "account": ".3tmg.c.wam",
+                "assets": "1"
+            },
+            {
+                "account": "b32ba.wam",
+                "assets": "1"
+            },
+            {
+                "account": "cjbb2.wam",
+                "assets": "1"
+            },
+            {
+                "account": "composerhodl",
+                "assets": "1"
+            },
+            {
+                "account": "epoxq.wam",
+                "assets": "1"
+            },
+            {
+                "account": "holaw.wam",
+                "assets": "1"
+            },
+            {
+                "account": "ifvvw.wam",
+                "assets": "1"
+            },
+            {
+                "account": "is1fq.wam",
+                "assets": "1"
+            },
+            {
+                "account": "kha3..c.wam",
+                "assets": "1"
+            },
+            {
+                "account": "kjvra.wam",
+                "assets": "1"
+            },
+            {
+                "account": "lj4b.wam",
+                "assets": "1"
+            },
+            {
+                "account": "ljzbg.wam",
+                "assets": "1"
+            },
+            {
+                "account": "lpoqy.wam",
+                "assets": "1"
+            },
+            {
+                "account": "lwcza.wam",
+                "assets": "1"
+            },
+            {
+                "account": "mjrbe.wam",
+                "assets": "1"
+            },
+            {
+                "account": "negativeste1",
+                "assets": "1"
+            },
+            {
+                "account": "pdgbk.wam",
+                "assets": "1"
+            },
+            {
+                "account": "poub2.wam",
+                "assets": "1"
+            },
+            {
+                "account": "pzgj2.wam",
+                "assets": "1"
+            },
+            {
+                "account": "retrogeekguy",
+                "assets": "1"
+            },
+            {
+                "account": "rpiay.wam",
+                "assets": "1"
+            },
+            {
+                "account": "teufw.wam",
+                "assets": "1"
+            },
+            {
+                "account": "tgeri.wam",
+                "assets": "1"
+            },
+            {
+                "account": "theonlyhero1",
+                "assets": "1"
+            },
+            {
+                "account": "tm3x.wam",
+                "assets": "1"
+            },
+            {
+                "account": "ut3hs.wam",
+                "assets": "1"
+            },
+            {
+                "account": "wj1ho.wam",
+                "assets": "1"
+            },
+            {
+                "account": "ys.wq.wam",
+                "assets": "1"
+            }
+        ],
+        "query_time": 1756585622175
+    },
+    "text": "{\"success\":true,\"data\":[{\"account\":\"blend.nefty\",\"assets\":\"5789\"},{\"account\":\"atomicpacksx\",\"assets\":\"2849\"},{\"account\":\"atomiccsends\",\"assets\":\"117\"},{\"account\":\"yjgcm.wam\",\"assets\":\"93\"},{\"account\":\"thesvnthseal\",\"assets\":\"29\"},{\"account\":\"palb.wam\",\"assets\":\"21\"},{\"account\":\"rv3qw.wam\",\"assets\":\"14\"},{\"account\":\"3lzbc.wam\",\"assets\":\"11\"},{\"account\":\"e3hrk.wam\",\"assets\":\"9\"},{\"account\":\"wq2w.wam\",\"assets\":\"9\"},{\"account\":\"pzypy.wam\",\"assets\":\"7\"},{\"account\":\"oh.qq.wam\",\"assets\":\"5\"},{\"account\":\"hehys.wam\",\"assets\":\"3\"},{\"account\":\"pharotheron2\",\"assets\":\"3\"},{\"account\":\"circle.gm\",\"assets\":\"2\"},{\"account\":\"ez1qy.wam\",\"assets\":\"2\"},{\"account\":\"fasruhkazdi5\",\"assets\":\"2\"},{\"account\":\"fbjr.wam\",\"assets\":\"2\"},{\"account\":\"fyyn.wam\",\"assets\":\"2\"},{\"account\":\"gnuro.wam\",\"assets\":\"2\"},{\"account\":\"sk4hq.wam\",\"assets\":\"2\"},{\"account\":\"1azps.wam\",\"assets\":\"1\"},{\"account\":\"1bkb4.wam\",\"assets\":\"1\"},{\"account\":\"1s1r2.wam\",\"assets\":\"1\"},{\"account\":\"3.lb4.wam\",\"assets\":\"1\"},{\"account\":\".3tmg.c.wam\",\"assets\":\"1\"},{\"account\":\"b32ba.wam\",\"assets\":\"1\"},{\"account\":\"cjbb2.wam\",\"assets\":\"1\"},{\"account\":\"composerhodl\",\"assets\":\"1\"},{\"account\":\"epoxq.wam\",\"assets\":\"1\"},{\"account\":\"holaw.wam\",\"assets\":\"1\"},{\"account\":\"ifvvw.wam\",\"assets\":\"1\"},{\"account\":\"is1fq.wam\",\"assets\":\"1\"},{\"account\":\"kha3..c.wam\",\"assets\":\"1\"},{\"account\":\"kjvra.wam\",\"assets\":\"1\"},{\"account\":\"lj4b.wam\",\"assets\":\"1\"},{\"account\":\"ljzbg.wam\",\"assets\":\"1\"},{\"account\":\"lpoqy.wam\",\"assets\":\"1\"},{\"account\":\"lwcza.wam\",\"assets\":\"1\"},{\"account\":\"mjrbe.wam\",\"assets\":\"1\"},{\"account\":\"negativeste1\",\"assets\":\"1\"},{\"account\":\"pdgbk.wam\",\"assets\":\"1\"},{\"account\":\"poub2.wam\",\"assets\":\"1\"},{\"account\":\"pzgj2.wam\",\"assets\":\"1\"},{\"account\":\"retrogeekguy\",\"assets\":\"1\"},{\"account\":\"rpiay.wam\",\"assets\":\"1\"},{\"account\":\"teufw.wam\",\"assets\":\"1\"},{\"account\":\"tgeri.wam\",\"assets\":\"1\"},{\"account\":\"theonlyhero1\",\"assets\":\"1\"},{\"account\":\"tm3x.wam\",\"assets\":\"1\"},{\"account\":\"ut3hs.wam\",\"assets\":\"1\"},{\"account\":\"wj1ho.wam\",\"assets\":\"1\"},{\"account\":\"ys.wq.wam\",\"assets\":\"1\"}],\"query_time\":1756585622175}"
+}

@@ -1,0 +1,19 @@
+{
+  "request": {
+    "path": "http://localhost/v1/proposals/search_proposals",
+    "params": {
+      "method": "POST",
+      "body": "{\"query\":\"pro\",\"limit\":3}",
+      "headers": {}
+    }
+  },
+  "status": 200,
+  "json": {
+    "more": false,
+    "proposals": [],
+    "query": "pro",
+    "status": "",
+    "total": 0
+  },
+  "text": "{\"more\":false,\"proposals\":[],\"query\":\"pro\",\"status\":\"\",\"total\":0}"
+}

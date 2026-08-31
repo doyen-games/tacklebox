@@ -1,0 +1,26 @@
+{
+    "api": "https://jungle4.api.eosnation.io",
+    "headers": {
+        "access-control-allow-headers": "Origin, X-Requested-With, Content-Type, Accept",
+        "access-control-allow-methods": "GET, POST, HEAD, OPTIONS",
+        "access-control-allow-origin": "*",
+        "connection": "close",
+        "content-length": "465",
+        "content-type": "application/json",
+        "date": "Fri, 04 Aug 2023 18:50:04 GMT",
+        "server": "nginx/1.24.0"
+    },
+    "status": 200,
+    "json": {
+        "state": "UNKNOWN",
+        "head_number": 90841456,
+        "head_id": "056a217065a468da24de7d0724c7f62fb97961852e5dbc70228a555b706d001f",
+        "head_timestamp": "2023-08-04T18:50:04.500",
+        "irreversible_number": 90841122,
+        "irreversible_id": "056a20227ecac1a288de07ae6ec484f12d18c624a08025024c74b35f0eedccdc",
+        "irreversible_timestamp": "2023-08-04T18:47:17.500",
+        "earliest_tracked_block_id": "0569cd2cffd2b1e82e14c7813523e559167642571807b560f679815fe2053fd5",
+        "earliest_tracked_block_number": 90819884
+    },
+    "text": "{\"state\":\"UNKNOWN\",\"head_number\":90841456,\"head_id\":\"056a217065a468da24de7d0724c7f62fb97961852e5dbc70228a555b706d001f\",\"head_timestamp\":\"2023-08-04T18:50:04.500\",\"irreversible_number\":90841122,\"irreversible_id\":\"056a20227ecac1a288de07ae6ec484f12d18c624a08025024c74b35f0eedccdc\",\"irreversible_timestamp\":\"2023-08-04T18:47:17.500\",\"earliest_tracked_block_id\":\"0569cd2cffd2b1e82e14c7813523e559167642571807b560f679815fe2053fd5\",\"earliest_tracked_block_number\":90819884}"
+}

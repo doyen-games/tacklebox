@@ -1,0 +1,19 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v1/buyoffers/_count",
+        "params": {
+            "method": "POST",
+            "body": "{\"collection_name\":\"taco\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": "13622",
+        "query_time": 1756585625824
+    },
+    "text": "{\"success\":true,\"data\":\"13622\",\"query_time\":1756585625824}"
+}

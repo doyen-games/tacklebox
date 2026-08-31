@@ -1,0 +1,67 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/collections/taco",
+        "params": {
+            "method": "GET",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "contract": "atomicassets",
+            "collection_name": "taco",
+            "name": "Taco",
+            "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+            "author": "taco",
+            "allow_notify": true,
+            "authorized_accounts": [
+                "taco",
+                "atomicdropsx",
+                "atomicpacksx",
+                "neftyblocksd",
+                "s.taco",
+                "blend.nefty",
+                "blenderizerx",
+                "g.taco",
+                "brigade.taco",
+                "b.taco",
+                "mkt.taco",
+                "acr.taco",
+                "takitakiboom",
+                "l.taco",
+                "worker.taco",
+                "tacotacopool",
+                "primarysale1",
+                "combz.taco",
+                "v.taco"
+            ],
+            "notify_accounts": [
+                "g.taco",
+                "brigade.taco",
+                "stake.taco",
+                "swap.taco",
+                "blend.nefty",
+                "neftyblocksd",
+                "neftyblocksp",
+                "rent.taco",
+                "a.taco"
+            ],
+            "market_fee": 0.06,
+            "data": {
+                "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                "url": "https://tacocrypto.io",
+                "name": "Taco",
+                "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                "socials": "{\"twitter\":\"tacowax\",\"discord\":\"https://discord.gg/tacocrypto\",\"medium\":\"https://medium.com/@taco.wax\",\"youtube\":\"\",\"telegram\":\"tacowax\",\"facebook\":\"tacowax\"}",
+                "description": "Gaming, Utility & DeFi. Taco is the ultimate Web3 project on the WAX Blockchain, combining a smart wallet app for crypto, an NFT-based P2E gaming platform and its own metaverse, the Taco Universe.\n\nWhitepaper: https://taco-2.gitbook.io/whitepaper\n\nDiscord: https://discord.gg/tacocrypto\n\nTwitter: https://twitter.com/tacowax\n\nMedium: https://medium.com/@taco.wax",
+                "creator_info": "{\"country\":\"IT\",\"address\":\"\",\"city\":\"Rome\",\"zip\":\"\",\"company\":\"TACO S.R.L.S.\",\"name\":\"Federico\",\"registration_number\":\"IT16340041009\"}"
+            },
+            "created_at_time": "1623106508500",
+            "created_at_block": "123329591"
+        },
+        "query_time": 1756585607133
+    },
+    "text": "{\"success\":true,\"data\":{\"contract\":\"atomicassets\",\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"data\":{\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"url\":\"https://tacocrypto.io\",\"name\":\"Taco\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"socials\":\"{\\\"twitter\\\":\\\"tacowax\\\",\\\"discord\\\":\\\"https://discord.gg/tacocrypto\\\",\\\"medium\\\":\\\"https://medium.com/@taco.wax\\\",\\\"youtube\\\":\\\"\\\",\\\"telegram\\\":\\\"tacowax\\\",\\\"facebook\\\":\\\"tacowax\\\"}\",\"description\":\"Gaming, Utility & DeFi. Taco is the ultimate Web3 project on the WAX Blockchain, combining a smart wallet app for crypto, an NFT-based P2E gaming platform and its own metaverse, the Taco Universe.\\n\\nWhitepaper: https://taco-2.gitbook.io/whitepaper\\n\\nDiscord: https://discord.gg/tacocrypto\\n\\nTwitter: https://twitter.com/tacowax\\n\\nMedium: https://medium.com/@taco.wax\",\"creator_info\":\"{\\\"country\\\":\\\"IT\\\",\\\"address\\\":\\\"\\\",\\\"city\\\":\\\"Rome\\\",\\\"zip\\\":\\\"\\\",\\\"company\\\":\\\"TACO S.R.L.S.\\\",\\\"name\\\":\\\"Federico\\\",\\\"registration_number\\\":\\\"IT16340041009\\\"}\"},\"created_at_time\":\"1623106508500\",\"created_at_block\":\"123329591\"},\"query_time\":1756585607133}"
+}

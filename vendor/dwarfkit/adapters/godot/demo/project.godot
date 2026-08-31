@@ -1,0 +1,6 @@
+config_version=5
+
+[application]
+config/name="Dwarfkit Demo"
+run/main_scene="res://login_transfer.tscn"
+config/features=PackedStringArray("4.3")

@@ -1,0 +1,255 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomictools/v1/links/1451754",
+        "params": {
+            "method": "GET",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "tools_contract": "atomictoolsx",
+            "link_id": "1451754",
+            "assets_contract": "atomicassets",
+            "creator": "taco",
+            "claimer": "farmingtales",
+            "state": 3,
+            "memo": "",
+            "assets": [
+                {
+                    "contract": "atomicassets",
+                    "asset_id": "1099804120974",
+                    "owner": null,
+                    "is_transferable": true,
+                    "is_burnable": true,
+                    "collection": {
+                        "collection_name": "uncutnefties",
+                        "name": "NeftyBlocks Uncutz",
+                        "img": "QmZRSdCuHyrfYWnRsLJp6ChVjQybh64qxVDN6S8LeWfeT8",
+                        "images": null,
+                        "author": "netfyblocksx",
+                        "allow_notify": true,
+                        "authorized_accounts": [
+                            "netfyblocksx",
+                            "neftyblocksx",
+                            "neftyblocksd",
+                            "mkt.nefty",
+                            "setup.nefty",
+                            "neftyblocksp",
+                            "blend.nefty",
+                            "collab.nefty",
+                            "quest.nefty",
+                            "avatar.nefty",
+                            "atomicpacksx",
+                            "up.nefty"
+                        ],
+                        "notify_accounts": [
+                            "quest.nefty",
+                            "blend.nefty",
+                            "neftyblocksp",
+                            "neftyblocksd",
+                            "avatar.nefty",
+                            "neftyblocksa"
+                        ],
+                        "market_fee": 0.06,
+                        "created_at_block": "117522456",
+                        "created_at_time": "1620202430000"
+                    },
+                    "schema": {
+                        "schema_name": "redeemables",
+                        "format": [
+                            {
+                                "name": "name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "img",
+                                "type": "image"
+                            },
+                            {
+                                "name": "back_img",
+                                "type": "image"
+                            },
+                            {
+                                "name": "description",
+                                "type": "string"
+                            },
+                            {
+                                "name": "color",
+                                "type": "string"
+                            },
+                            {
+                                "name": "clothing_type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "to_redeem",
+                                "type": "string"
+                            }
+                        ],
+                        "created_at_block": "181295963",
+                        "created_at_time": "1652106310000"
+                    },
+                    "template": {
+                        "template_id": "545949",
+                        "max_supply": "0",
+                        "is_transferable": true,
+                        "is_burnable": true,
+                        "issued_supply": "45",
+                        "immutable_data": {
+                            "img": "QmZFLy9C1VVJG4YAfwzfnSFuywXyzKgvuikd3BuzqBTPCu",
+                            "name": "General Ticket",
+                            "back_img": "QmYuBo67cCaPc33x8WahR52DKhT4RstE4hHVEXjz7ofn55",
+                            "to_redeem": "Go to My NFTs > Redeemables",
+                            "description": "This is a redeemable ticket NFT. You can redeem this NFT for a code. Use the code to claim a general access ticket for the 'NFT Community Day 2022' on September 30th in Hilversum. This NFT can be redeemed only once and is burned in the process. Only redeem this NFT if you are attending the event! Redeemed NFTs cannot be refunded."
+                        },
+                        "created_at_time": "1657786268000",
+                        "created_at_block": "192654398"
+                    },
+                    "mutable_data": {},
+                    "immutable_data": {},
+                    "template_mint": "43",
+                    "backed_tokens": [],
+                    "burned_by_account": "redeem.nefty",
+                    "burned_at_block": "201289145",
+                    "burned_at_time": "1662104369000",
+                    "updated_at_block": "201289145",
+                    "updated_at_time": "1662104369000",
+                    "transferred_at_block": "201289145",
+                    "transferred_at_time": "1662104369000",
+                    "minted_at_block": "192669740",
+                    "minted_at_time": "1657793939500",
+                    "data": {
+                        "img": "QmZFLy9C1VVJG4YAfwzfnSFuywXyzKgvuikd3BuzqBTPCu",
+                        "name": "General Ticket",
+                        "back_img": "QmYuBo67cCaPc33x8WahR52DKhT4RstE4hHVEXjz7ofn55",
+                        "to_redeem": "Go to My NFTs > Redeemables",
+                        "description": "This is a redeemable ticket NFT. You can redeem this NFT for a code. Use the code to claim a general access ticket for the 'NFT Community Day 2022' on September 30th in Hilversum. This NFT can be redeemed only once and is burned in the process. Only redeem this NFT if you are attending the event! Redeemed NFTs cannot be refunded."
+                    },
+                    "name": "General Ticket"
+                },
+                {
+                    "contract": "atomicassets",
+                    "asset_id": "1099804120973",
+                    "owner": null,
+                    "is_transferable": true,
+                    "is_burnable": true,
+                    "collection": {
+                        "collection_name": "uncutnefties",
+                        "name": "NeftyBlocks Uncutz",
+                        "img": "QmZRSdCuHyrfYWnRsLJp6ChVjQybh64qxVDN6S8LeWfeT8",
+                        "images": null,
+                        "author": "netfyblocksx",
+                        "allow_notify": true,
+                        "authorized_accounts": [
+                            "netfyblocksx",
+                            "neftyblocksx",
+                            "neftyblocksd",
+                            "mkt.nefty",
+                            "setup.nefty",
+                            "neftyblocksp",
+                            "blend.nefty",
+                            "collab.nefty",
+                            "quest.nefty",
+                            "avatar.nefty",
+                            "atomicpacksx",
+                            "up.nefty"
+                        ],
+                        "notify_accounts": [
+                            "quest.nefty",
+                            "blend.nefty",
+                            "neftyblocksp",
+                            "neftyblocksd",
+                            "avatar.nefty",
+                            "neftyblocksa"
+                        ],
+                        "market_fee": 0.06,
+                        "created_at_block": "117522456",
+                        "created_at_time": "1620202430000"
+                    },
+                    "schema": {
+                        "schema_name": "redeemables",
+                        "format": [
+                            {
+                                "name": "name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "img",
+                                "type": "image"
+                            },
+                            {
+                                "name": "back_img",
+                                "type": "image"
+                            },
+                            {
+                                "name": "description",
+                                "type": "string"
+                            },
+                            {
+                                "name": "color",
+                                "type": "string"
+                            },
+                            {
+                                "name": "clothing_type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "to_redeem",
+                                "type": "string"
+                            }
+                        ],
+                        "created_at_block": "181295963",
+                        "created_at_time": "1652106310000"
+                    },
+                    "template": {
+                        "template_id": "545949",
+                        "max_supply": "0",
+                        "is_transferable": true,
+                        "is_burnable": true,
+                        "issued_supply": "45",
+                        "immutable_data": {
+                            "img": "QmZFLy9C1VVJG4YAfwzfnSFuywXyzKgvuikd3BuzqBTPCu",
+                            "name": "General Ticket",
+                            "back_img": "QmYuBo67cCaPc33x8WahR52DKhT4RstE4hHVEXjz7ofn55",
+                            "to_redeem": "Go to My NFTs > Redeemables",
+                            "description": "This is a redeemable ticket NFT. You can redeem this NFT for a code. Use the code to claim a general access ticket for the 'NFT Community Day 2022' on September 30th in Hilversum. This NFT can be redeemed only once and is burned in the process. Only redeem this NFT if you are attending the event! Redeemed NFTs cannot be refunded."
+                        },
+                        "created_at_time": "1657786268000",
+                        "created_at_block": "192654398"
+                    },
+                    "mutable_data": {},
+                    "immutable_data": {},
+                    "template_mint": "42",
+                    "backed_tokens": [],
+                    "burned_by_account": "redeem.nefty",
+                    "burned_at_block": "201289193",
+                    "burned_at_time": "1662104393000",
+                    "updated_at_block": "201289193",
+                    "updated_at_time": "1662104393000",
+                    "transferred_at_block": "201289193",
+                    "transferred_at_time": "1662104393000",
+                    "minted_at_block": "192669740",
+                    "minted_at_time": "1657793939500",
+                    "data": {
+                        "img": "QmZFLy9C1VVJG4YAfwzfnSFuywXyzKgvuikd3BuzqBTPCu",
+                        "name": "General Ticket",
+                        "back_img": "QmYuBo67cCaPc33x8WahR52DKhT4RstE4hHVEXjz7ofn55",
+                        "to_redeem": "Go to My NFTs > Redeemables",
+                        "description": "This is a redeemable ticket NFT. You can redeem this NFT for a code. Use the code to claim a general access ticket for the 'NFT Community Day 2022' on September 30th in Hilversum. This NFT can be redeemed only once and is burned in the process. Only redeem this NFT if you are attending the event! Redeemed NFTs cannot be refunded."
+                    },
+                    "name": "General Ticket"
+                }
+            ],
+            "created_at_block": "200658297",
+            "created_at_time": "1661788727000",
+            "updated_at_block": "200672796",
+            "updated_at_time": "1661795978500",
+            "public_key": "PUB_K1_7Yxk68nRomXAyppDeKKrazXXzoouKKHx5x4xJBvMnJVf97ipoH"
+        },
+        "query_time": 1756585622504
+    },
+    "text": "{\"success\":true,\"data\":{\"tools_contract\":\"atomictoolsx\",\"link_id\":\"1451754\",\"assets_contract\":\"atomicassets\",\"creator\":\"taco\",\"claimer\":\"farmingtales\",\"state\":3,\"memo\":\"\",\"assets\":[{\"contract\":\"atomicassets\",\"asset_id\":\"1099804120974\",\"owner\":null,\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"uncutnefties\",\"name\":\"NeftyBlocks Uncutz\",\"img\":\"QmZRSdCuHyrfYWnRsLJp6ChVjQybh64qxVDN6S8LeWfeT8\",\"images\":null,\"author\":\"netfyblocksx\",\"allow_notify\":true,\"authorized_accounts\":[\"netfyblocksx\",\"neftyblocksx\",\"neftyblocksd\",\"mkt.nefty\",\"setup.nefty\",\"neftyblocksp\",\"blend.nefty\",\"collab.nefty\",\"quest.nefty\",\"avatar.nefty\",\"atomicpacksx\",\"up.nefty\"],\"notify_accounts\":[\"quest.nefty\",\"blend.nefty\",\"neftyblocksp\",\"neftyblocksd\",\"avatar.nefty\",\"neftyblocksa\"],\"market_fee\":0.06,\"created_at_block\":\"117522456\",\"created_at_time\":\"1620202430000\"},\"schema\":{\"schema_name\":\"redeemables\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"back_img\",\"type\":\"image\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"color\",\"type\":\"string\"},{\"name\":\"clothing_type\",\"type\":\"string\"},{\"name\":\"to_redeem\",\"type\":\"string\"}],\"created_at_block\":\"181295963\",\"created_at_time\":\"1652106310000\"},\"template\":{\"template_id\":\"545949\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"45\",\"immutable_data\":{\"img\":\"QmZFLy9C1VVJG4YAfwzfnSFuywXyzKgvuikd3BuzqBTPCu\",\"name\":\"General Ticket\",\"back_img\":\"QmYuBo67cCaPc33x8WahR52DKhT4RstE4hHVEXjz7ofn55\",\"to_redeem\":\"Go to My NFTs > Redeemables\",\"description\":\"This is a redeemable ticket NFT. You can redeem this NFT for a code. Use the code to claim a general access ticket for the 'NFT Community Day 2022' on September 30th in Hilversum. This NFT can be redeemed only once and is burned in the process. Only redeem this NFT if you are attending the event! Redeemed NFTs cannot be refunded.\"},\"created_at_time\":\"1657786268000\",\"created_at_block\":\"192654398\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"43\",\"backed_tokens\":[],\"burned_by_account\":\"redeem.nefty\",\"burned_at_block\":\"201289145\",\"burned_at_time\":\"1662104369000\",\"updated_at_block\":\"201289145\",\"updated_at_time\":\"1662104369000\",\"transferred_at_block\":\"201289145\",\"transferred_at_time\":\"1662104369000\",\"minted_at_block\":\"192669740\",\"minted_at_time\":\"1657793939500\",\"data\":{\"img\":\"QmZFLy9C1VVJG4YAfwzfnSFuywXyzKgvuikd3BuzqBTPCu\",\"name\":\"General Ticket\",\"back_img\":\"QmYuBo67cCaPc33x8WahR52DKhT4RstE4hHVEXjz7ofn55\",\"to_redeem\":\"Go to My NFTs > Redeemables\",\"description\":\"This is a redeemable ticket NFT. You can redeem this NFT for a code. Use the code to claim a general access ticket for the 'NFT Community Day 2022' on September 30th in Hilversum. This NFT can be redeemed only once and is burned in the process. Only redeem this NFT if you are attending the event! Redeemed NFTs cannot be refunded.\"},\"name\":\"General Ticket\"},{\"contract\":\"atomicassets\",\"asset_id\":\"1099804120973\",\"owner\":null,\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"uncutnefties\",\"name\":\"NeftyBlocks Uncutz\",\"img\":\"QmZRSdCuHyrfYWnRsLJp6ChVjQybh64qxVDN6S8LeWfeT8\",\"images\":null,\"author\":\"netfyblocksx\",\"allow_notify\":true,\"authorized_accounts\":[\"netfyblocksx\",\"neftyblocksx\",\"neftyblocksd\",\"mkt.nefty\",\"setup.nefty\",\"neftyblocksp\",\"blend.nefty\",\"collab.nefty\",\"quest.nefty\",\"avatar.nefty\",\"atomicpacksx\",\"up.nefty\"],\"notify_accounts\":[\"quest.nefty\",\"blend.nefty\",\"neftyblocksp\",\"neftyblocksd\",\"avatar.nefty\",\"neftyblocksa\"],\"market_fee\":0.06,\"created_at_block\":\"117522456\",\"created_at_time\":\"1620202430000\"},\"schema\":{\"schema_name\":\"redeemables\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"back_img\",\"type\":\"image\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"color\",\"type\":\"string\"},{\"name\":\"clothing_type\",\"type\":\"string\"},{\"name\":\"to_redeem\",\"type\":\"string\"}],\"created_at_block\":\"181295963\",\"created_at_time\":\"1652106310000\"},\"template\":{\"template_id\":\"545949\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"45\",\"immutable_data\":{\"img\":\"QmZFLy9C1VVJG4YAfwzfnSFuywXyzKgvuikd3BuzqBTPCu\",\"name\":\"General Ticket\",\"back_img\":\"QmYuBo67cCaPc33x8WahR52DKhT4RstE4hHVEXjz7ofn55\",\"to_redeem\":\"Go to My NFTs > Redeemables\",\"description\":\"This is a redeemable ticket NFT. You can redeem this NFT for a code. Use the code to claim a general access ticket for the 'NFT Community Day 2022' on September 30th in Hilversum. This NFT can be redeemed only once and is burned in the process. Only redeem this NFT if you are attending the event! Redeemed NFTs cannot be refunded.\"},\"created_at_time\":\"1657786268000\",\"created_at_block\":\"192654398\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"42\",\"backed_tokens\":[],\"burned_by_account\":\"redeem.nefty\",\"burned_at_block\":\"201289193\",\"burned_at_time\":\"1662104393000\",\"updated_at_block\":\"201289193\",\"updated_at_time\":\"1662104393000\",\"transferred_at_block\":\"201289193\",\"transferred_at_time\":\"1662104393000\",\"minted_at_block\":\"192669740\",\"minted_at_time\":\"1657793939500\",\"data\":{\"img\":\"QmZFLy9C1VVJG4YAfwzfnSFuywXyzKgvuikd3BuzqBTPCu\",\"name\":\"General Ticket\",\"back_img\":\"QmYuBo67cCaPc33x8WahR52DKhT4RstE4hHVEXjz7ofn55\",\"to_redeem\":\"Go to My NFTs > Redeemables\",\"description\":\"This is a redeemable ticket NFT. You can redeem this NFT for a code. Use the code to claim a general access ticket for the 'NFT Community Day 2022' on September 30th in Hilversum. This NFT can be redeemed only once and is burned in the process. Only redeem this NFT if you are attending the event! Redeemed NFTs cannot be refunded.\"},\"name\":\"General Ticket\"}],\"created_at_block\":\"200658297\",\"created_at_time\":\"1661788727000\",\"updated_at_block\":\"200672796\",\"updated_at_time\":\"1661795978500\",\"public_key\":\"PUB_K1_7Yxk68nRomXAyppDeKKrazXXzoouKKHx5x4xJBvMnJVf97ipoH\"},\"query_time\":1756585622504}"
+}

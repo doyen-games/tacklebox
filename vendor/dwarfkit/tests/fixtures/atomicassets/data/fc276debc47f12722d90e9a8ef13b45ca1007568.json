@@ -1,0 +1,353 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/collections/taco/logs",
+        "params": {
+            "method": "POST",
+            "body": "{\"limit\":\"10\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "log_id": "7888004570",
+                "name": "createcol",
+                "data": {
+                    "data": [
+                        {
+                            "key": "name",
+                            "value": [
+                                "string",
+                                "Taco"
+                            ]
+                        }
+                    ],
+                    "author": "taco",
+                    "market_fee": 0.1,
+                    "allow_notify": true,
+                    "notify_accounts": [],
+                    "authorized_accounts": [
+                        "taco"
+                    ]
+                },
+                "txid": "ab930c8dca8fabe3565003b3d12ba946dcf644eb225c037fb3cf19dc6b8e94d1",
+                "created_at_block": "123329591",
+                "created_at_time": "1623106508500"
+            },
+            {
+                "log_id": "7888256069",
+                "name": "setcoldata",
+                "data": {
+                    "data": [
+                        {
+                            "key": "name",
+                            "value": [
+                                "string",
+                                "Taco"
+                            ]
+                        },
+                        {
+                            "key": "img",
+                            "value": [
+                                "string",
+                                "Qmejne66SbmXCAF6ydi4Li6MzVBG5uX24RRMW4PqC7Evvf"
+                            ]
+                        }
+                    ]
+                },
+                "txid": "9b8017191595fda855f8bff9c85935496ac5938917d8ab91259c0e7d84775b52",
+                "created_at_block": "123330037",
+                "created_at_time": "1623106731500"
+            },
+            {
+                "log_id": "7924925121",
+                "name": "setcoldata",
+                "data": {
+                    "data": [
+                        {
+                            "key": "name",
+                            "value": [
+                                "string",
+                                "Taco"
+                            ]
+                        },
+                        {
+                            "key": "img",
+                            "value": [
+                                "string",
+                                "Qmejne66SbmXCAF6ydi4Li6MzVBG5uX24RRMW4PqC7Evvf"
+                            ]
+                        },
+                        {
+                            "key": "description",
+                            "value": [
+                                "string",
+                                "Taco is a multi-account native mobile app that lets you easily track markets, transfer, swap tokens and many more! 🌮"
+                            ]
+                        },
+                        {
+                            "key": "url",
+                            "value": [
+                                "string",
+                                "https://twitter.com/tacowax"
+                            ]
+                        }
+                    ]
+                },
+                "txid": "6072f5ae11302ce906fd20d5ab9c608d138bd70b47c73eab0c15de29e44ce06a",
+                "created_at_block": "123397553",
+                "created_at_time": "1623140494000"
+            },
+            {
+                "log_id": "7925609921",
+                "name": "setcoldata",
+                "data": {
+                    "data": [
+                        {
+                            "key": "name",
+                            "value": [
+                                "string",
+                                "Taco"
+                            ]
+                        },
+                        {
+                            "key": "img",
+                            "value": [
+                                "string",
+                                "Qmejne66SbmXCAF6ydi4Li6MzVBG5uX24RRMW4PqC7Evvf"
+                            ]
+                        },
+                        {
+                            "key": "description",
+                            "value": [
+                                "string",
+                                "Taco is a multi-account native mobile app (iOS and Android) that lets you easily track markets, transfer, swap tokens and many more! 🌮"
+                            ]
+                        },
+                        {
+                            "key": "url",
+                            "value": [
+                                "string",
+                                "https://twitter.com/tacowax"
+                            ]
+                        }
+                    ]
+                },
+                "txid": "786566a7006b6b2f3da2eaf00d6096b687c7b851223b265f5389de9c5c411a96",
+                "created_at_block": "123398791",
+                "created_at_time": "1623141113000"
+            },
+            {
+                "log_id": "7926303801",
+                "name": "setcoldata",
+                "data": {
+                    "data": [
+                        {
+                            "key": "name",
+                            "value": [
+                                "string",
+                                "Taco"
+                            ]
+                        },
+                        {
+                            "key": "img",
+                            "value": [
+                                "string",
+                                "Qmejne66SbmXCAF6ydi4Li6MzVBG5uX24RRMW4PqC7Evvf"
+                            ]
+                        },
+                        {
+                            "key": "description",
+                            "value": [
+                                "string",
+                                "Taco is a multi-account native mobile app (iOS and Android) that lets you easily track markets, transfer, swap tokens and get access to a full set of WAX utility tools! 🌮"
+                            ]
+                        },
+                        {
+                            "key": "url",
+                            "value": [
+                                "string",
+                                "https://twitter.com/tacowax"
+                            ]
+                        }
+                    ]
+                },
+                "txid": "045dcc5bae5808cd5eeee570688b3be92fe12e4403bee62e55e6d03263295f93",
+                "created_at_block": "123400063",
+                "created_at_time": "1623141749000"
+            },
+            {
+                "log_id": "7965683766",
+                "name": "setcoldata",
+                "data": {
+                    "data": [
+                        {
+                            "key": "name",
+                            "value": [
+                                "string",
+                                "Taco"
+                            ]
+                        },
+                        {
+                            "key": "img",
+                            "value": [
+                                "string",
+                                "Qmejne66SbmXCAF6ydi4Li6MzVBG5uX24RRMW4PqC7Evvf"
+                            ]
+                        },
+                        {
+                            "key": "description",
+                            "value": [
+                                "string",
+                                "Taco is a multi-account native mobile app (iOS and Android) that lets you easily track markets, transfer, swap tokens and get access to a full set of WAX utility tools! 🌮"
+                            ]
+                        },
+                        {
+                            "key": "url",
+                            "value": [
+                                "string",
+                                "tacocrypto.io"
+                            ]
+                        }
+                    ]
+                },
+                "txid": "0818ca9c2057f561d5a925587de5cdb49edbaf2ade2414d06738a30fa6922e09",
+                "created_at_block": "123472745",
+                "created_at_time": "1623178098000"
+            },
+            {
+                "log_id": "7979297978",
+                "name": "setcoldata",
+                "data": {
+                    "data": [
+                        {
+                            "key": "name",
+                            "value": [
+                                "string",
+                                "Taco"
+                            ]
+                        },
+                        {
+                            "key": "img",
+                            "value": [
+                                "string",
+                                "Qmejne66SbmXCAF6ydi4Li6MzVBG5uX24RRMW4PqC7Evvf"
+                            ]
+                        },
+                        {
+                            "key": "description",
+                            "value": [
+                                "string",
+                                "Taco is a multi-account native mobile app (iOS and Android) that lets you easily track markets, transfer, swap tokens and get access to a full set of WAX utility tools! 🌮"
+                            ]
+                        },
+                        {
+                            "key": "url",
+                            "value": [
+                                "string",
+                                "https://tacocrypto.io"
+                            ]
+                        }
+                    ]
+                },
+                "txid": "e4249f88a302c1785d869e0fd507a345f1f603494261f16da88180fad6fbbf24",
+                "created_at_block": "123496941",
+                "created_at_time": "1623190196500"
+            },
+            {
+                "log_id": "8135757426",
+                "name": "setmarketfee",
+                "data": {
+                    "market_fee": 0.09
+                },
+                "txid": "7d7dc71ef10e5dee63159c4c96452ac222a8d4d2ca73ea8b05fd8f0036df6ad0",
+                "created_at_block": "123776821",
+                "created_at_time": "1623330152000"
+            },
+            {
+                "log_id": "8137893354",
+                "name": "setcoldata",
+                "data": {
+                    "data": [
+                        {
+                            "key": "name",
+                            "value": [
+                                "string",
+                                "Taco"
+                            ]
+                        },
+                        {
+                            "key": "img",
+                            "value": [
+                                "string",
+                                "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3"
+                            ]
+                        },
+                        {
+                            "key": "description",
+                            "value": [
+                                "string",
+                                "Taco is a multi-account native mobile app (iOS and Android) that lets you easily track markets, transfer, swap tokens and get access to a full set of WAX utility tools! 🌮"
+                            ]
+                        },
+                        {
+                            "key": "url",
+                            "value": [
+                                "string",
+                                "https://tacocrypto.io"
+                            ]
+                        }
+                    ]
+                },
+                "txid": "398bb27a1e3ffc80c7001c29ecae0e650b4923d77c6f1f1659bf19dfea0686f6",
+                "created_at_block": "123780408",
+                "created_at_time": "1623331945500"
+            },
+            {
+                "log_id": "8159677508",
+                "name": "setcoldata",
+                "data": {
+                    "data": [
+                        {
+                            "key": "name",
+                            "value": [
+                                "string",
+                                "Taco"
+                            ]
+                        },
+                        {
+                            "key": "img",
+                            "value": [
+                                "string",
+                                "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3"
+                            ]
+                        },
+                        {
+                            "key": "description",
+                            "value": [
+                                "string",
+                                "Taco is a multi-account native mobile app (iOS and Android) that lets you easily track markets, transfer, swap tokens and get access to a full set of WAX utility tools! 🌮\nCollect Taco NFTs to unlock new Super Secret Taco Tools! 🔥"
+                            ]
+                        },
+                        {
+                            "key": "url",
+                            "value": [
+                                "string",
+                                "https://tacocrypto.io"
+                            ]
+                        }
+                    ]
+                },
+                "txid": "08d0226192657437fe7f2e7cbbac1a1dba6286b77ae7806469bf676a148aab4e",
+                "created_at_block": "123819088",
+                "created_at_time": "1623351288000"
+            }
+        ],
+        "query_time": 1756585607416
+    },
+    "text": "{\"success\":true,\"data\":[{\"log_id\":\"7888004570\",\"name\":\"createcol\",\"data\":{\"data\":[{\"key\":\"name\",\"value\":[\"string\",\"Taco\"]}],\"author\":\"taco\",\"market_fee\":0.1,\"allow_notify\":true,\"notify_accounts\":[],\"authorized_accounts\":[\"taco\"]},\"txid\":\"ab930c8dca8fabe3565003b3d12ba946dcf644eb225c037fb3cf19dc6b8e94d1\",\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},{\"log_id\":\"7888256069\",\"name\":\"setcoldata\",\"data\":{\"data\":[{\"key\":\"name\",\"value\":[\"string\",\"Taco\"]},{\"key\":\"img\",\"value\":[\"string\",\"Qmejne66SbmXCAF6ydi4Li6MzVBG5uX24RRMW4PqC7Evvf\"]}]},\"txid\":\"9b8017191595fda855f8bff9c85935496ac5938917d8ab91259c0e7d84775b52\",\"created_at_block\":\"123330037\",\"created_at_time\":\"1623106731500\"},{\"log_id\":\"7924925121\",\"name\":\"setcoldata\",\"data\":{\"data\":[{\"key\":\"name\",\"value\":[\"string\",\"Taco\"]},{\"key\":\"img\",\"value\":[\"string\",\"Qmejne66SbmXCAF6ydi4Li6MzVBG5uX24RRMW4PqC7Evvf\"]},{\"key\":\"description\",\"value\":[\"string\",\"Taco is a multi-account native mobile app that lets you easily track markets, transfer, swap tokens and many more! 🌮\"]},{\"key\":\"url\",\"value\":[\"string\",\"https://twitter.com/tacowax\"]}]},\"txid\":\"6072f5ae11302ce906fd20d5ab9c608d138bd70b47c73eab0c15de29e44ce06a\",\"created_at_block\":\"123397553\",\"created_at_time\":\"1623140494000\"},{\"log_id\":\"7925609921\",\"name\":\"setcoldata\",\"data\":{\"data\":[{\"key\":\"name\",\"value\":[\"string\",\"Taco\"]},{\"key\":\"img\",\"value\":[\"string\",\"Qmejne66SbmXCAF6ydi4Li6MzVBG5uX24RRMW4PqC7Evvf\"]},{\"key\":\"description\",\"value\":[\"string\",\"Taco is a multi-account native mobile app (iOS and Android) that lets you easily track markets, transfer, swap tokens and many more! 🌮\"]},{\"key\":\"url\",\"value\":[\"string\",\"https://twitter.com/tacowax\"]}]},\"txid\":\"786566a7006b6b2f3da2eaf00d6096b687c7b851223b265f5389de9c5c411a96\",\"created_at_block\":\"123398791\",\"created_at_time\":\"1623141113000\"},{\"log_id\":\"7926303801\",\"name\":\"setcoldata\",\"data\":{\"data\":[{\"key\":\"name\",\"value\":[\"string\",\"Taco\"]},{\"key\":\"img\",\"value\":[\"string\",\"Qmejne66SbmXCAF6ydi4Li6MzVBG5uX24RRMW4PqC7Evvf\"]},{\"key\":\"description\",\"value\":[\"string\",\"Taco is a multi-account native mobile app (iOS and Android) that lets you easily track markets, transfer, swap tokens and get access to a full set of WAX utility tools! 🌮\"]},{\"key\":\"url\",\"value\":[\"string\",\"https://twitter.com/tacowax\"]}]},\"txid\":\"045dcc5bae5808cd5eeee570688b3be92fe12e4403bee62e55e6d03263295f93\",\"created_at_block\":\"123400063\",\"created_at_time\":\"1623141749000\"},{\"log_id\":\"7965683766\",\"name\":\"setcoldata\",\"data\":{\"data\":[{\"key\":\"name\",\"value\":[\"string\",\"Taco\"]},{\"key\":\"img\",\"value\":[\"string\",\"Qmejne66SbmXCAF6ydi4Li6MzVBG5uX24RRMW4PqC7Evvf\"]},{\"key\":\"description\",\"value\":[\"string\",\"Taco is a multi-account native mobile app (iOS and Android) that lets you easily track markets, transfer, swap tokens and get access to a full set of WAX utility tools! 🌮\"]},{\"key\":\"url\",\"value\":[\"string\",\"tacocrypto.io\"]}]},\"txid\":\"0818ca9c2057f561d5a925587de5cdb49edbaf2ade2414d06738a30fa6922e09\",\"created_at_block\":\"123472745\",\"created_at_time\":\"1623178098000\"},{\"log_id\":\"7979297978\",\"name\":\"setcoldata\",\"data\":{\"data\":[{\"key\":\"name\",\"value\":[\"string\",\"Taco\"]},{\"key\":\"img\",\"value\":[\"string\",\"Qmejne66SbmXCAF6ydi4Li6MzVBG5uX24RRMW4PqC7Evvf\"]},{\"key\":\"description\",\"value\":[\"string\",\"Taco is a multi-account native mobile app (iOS and Android) that lets you easily track markets, transfer, swap tokens and get access to a full set of WAX utility tools! 🌮\"]},{\"key\":\"url\",\"value\":[\"string\",\"https://tacocrypto.io\"]}]},\"txid\":\"e4249f88a302c1785d869e0fd507a345f1f603494261f16da88180fad6fbbf24\",\"created_at_block\":\"123496941\",\"created_at_time\":\"1623190196500\"},{\"log_id\":\"8135757426\",\"name\":\"setmarketfee\",\"data\":{\"market_fee\":0.09},\"txid\":\"7d7dc71ef10e5dee63159c4c96452ac222a8d4d2ca73ea8b05fd8f0036df6ad0\",\"created_at_block\":\"123776821\",\"created_at_time\":\"1623330152000\"},{\"log_id\":\"8137893354\",\"name\":\"setcoldata\",\"data\":{\"data\":[{\"key\":\"name\",\"value\":[\"string\",\"Taco\"]},{\"key\":\"img\",\"value\":[\"string\",\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\"]},{\"key\":\"description\",\"value\":[\"string\",\"Taco is a multi-account native mobile app (iOS and Android) that lets you easily track markets, transfer, swap tokens and get access to a full set of WAX utility tools! 🌮\"]},{\"key\":\"url\",\"value\":[\"string\",\"https://tacocrypto.io\"]}]},\"txid\":\"398bb27a1e3ffc80c7001c29ecae0e650b4923d77c6f1f1659bf19dfea0686f6\",\"created_at_block\":\"123780408\",\"created_at_time\":\"1623331945500\"},{\"log_id\":\"8159677508\",\"name\":\"setcoldata\",\"data\":{\"data\":[{\"key\":\"name\",\"value\":[\"string\",\"Taco\"]},{\"key\":\"img\",\"value\":[\"string\",\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\"]},{\"key\":\"description\",\"value\":[\"string\",\"Taco is a multi-account native mobile app (iOS and Android) that lets you easily track markets, transfer, swap tokens and get access to a full set of WAX utility tools! 🌮\\nCollect Taco NFTs to unlock new Super Secret Taco Tools! 🔥\"]},{\"key\":\"url\",\"value\":[\"string\",\"https://tacocrypto.io\"]}]},\"txid\":\"08d0226192657437fe7f2e7cbbac1a1dba6286b77ae7806469bf676a148aab4e\",\"created_at_block\":\"123819088\",\"created_at_time\":\"1623351288000\"}],\"query_time\":1756585607416}"
+}

@@ -1,0 +1,31 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v1/assets/1099851897196/logs",
+        "params": {
+            "method": "POST",
+            "body": "{\"action_whitelist\":\"logmint,mintasset,logtransfer\",\"limit\":\"10\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "log_id": "73952596393",
+                "name": "logmint",
+                "data": {
+                    "new_asset_owner": "taco",
+                    "authorized_minter": "taco"
+                },
+                "txid": "5345915e304997c56cd6b82a227aa68bae8c56aeeb1098551e68d242309d5946",
+                "created_at_block": "226985207",
+                "created_at_time": "1674960348000"
+            }
+        ],
+        "query_time": 1756585623554
+    },
+    "text": "{\"success\":true,\"data\":[{\"log_id\":\"73952596393\",\"name\":\"logmint\",\"data\":{\"new_asset_owner\":\"taco\",\"authorized_minter\":\"taco\"},\"txid\":\"5345915e304997c56cd6b82a227aa68bae8c56aeeb1098551e68d242309d5946\",\"created_at_block\":\"226985207\",\"created_at_time\":\"1674960348000\"}],\"query_time\":1756585623554}"
+}

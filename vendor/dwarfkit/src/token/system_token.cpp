@@ -1,0 +1,95 @@
+#include <dwarfkit/token/system_token.hpp>
+
+#include <dwarfkit/antelope/chain/blob.hpp>
+#include <dwarfkit/antelope/serializer.hpp>
+
+namespace dwarfkit::system_token {
+
+const char* const abiBlob =
+    "DmVvc2lvOjphYmkvMS4xAAgHYWNjb3VudAABB2JhbGFuY2UFYXNzZXQFY2xvc2UAAgVvd25lcgRuYW1lBnN5bWJvbAZzeW1i"
+    "b2wGY3JlYXRlAAIGaXNzdWVyBG5hbWUObWF4aW11bV9zdXBwbHkFYXNzZXQOY3VycmVuY3lfc3RhdHMAAwZzdXBwbHkFYXNz"
+    "ZXQKbWF4X3N1cHBseQVhc3NldAZpc3N1ZXIEbmFtZQVpc3N1ZQADAnRvBG5hbWUIcXVhbnRpdHkFYXNzZXQEbWVtbwZzdHJp"
+    "bmcEb3BlbgADBW93bmVyBG5hbWUGc3ltYm9sBnN5bWJvbAlyYW1fcGF5ZXIEbmFtZQZyZXRpcmUAAghxdWFudGl0eQVhc3Nl"
+    "dARtZW1vBnN0cmluZwh0cmFuc2ZlcgAEBGZyb20EbmFtZQJ0bwRuYW1lCHF1YW50aXR5BWFzc2V0BG1lbW8Gc3RyaW5nBgAA"
+    "AAAAhWlEBWNsb3Nl7QMtLS0Kc3BlY192ZXJzaW9uOiAiMC4yLjAiCnRpdGxlOiBDbG9zZSBUb2tlbiBCYWxhbmNlCnN1bW1h"
+    "cnk6ICdDbG9zZSB7e25vd3JhcCBvd25lcn194oCZcyB6ZXJvIHF1YW50aXR5IGJhbGFuY2UnCmljb246IGh0dHBzOi8vcmF3"
+    "LmdpdGh1YnVzZXJjb250ZW50LmNvbS9jcnlwdG9reWxpbi9lb3Npby5jb250cmFjdHMvdjEuNy4wL2NvbnRyYWN0cy9pY29u"
+    "cy90b2tlbi5wbmcjMjA3ZmY2OGIwNDA2ZWFhNTY2MThiMDhiZGE4MWQ2YTA5NTQ1NDNmMzZhZGMzMjhhYjMwNjVmMzFhNWM1"
+    "ZDY1NAotLS0KCnt7b3duZXJ9fSBhZ3JlZXMgdG8gY2xvc2UgdGhlaXIgemVybyBxdWFudGl0eSBiYWxhbmNlIGZvciB0aGUg"
+    "e3tzeW1ib2xfdG9fc3ltYm9sX2NvZGUgc3ltYm9sfX0gdG9rZW4uCgpSQU0gd2lsbCBiZSByZWZ1bmRlZCB0byB0aGUgUkFN"
+    "IHBheWVyIG9mIHRoZSB7e3N5bWJvbF90b19zeW1ib2xfY29kZSBzeW1ib2x9fSB0b2tlbiBiYWxhbmNlIGZvciB7e293bmVy"
+    "fX0uAAAAAKhs1EUGY3JlYXRljgUtLS0Kc3BlY192ZXJzaW9uOiAiMC4yLjAiCnRpdGxlOiBDcmVhdGUgTmV3IFRva2VuCnN1"
+    "bW1hcnk6ICdDcmVhdGUgYSBuZXcgdG9rZW4nCmljb246IGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9jcnlw"
+    "dG9reWxpbi9lb3Npby5jb250cmFjdHMvdjEuNy4wL2NvbnRyYWN0cy9pY29ucy90b2tlbi5wbmcjMjA3ZmY2OGIwNDA2ZWFh"
+    "NTY2MThiMDhiZGE4MWQ2YTA5NTQ1NDNmMzZhZGMzMjhhYjMwNjVmMzFhNWM1ZDY1NAotLS0KCnt7JGFjdGlvbi5hY2NvdW50"
+    "fX0gYWdyZWVzIHRvIGNyZWF0ZSBhIG5ldyB0b2tlbiB3aXRoIHN5bWJvbCB7e2Fzc2V0X3RvX3N5bWJvbF9jb2RlIG1heGlt"
+    "dW1fc3VwcGx5fX0gdG8gYmUgbWFuYWdlZCBieSB7e2lzc3Vlcn19LgoKVGhpcyBhY3Rpb24gd2lsbCBub3QgcmVzdWx0IGFu"
+    "eSBhbnkgdG9rZW5zIGJlaW5nIGlzc3VlZCBpbnRvIGNpcmN1bGF0aW9uLgoKe3tpc3N1ZXJ9fSB3aWxsIGJlIGFsbG93ZWQg"
+    "dG8gaXNzdWUgdG9rZW5zIGludG8gY2lyY3VsYXRpb24sIHVwIHRvIGEgbWF4aW11bSBzdXBwbHkgb2Yge3ttYXhpbXVtX3N1"
+    "cHBseX19LgoKUkFNIHdpbGwgZGVkdWN0ZWQgZnJvbSB7eyRhY3Rpb24uYWNjb3VudH194oCZcyByZXNvdXJjZXMgdG8gY3Jl"
+    "YXRlIHRoZSBuZWNlc3NhcnkgcmVjb3Jkcy4AAAAAAKUxdgVpc3N1ZeIHLS0tCnNwZWNfdmVyc2lvbjogIjAuMi4wIgp0aXRs"
+    "ZTogSXNzdWUgVG9rZW5zIGludG8gQ2lyY3VsYXRpb24Kc3VtbWFyeTogJ0lzc3VlIHt7bm93cmFwIHF1YW50aXR5fX0gaW50"
+    "byBjaXJjdWxhdGlvbiBhbmQgdHJhbnNmZXIgaW50byB7e25vd3JhcCB0b3194oCZcyBhY2NvdW50JwppY29uOiBodHRwczov"
+    "L3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vY3J5cHRva3lsaW4vZW9zaW8uY29udHJhY3RzL3YxLjcuMC9jb250cmFjdHMv"
+    "aWNvbnMvdG9rZW4ucG5nIzIwN2ZmNjhiMDQwNmVhYTU2NjE4YjA4YmRhODFkNmEwOTU0NTQzZjM2YWRjMzI4YWIzMDY1ZjMx"
+    "YTVjNWQ2NTQKLS0tCgpUaGUgdG9rZW4gbWFuYWdlciBhZ3JlZXMgdG8gaXNzdWUge3txdWFudGl0eX19IGludG8gY2lyY3Vs"
+    "YXRpb24sIGFuZCB0cmFuc2ZlciBpdCBpbnRvIHt7dG99feKAmXMgYWNjb3VudC4KCnt7I2lmIG1lbW99fVRoZXJlIGlzIGEg"
+    "bWVtbyBhdHRhY2hlZCB0byB0aGUgdHJhbnNmZXIgc3RhdGluZzoKe3ttZW1vfX0Ke3svaWZ9fQoKSWYge3t0b319IGRvZXMg"
+    "bm90IGhhdmUgYSBiYWxhbmNlIGZvciB7e2Fzc2V0X3RvX3N5bWJvbF9jb2RlIHF1YW50aXR5fX0sIG9yIHRoZSB0b2tlbiBt"
+    "YW5hZ2VyIGRvZXMgbm90IGhhdmUgYSBiYWxhbmNlIGZvciB7e2Fzc2V0X3RvX3N5bWJvbF9jb2RlIHF1YW50aXR5fX0sIHRo"
+    "ZSB0b2tlbiBtYW5hZ2VyIHdpbGwgYmUgZGVzaWduYXRlZCBhcyB0aGUgUkFNIHBheWVyIG9mIHRoZSB7e2Fzc2V0X3RvX3N5"
+    "bWJvbF9jb2RlIHF1YW50aXR5fX0gdG9rZW4gYmFsYW5jZSBmb3Ige3t0b319LiBBcyBhIHJlc3VsdCwgUkFNIHdpbGwgYmUg"
+    "ZGVkdWN0ZWQgZnJvbSB0aGUgdG9rZW4gbWFuYWdlcuKAmXMgcmVzb3VyY2VzIHRvIGNyZWF0ZSB0aGUgbmVjZXNzYXJ5IHJl"
+    "Y29yZHMuCgpUaGlzIGFjdGlvbiBkb2VzIG5vdCBhbGxvdyB0aGUgdG90YWwgcXVhbnRpdHkgdG8gZXhjZWVkIHRoZSBtYXgg"
+    "YWxsb3dlZCBzdXBwbHkgb2YgdGhlIHRva2VuLgAAAAAAMFWlBG9wZW66BS0tLQpzcGVjX3ZlcnNpb246ICIwLjIuMCIKdGl0"
+    "bGU6IE9wZW4gVG9rZW4gQmFsYW5jZQpzdW1tYXJ5OiAnT3BlbiBhIHplcm8gcXVhbnRpdHkgYmFsYW5jZSBmb3Ige3tub3dy"
+    "YXAgb3duZXJ9fScKaWNvbjogaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2NyeXB0b2t5bGluL2Vvc2lvLmNv"
+    "bnRyYWN0cy92MS43LjAvY29udHJhY3RzL2ljb25zL3Rva2VuLnBuZyMyMDdmZjY4YjA0MDZlYWE1NjYxOGIwOGJkYTgxZDZh"
+    "MDk1NDU0M2YzNmFkYzMyOGFiMzA2NWYzMWE1YzVkNjU0Ci0tLQoKe3tyYW1fcGF5ZXJ9fSBhZ3JlZXMgdG8gZXN0YWJsaXNo"
+    "IGEgemVybyBxdWFudGl0eSBiYWxhbmNlIGZvciB7e293bmVyfX0gZm9yIHRoZSB7e3N5bWJvbF90b19zeW1ib2xfY29kZSBz"
+    "eW1ib2x9fSB0b2tlbi4KCklmIHt7b3duZXJ9fSBkb2VzIG5vdCBoYXZlIGEgYmFsYW5jZSBmb3Ige3tzeW1ib2xfdG9fc3lt"
+    "Ym9sX2NvZGUgc3ltYm9sfX0sIHt7cmFtX3BheWVyfX0gd2lsbCBiZSBkZXNpZ25hdGVkIGFzIHRoZSBSQU0gcGF5ZXIgb2Yg"
+    "dGhlIHt7c3ltYm9sX3RvX3N5bWJvbF9jb2RlIHN5bWJvbH19IHRva2VuIGJhbGFuY2UgZm9yIHt7b3duZXJ9fS4gQXMgYSBy"
+    "ZXN1bHQsIFJBTSB3aWxsIGJlIGRlZHVjdGVkIGZyb20ge3tyYW1fcGF5ZXJ9feKAmXMgcmVzb3VyY2VzIHRvIGNyZWF0ZSB0"
+    "aGUgbmVjZXNzYXJ5IHJlY29yZHMuAAAAAKjrsroGcmV0aXJl0AMtLS0Kc3BlY192ZXJzaW9uOiAiMC4yLjAiCnRpdGxlOiBS"
+    "ZW1vdmUgVG9rZW5zIGZyb20gQ2lyY3VsYXRpb24Kc3VtbWFyeTogJ1JlbW92ZSB7e25vd3JhcCBxdWFudGl0eX19IGZyb20g"
+    "Y2lyY3VsYXRpb24nCmljb246IGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9jcnlwdG9reWxpbi9lb3Npby5j"
+    "b250cmFjdHMvdjEuNy4wL2NvbnRyYWN0cy9pY29ucy90b2tlbi5wbmcjMjA3ZmY2OGIwNDA2ZWFhNTY2MThiMDhiZGE4MWQ2"
+    "YTA5NTQ1NDNmMzZhZGMzMjhhYjMwNjVmMzFhNWM1ZDY1NAotLS0KClRoZSB0b2tlbiBtYW5hZ2VyIGFncmVlcyB0byByZW1v"
+    "dmUge3txdWFudGl0eX19IGZyb20gY2lyY3VsYXRpb24sIHRha2VuIGZyb20gdGhlaXIgb3duIGFjY291bnQuCgp7eyNpZiBt"
+    "ZW1vfX0gVGhlcmUgaXMgYSBtZW1vIGF0dGFjaGVkIHRvIHRoZSBhY3Rpb24gc3RhdGluZzoKe3ttZW1vfX0Ke3svaWZ9fQAA"
+    "AFctPM3NCHRyYW5zZmVyqgctLS0Kc3BlY192ZXJzaW9uOiAiMC4yLjAiCnRpdGxlOiBUcmFuc2ZlciBUb2tlbnMKc3VtbWFy"
+    "eTogJ1NlbmQge3tub3dyYXAgcXVhbnRpdHl9fSBmcm9tIHt7bm93cmFwIGZyb219fSB0byB7e25vd3JhcCB0b319JwppY29u"
+    "OiBodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vY3J5cHRva3lsaW4vZW9zaW8uY29udHJhY3RzL3YxLjcuMC9j"
+    "b250cmFjdHMvaWNvbnMvdHJhbnNmZXIucG5nIzVkZmFkMGRmNzI3NzJlZTFjY2MxNTVlNjcwYzFkMTI0ZjVjNTEyMmYxZDUw"
+    "Mjc1NjVkZjM4YjQxODA0MmQxZGQKLS0tCgp7e2Zyb219fSBhZ3JlZXMgdG8gc2VuZCB7e3F1YW50aXR5fX0gdG8ge3t0b319"
+    "LgoKe3sjaWYgbWVtb319VGhlcmUgaXMgYSBtZW1vIGF0dGFjaGVkIHRvIHRoZSB0cmFuc2ZlciBzdGF0aW5nOgp7e21lbW99"
+    "fQp7ey9pZn19CgpJZiB7e2Zyb219fSBpcyBub3QgYWxyZWFkeSB0aGUgUkFNIHBheWVyIG9mIHRoZWlyIHt7YXNzZXRfdG9f"
+    "c3ltYm9sX2NvZGUgcXVhbnRpdHl9fSB0b2tlbiBiYWxhbmNlLCB7e2Zyb219fSB3aWxsIGJlIGRlc2lnbmF0ZWQgYXMgc3Vj"
+    "aC4gQXMgYSByZXN1bHQsIFJBTSB3aWxsIGJlIGRlZHVjdGVkIGZyb20ge3tmcm9tfX3igJlzIHJlc291cmNlcyB0byByZWZ1"
+    "bmQgdGhlIG9yaWdpbmFsIFJBTSBwYXllci4KCklmIHt7dG99fSBkb2VzIG5vdCBoYXZlIGEgYmFsYW5jZSBmb3Ige3thc3Nl"
+    "dF90b19zeW1ib2xfY29kZSBxdWFudGl0eX19LCB7e2Zyb219fSB3aWxsIGJlIGRlc2lnbmF0ZWQgYXMgdGhlIFJBTSBwYXll"
+    "ciBvZiB0aGUge3thc3NldF90b19zeW1ib2xfY29kZSBxdWFudGl0eX19IHRva2VuIGJhbGFuY2UgZm9yIHt7dG99fS4gQXMg"
+    "YSByZXN1bHQsIFJBTSB3aWxsIGJlIGRlZHVjdGVkIGZyb20ge3tmcm9tfX3igJlzIHJlc291cmNlcyB0byBjcmVhdGUgdGhl"
+    "IG5lY2Vzc2FyeSByZWNvcmRzLgIAAAA4T00RMgNpNjQAAAdhY2NvdW50AAAAAACQTcYDaTY0AAAOY3VycmVuY3lfc3RhdHMA"
+    "AAAAAA==";
+
+const ABI& abi() {
+    static const ABI decoded = [] {
+        const auto blob = Blob::from(abiBlob);
+        if (blob) {
+            const auto parsed = Serializer::decode<ABI>(blob->array);
+            if (parsed) {
+                return *parsed;
+            }
+        }
+        return ABI();
+    }();
+    return decoded;
+}
+
+Contract contract(const std::shared_ptr<APIClient>& client, const Name& account) {
+    return Contract({.abi = abi(), .account = account, .client = client});
+}
+
+}  // namespace dwarfkit::system_token

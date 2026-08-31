@@ -1,0 +1,52 @@
+{
+  "request": {
+    "path": "http://localhost/v1/proposals/search_proposals",
+    "params": {
+      "method": "POST",
+      "body": "{\"query\":\"tra\",\"limit\":10,\"status\":\"proposed\"}",
+      "headers": {}
+    }
+  },
+  "status": 200,
+  "json": {
+    "more": false,
+    "proposals": [
+      {
+        "actions_count": 1,
+        "cancelled_at": null,
+        "cancelled_by": null,
+        "cancelled_trx_id": null,
+        "created_at": "2027-12-12T14:34:56.000",
+        "created_block": 100420,
+        "created_trx_id": "0202020202020202020202020202020202020202020202020202020202020202",
+        "executed_at": null,
+        "executed_by": null,
+        "executed_trx_id": null,
+        "expiration": "2027-12-27T13:59:56.000",
+        "globalseq": 1026,
+        "proposal_name": "transfer",
+        "proposer": "dave",
+        "provided_approvals": [
+          {
+            "actor": "eve",
+            "permission": "active"
+          }
+        ],
+        "requested_approvals": [
+          {
+            "actor": "eve",
+            "permission": "active"
+          }
+        ],
+        "status": "proposed",
+        "transaction": {
+          "actions": [],
+          "expiration": "2025-12-22T00:00:00"
+        }
+      }
+    ],
+    "query": "tra",
+    "status": "proposed",
+    "total": 1
+  }
+}

@@ -1,0 +1,86 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_by_scope",
+        "params": {
+            "method": "POST",
+            "body": "{\"code\":\"eosio.msig\",\"table\":\"proposal\",\"limit\":10}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            {
+                "code": "eosio.msig",
+                "scope": "1111111zzzzz",
+                "table": "proposal",
+                "payer": "1111111zzzzz",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "113332.pcash",
+                "table": "proposal",
+                "payer": "113332.pcash",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "11rippche24y",
+                "table": "proposal",
+                "payer": "11rippche24y",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "121moe.ftw",
+                "table": "proposal",
+                "payer": "121moe.ftw",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "12235213.ftw",
+                "table": "proposal",
+                "payer": "12235213.ftw",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "123ahmet.ftw",
+                "table": "proposal",
+                "payer": "123ahmet.ftw",
+                "count": 2
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "123gehed1234",
+                "table": "proposal",
+                "payer": "123gehed1234",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "12jokerass12",
+                "table": "proposal",
+                "payer": "12jokerass12",
+                "count": 6
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "12shadow.ftw",
+                "table": "proposal",
+                "payer": "12shadow.ftw",
+                "count": 5
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "1andreaeoswa",
+                "table": "proposal",
+                "payer": "1andreaeoswa",
+                "count": 1
+            }
+        ],
+        "more": "1charcha.ftw"
+    },
+    "text": "{\"rows\":[{\"code\":\"eosio.msig\",\"scope\":\"1111111zzzzz\",\"table\":\"proposal\",\"payer\":\"1111111zzzzz\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"113332.pcash\",\"table\":\"proposal\",\"payer\":\"113332.pcash\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"11rippche24y\",\"table\":\"proposal\",\"payer\":\"11rippche24y\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"121moe.ftw\",\"table\":\"proposal\",\"payer\":\"121moe.ftw\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"12235213.ftw\",\"table\":\"proposal\",\"payer\":\"12235213.ftw\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"123ahmet.ftw\",\"table\":\"proposal\",\"payer\":\"123ahmet.ftw\",\"count\":2},{\"code\":\"eosio.msig\",\"scope\":\"123gehed1234\",\"table\":\"proposal\",\"payer\":\"123gehed1234\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"12jokerass12\",\"table\":\"proposal\",\"payer\":\"12jokerass12\",\"count\":6},{\"code\":\"eosio.msig\",\"scope\":\"12shadow.ftw\",\"table\":\"proposal\",\"payer\":\"12shadow.ftw\",\"count\":5},{\"code\":\"eosio.msig\",\"scope\":\"1andreaeoswa\",\"table\":\"proposal\",\"payer\":\"1andreaeoswa\",\"count\":1}],\"more\":\"1charcha.ftw\"}"
+}

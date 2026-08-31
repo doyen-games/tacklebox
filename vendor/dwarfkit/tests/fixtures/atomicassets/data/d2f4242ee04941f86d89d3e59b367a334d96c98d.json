@@ -1,0 +1,19 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v1/template_buyoffers/_count",
+        "params": {
+            "method": "POST",
+            "body": "{\"template_id\":\"443565\",\"state\":\"1\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": "248",
+        "query_time": 1756585626162
+    },
+    "text": "{\"success\":true,\"data\":\"248\",\"query_time\":1756585626162}"
+}

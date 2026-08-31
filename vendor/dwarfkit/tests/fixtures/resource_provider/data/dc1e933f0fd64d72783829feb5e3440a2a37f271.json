@@ -1,0 +1,75 @@
+{
+    "request": {
+        "path": "https://jungle4.greymass.com/v1/resource_provider/request_transaction",
+        "params": {
+            "method": "POST",
+            "body": "{\"request\":\"esr://gmMsfmIRpc7x7DpLh8nvg-zz9VdvrLYRihbJ-mIxXW5CYY4vUyfD3My5qccuO2syAAEjw7ImE-ZXBqFAdriuzdmzjAFOHDcPlvo-BskyTNh4KgYmAGSDaUYGCGBx9Q8G0dblGYlFadmZJQoFOaXpmXkKugpFqcX5pUXJqQoFRfllmSmpRQolqcUlChqJOTn55W6pqcVWCmmJOcWpmkD7GQA\",\"signer\":{\"actor\":\"wharfkit1115\",\"permission\":\"test\"}}"
+        }
+    },
+    "status": 402,
+    "json": {
+        "code": 402,
+        "data": {
+            "request": [
+                "transaction",
+                {
+                    "expiration": "2026-02-24T01:36:09",
+                    "ref_block_num": 26013,
+                    "ref_block_prefix": 692310982,
+                    "max_net_usage_words": 0,
+                    "max_cpu_usage_ms": 0,
+                    "delay_sec": 0,
+                    "context_free_actions": [],
+                    "actions": [
+                        {
+                            "account": "greymassnoop",
+                            "name": "noop",
+                            "authorization": [
+                                {
+                                    "actor": "greymassfuel",
+                                    "permission": "cosign"
+                                }
+                            ],
+                            "data": ""
+                        },
+                        {
+                            "account": "eosio.token",
+                            "name": "transfer",
+                            "authorization": [
+                                {
+                                    "actor": "wharfkit1115",
+                                    "permission": "test"
+                                }
+                            ],
+                            "data": "504208d9c1754de3000000403210955e0a0000000000000004454f5300000000274675656c205472616e73616374696f6e20466565207c207265663d7465616d677265796d617373"
+                        },
+                        {
+                            "account": "eosio.token",
+                            "name": "transfer",
+                            "authorization": [
+                                {
+                                    "actor": "wharfkit1115",
+                                    "permission": "test"
+                                }
+                            ],
+                            "data": "504208d9c1754de390b1cad9c1754de3010000000000000004454f53000000003b77686172666b697420706c7567696e202d207265736f757263652070726f766964657220746573742028616c6c6f77466565733a2066616c736529"
+                        }
+                    ],
+                    "transaction_extensions": []
+                }
+            ],
+            "signatures": [
+                "SIG_K1_K93pdULU3tXhGDFJukSNn5focKMvCu6zL9VcopKfYeLAj7tfD91j1AG6zRB6YXvrUU6G2mZYtWNwZYvpaepKN2dieu9kcL"
+            ],
+            "version": null,
+            "costs": {
+                "cpu": "0.0009 EOS",
+                "net": "0.0001 EOS",
+                "ram": "0.0000 EOS"
+            },
+            "fee": "0.0010 EOS"
+        },
+        "message": "Fee required to complete transaction."
+    },
+    "text": "{\"code\": 402, \"data\": {\"request\": [\"transaction\", {\"expiration\": \"2026-02-24T01:36:09\", \"ref_block_num\": 26013, \"ref_block_prefix\": 692310982, \"max_net_usage_words\": 0, \"max_cpu_usage_ms\": 0, \"delay_sec\": 0, \"context_free_actions\": [], \"actions\": [{\"account\": \"greymassnoop\", \"name\": \"noop\", \"authorization\": [{\"actor\": \"greymassfuel\", \"permission\": \"cosign\"}], \"data\": \"\"}, {\"account\": \"eosio.token\", \"name\": \"transfer\", \"authorization\": [{\"actor\": \"wharfkit1115\", \"permission\": \"test\"}], \"data\": \"504208d9c1754de3000000403210955e0a0000000000000004454f5300000000274675656c205472616e73616374696f6e20466565207c207265663d7465616d677265796d617373\"}, {\"account\": \"eosio.token\", \"name\": \"transfer\", \"authorization\": [{\"actor\": \"wharfkit1115\", \"permission\": \"test\"}], \"data\": \"504208d9c1754de390b1cad9c1754de3010000000000000004454f53000000003b77686172666b697420706c7567696e202d207265736f757263652070726f766964657220746573742028616c6c6f77466565733a2066616c736529\"}], \"transaction_extensions\": []}], \"signatures\": [\"SIG_K1_K93pdULU3tXhGDFJukSNn5focKMvCu6zL9VcopKfYeLAj7tfD91j1AG6zRB6YXvrUU6G2mZYtWNwZYvpaepKN2dieu9kcL\"], \"version\": null, \"costs\": {\"cpu\": \"0.0009 EOS\", \"net\": \"0.0001 EOS\", \"ram\": \"0.0000 EOS\"}, \"fee\": \"0.0010 EOS\"}, \"message\": \"Fee required to complete transaction.\"}"
+}

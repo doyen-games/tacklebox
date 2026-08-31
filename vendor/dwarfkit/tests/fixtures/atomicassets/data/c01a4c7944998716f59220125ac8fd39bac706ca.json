@@ -1,0 +1,18 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/offers/_count",
+        "params": {
+            "method": "POST",
+            "body": "{\"collection_name\":\"outlawtroops,babymetaljpn\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 408,
+    "json": {
+        "success": false,
+        "message": "Max database query time exceeded. Please try to add more filters to your query."
+    },
+    "text": "{\"success\":false,\"message\":\"Max database query time exceeded. Please try to add more filters to your query.\"}"
+}

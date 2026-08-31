@@ -1,0 +1,61 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_activity",
+        "params": {
+            "method": "POST",
+            "body": "{\"account\":\"bob\"}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "account": "bob",
+        "activity": [
+            {
+                "action": "approved",
+                "globalseq": 1029,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:43:49.500"
+            },
+            {
+                "action": "approved",
+                "globalseq": 1025,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:42:24.500"
+            },
+            {
+                "action": "approved",
+                "globalseq": 1019,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:39:04.500"
+            },
+            {
+                "action": "approved",
+                "globalseq": 1013,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:36:34.500"
+            },
+            {
+                "action": "approved",
+                "globalseq": 1003,
+                "proposal_name": "newperm",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:22:09.500"
+            },
+            {
+                "action": "approved",
+                "globalseq": 1001,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "timestamp": "2025-11-24T01:16:59.500"
+            }
+        ],
+        "more": false,
+        "total": 6
+    },
+    "text": "{\"account\":\"bob\",\"activity\":[{\"action\":\"approved\",\"globalseq\":1029,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:43:49.500\"},{\"action\":\"approved\",\"globalseq\":1025,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:42:24.500\"},{\"action\":\"approved\",\"globalseq\":1019,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:39:04.500\"},{\"action\":\"approved\",\"globalseq\":1013,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:36:34.500\"},{\"action\":\"approved\",\"globalseq\":1003,\"proposal_name\":\"newperm\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:22:09.500\"},{\"action\":\"approved\",\"globalseq\":1001,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timestamp\":\"2025-11-24T01:16:59.500\"}],\"more\":false,\"total\":6}"
+}

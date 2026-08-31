@@ -1,0 +1,11 @@
+[configuration]
+entry_symbol = "dwarfkit_library_init"
+compatibility_minimum = "4.3"
+
+[libraries]
+windows.debug.x86_64 = "res://bin/dwarfkit.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://bin/dwarfkit.windows.template_release.x86_64.dll"
+linux.debug.x86_64 = "res://bin/libdwarfkit.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://bin/libdwarfkit.linux.template_release.x86_64.so"
+macos.debug = "res://bin/libdwarfkit.macos.template_debug.framework"
+macos.release = "res://bin/libdwarfkit.macos.template_release.framework"

@@ -1,0 +1,215 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_proposal",
+        "params": {
+            "method": "POST",
+            "body": "{\"proposer\":\"zara\",\"proposal_name\":\"batch\"}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "actions_count": 15,
+        "cancelled_at": null,
+        "cancelled_by": null,
+        "cancelled_trx_id": null,
+        "created_at": "2025-11-24T01:23:39.500",
+        "created_block": 400040,
+        "created_trx_id": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+        "executed_at": null,
+        "executed_by": null,
+        "executed_trx_id": null,
+        "expiration": "2025-12-01T01:16:09.500",
+        "globalseq": 4005,
+        "proposal_name": "batch",
+        "proposer": "zara",
+        "provided_approvals": [
+            {
+                "actor": "admin1",
+                "permission": "active"
+            }
+        ],
+        "requested_approvals": [
+            {
+                "actor": "admin1",
+                "permission": "active"
+            },
+            {
+                "actor": "admin2",
+                "permission": "active"
+            }
+        ],
+        "status": "proposed",
+        "transaction": {
+            "actions": [
+                {
+                    "account": "eosio.token",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "transfer"
+                },
+                {
+                    "account": "eosio.token",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "transfer"
+                },
+                {
+                    "account": "eosio.token",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "transfer"
+                },
+                {
+                    "account": "eosio",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "updateauth"
+                },
+                {
+                    "account": "eosio",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "linkauth"
+                },
+                {
+                    "account": "eosio",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "unlinkauth"
+                },
+                {
+                    "account": "eosio.token",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "transfer"
+                },
+                {
+                    "account": "eosio.token",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "transfer"
+                },
+                {
+                    "account": "eosio",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "delegatebw"
+                },
+                {
+                    "account": "eosio",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "undelegatebw"
+                },
+                {
+                    "account": "eosio.token",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "transfer"
+                },
+                {
+                    "account": "eosio",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "buyrambytes"
+                },
+                {
+                    "account": "eosio",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "sellram"
+                },
+                {
+                    "account": "eosio",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "voteproducer"
+                },
+                {
+                    "account": "eosio.token",
+                    "authorization": [
+                        {
+                            "actor": "zara",
+                            "permission": "active"
+                        }
+                    ],
+                    "data": "",
+                    "name": "transfer"
+                }
+            ],
+            "expiration": "2025-12-25T00:00:00"
+        }
+    },
+    "text": "{\"actions_count\":15,\"cancelled_at\":null,\"cancelled_by\":null,\"cancelled_trx_id\":null,\"created_at\":\"2025-11-24T01:23:39.500\",\"created_block\":400040,\"created_trx_id\":\"a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5\",\"executed_at\":null,\"executed_by\":null,\"executed_trx_id\":null,\"expiration\":\"2025-12-01T01:16:09.500\",\"globalseq\":4005,\"proposal_name\":\"batch\",\"proposer\":\"zara\",\"provided_approvals\":[{\"actor\":\"admin1\",\"permission\":\"active\"}],\"requested_approvals\":[{\"actor\":\"admin1\",\"permission\":\"active\"},{\"actor\":\"admin2\",\"permission\":\"active\"}],\"status\":\"proposed\",\"transaction\":{\"actions\":[{\"account\":\"eosio.token\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"transfer\"},{\"account\":\"eosio.token\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"transfer\"},{\"account\":\"eosio.token\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"transfer\"},{\"account\":\"eosio\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"updateauth\"},{\"account\":\"eosio\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"linkauth\"},{\"account\":\"eosio\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"unlinkauth\"},{\"account\":\"eosio.token\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"transfer\"},{\"account\":\"eosio.token\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"transfer\"},{\"account\":\"eosio\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"delegatebw\"},{\"account\":\"eosio\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"undelegatebw\"},{\"account\":\"eosio.token\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"transfer\"},{\"account\":\"eosio\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"buyrambytes\"},{\"account\":\"eosio\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"sellram\"},{\"account\":\"eosio\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"voteproducer\"},{\"account\":\"eosio.token\",\"authorization\":[{\"actor\":\"zara\",\"permission\":\"active\"}],\"data\":\"\",\"name\":\"transfer\"}],\"expiration\":\"2025-12-25T00:00:00\"}}"
+}

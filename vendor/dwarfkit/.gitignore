@@ -1,0 +1,17 @@
+# build trees
+build/
+build-*/
+out/
+
+# reference clones (fetched by scripts/fetch_reference.sh)
+reference/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+CMakeUserPresets.json
+
+# misc
+*.log

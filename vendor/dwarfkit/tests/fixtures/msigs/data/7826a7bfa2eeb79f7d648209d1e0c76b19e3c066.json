@@ -1,0 +1,29 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_approvals",
+        "params": {
+            "method": "POST",
+            "body": "{\"proposer\":\"yolanda\",\"proposal_name\":\"flipflop\"}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "globalseq": 4004,
+        "more": false,
+        "proposal_name": "flipflop",
+        "proposer": "yolanda",
+        "timeline": [
+            {
+                "action": "approve",
+                "actor": "approver",
+                "block_num": 400031,
+                "globalseq": 4004,
+                "permission": "active",
+                "timestamp": "2025-11-24T01:23:14.500"
+            }
+        ],
+        "total": 1
+    },
+    "text": "{\"globalseq\":4004,\"more\":false,\"proposal_name\":\"flipflop\",\"proposer\":\"yolanda\",\"timeline\":[{\"action\":\"approve\",\"actor\":\"approver\",\"block_num\":400031,\"globalseq\":4004,\"permission\":\"active\",\"timestamp\":\"2025-11-24T01:23:14.500\"}],\"total\":1}"
+}

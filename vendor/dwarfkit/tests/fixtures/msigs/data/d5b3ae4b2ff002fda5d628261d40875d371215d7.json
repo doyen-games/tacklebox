@@ -1,0 +1,158 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_proposals",
+        "params": {
+            "method": "POST",
+            "body": "{\"proposer\":\"zach\",\"limit\":10}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "more": true,
+        "proposals": [
+            {
+                "actions_count": 1,
+                "approval_ratio": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2025-11-24T01:40:19.500",
+                "created_trx_id": "d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5",
+                "expiration": "2025-12-09T01:16:09.500",
+                "globalseq": 3029,
+                "proposal_name": "prop3",
+                "proposer": "zach",
+                "status": "cancelled",
+                "time_remaining_seconds": 2588902
+            },
+            {
+                "actions_count": 1,
+                "approval_ratio": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2025-11-24T01:39:29.500",
+                "created_trx_id": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+                "expiration": "2025-12-09T01:16:09.500",
+                "globalseq": 3028,
+                "proposal_name": "prop2",
+                "proposer": "zach",
+                "status": "cancelled",
+                "time_remaining_seconds": 2588902
+            },
+            {
+                "actions_count": 1,
+                "approval_ratio": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2025-11-24T01:38:39.500",
+                "created_trx_id": "d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3",
+                "expiration": "2025-12-09T01:16:09.500",
+                "globalseq": 3027,
+                "proposal_name": "prop2",
+                "proposer": "zach",
+                "status": "cancelled",
+                "time_remaining_seconds": 2588902
+            },
+            {
+                "actions_count": 1,
+                "approval_ratio": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2025-11-24T01:37:49.500",
+                "created_trx_id": "d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2",
+                "expiration": "2025-12-09T01:16:09.500",
+                "globalseq": 3026,
+                "proposal_name": "prop2",
+                "proposer": "zach",
+                "status": "cancelled",
+                "time_remaining_seconds": 2588902
+            },
+            {
+                "actions_count": 1,
+                "approval_ratio": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2025-11-24T01:36:59.500",
+                "created_trx_id": "d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1",
+                "expiration": "2025-12-09T01:16:09.500",
+                "globalseq": 3025,
+                "proposal_name": "prop2",
+                "proposer": "zach",
+                "status": "cancelled",
+                "time_remaining_seconds": 2588902
+            },
+            {
+                "actions_count": 1,
+                "approval_ratio": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2025-11-24T01:36:09.500",
+                "created_trx_id": "d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0",
+                "expiration": "2025-12-09T01:16:09.500",
+                "globalseq": 3024,
+                "proposal_name": "prop25",
+                "proposer": "zach",
+                "status": "executed",
+                "time_remaining_seconds": 2588902
+            },
+            {
+                "actions_count": 1,
+                "approval_ratio": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2025-11-24T01:35:19.500",
+                "created_trx_id": "cfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf",
+                "expiration": "2025-12-09T01:16:09.500",
+                "globalseq": 3023,
+                "proposal_name": "prop24",
+                "proposer": "zach",
+                "status": "executed",
+                "time_remaining_seconds": 2588902
+            },
+            {
+                "actions_count": 1,
+                "approval_ratio": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2025-11-24T01:34:29.500",
+                "created_trx_id": "cececececececececececececececececececececececececececececececece",
+                "expiration": "2025-12-09T01:16:09.500",
+                "globalseq": 3022,
+                "proposal_name": "prop23",
+                "proposer": "zach",
+                "status": "executed",
+                "time_remaining_seconds": 2588902
+            },
+            {
+                "actions_count": 1,
+                "approval_ratio": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2025-11-24T01:33:39.500",
+                "created_trx_id": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+                "expiration": "2025-12-09T01:16:09.500",
+                "globalseq": 3021,
+                "proposal_name": "prop22",
+                "proposer": "zach",
+                "status": "executed",
+                "time_remaining_seconds": 2588902
+            },
+            {
+                "actions_count": 1,
+                "approval_ratio": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2025-11-24T01:32:49.500",
+                "created_trx_id": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "expiration": "2025-12-09T01:16:09.500",
+                "globalseq": 3020,
+                "proposal_name": "prop21",
+                "proposer": "zach",
+                "status": "executed",
+                "time_remaining_seconds": 2588902
+            }
+        ],
+        "total": 30
+    },
+    "text": "{\"more\":true,\"proposals\":[{\"actions_count\":1,\"approval_ratio\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2025-11-24T01:40:19.500\",\"created_trx_id\":\"d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5\",\"expiration\":\"2025-12-09T01:16:09.500\",\"globalseq\":3029,\"proposal_name\":\"prop3\",\"proposer\":\"zach\",\"status\":\"cancelled\",\"time_remaining_seconds\":2588902},{\"actions_count\":1,\"approval_ratio\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2025-11-24T01:39:29.500\",\"created_trx_id\":\"d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4\",\"expiration\":\"2025-12-09T01:16:09.500\",\"globalseq\":3028,\"proposal_name\":\"prop2\",\"proposer\":\"zach\",\"status\":\"cancelled\",\"time_remaining_seconds\":2588902},{\"actions_count\":1,\"approval_ratio\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2025-11-24T01:38:39.500\",\"created_trx_id\":\"d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3\",\"expiration\":\"2025-12-09T01:16:09.500\",\"globalseq\":3027,\"proposal_name\":\"prop2\",\"proposer\":\"zach\",\"status\":\"cancelled\",\"time_remaining_seconds\":2588902},{\"actions_count\":1,\"approval_ratio\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2025-11-24T01:37:49.500\",\"created_trx_id\":\"d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2\",\"expiration\":\"2025-12-09T01:16:09.500\",\"globalseq\":3026,\"proposal_name\":\"prop2\",\"proposer\":\"zach\",\"status\":\"cancelled\",\"time_remaining_seconds\":2588902},{\"actions_count\":1,\"approval_ratio\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2025-11-24T01:36:59.500\",\"created_trx_id\":\"d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1\",\"expiration\":\"2025-12-09T01:16:09.500\",\"globalseq\":3025,\"proposal_name\":\"prop2\",\"proposer\":\"zach\",\"status\":\"cancelled\",\"time_remaining_seconds\":2588902},{\"actions_count\":1,\"approval_ratio\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2025-11-24T01:36:09.500\",\"created_trx_id\":\"d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0\",\"expiration\":\"2025-12-09T01:16:09.500\",\"globalseq\":3024,\"proposal_name\":\"prop25\",\"proposer\":\"zach\",\"status\":\"executed\",\"time_remaining_seconds\":2588902},{\"actions_count\":1,\"approval_ratio\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2025-11-24T01:35:19.500\",\"created_trx_id\":\"cfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf\",\"expiration\":\"2025-12-09T01:16:09.500\",\"globalseq\":3023,\"proposal_name\":\"prop24\",\"proposer\":\"zach\",\"status\":\"executed\",\"time_remaining_seconds\":2588902},{\"actions_count\":1,\"approval_ratio\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2025-11-24T01:34:29.500\",\"created_trx_id\":\"cececececececececececececececececececececececececececececececece\",\"expiration\":\"2025-12-09T01:16:09.500\",\"globalseq\":3022,\"proposal_name\":\"prop23\",\"proposer\":\"zach\",\"status\":\"executed\",\"time_remaining_seconds\":2588902},{\"actions_count\":1,\"approval_ratio\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2025-11-24T01:33:39.500\",\"created_trx_id\":\"cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd\",\"expiration\":\"2025-12-09T01:16:09.500\",\"globalseq\":3021,\"proposal_name\":\"prop22\",\"proposer\":\"zach\",\"status\":\"executed\",\"time_remaining_seconds\":2588902},{\"actions_count\":1,\"approval_ratio\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2025-11-24T01:32:49.500\",\"created_trx_id\":\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\",\"expiration\":\"2025-12-09T01:16:09.500\",\"globalseq\":3020,\"proposal_name\":\"prop21\",\"proposer\":\"zach\",\"status\":\"executed\",\"time_remaining_seconds\":2588902}],\"total\":30}"
+}

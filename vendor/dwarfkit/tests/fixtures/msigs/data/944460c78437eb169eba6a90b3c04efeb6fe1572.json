@@ -1,0 +1,53 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_approver_proposals",
+        "params": {
+            "method": "POST",
+            "body": "{\"approver\":\"bob\",\"status\":\"proposed\",\"limit\":10}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "approver": "bob",
+        "more": false,
+        "proposals": [
+            {
+                "actions_count": 1,
+                "approvals_received": 0,
+                "approvals_required": 4,
+                "created_at": "2025-11-24T01:46:09.500",
+                "created_trx_id": "0909090909090909090909090909090909090909090909090909090909090909",
+                "expiration": "2025-12-24T01:16:09.500",
+                "globalseq": 1033,
+                "my_approval_status": "pending",
+                "my_approval_time": null,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "provided_approvals": [],
+                "requested_approvals": [
+                    {
+                        "actor": "bob",
+                        "permission": "active"
+                    },
+                    {
+                        "actor": "charlie",
+                        "permission": "active"
+                    },
+                    {
+                        "actor": "dave",
+                        "permission": "active"
+                    },
+                    {
+                        "actor": "eve",
+                        "permission": "active"
+                    }
+                ],
+                "status": "proposed",
+                "time_remaining_seconds": 5180902
+            }
+        ],
+        "total": 1
+    },
+    "text": "{\"approver\":\"bob\",\"more\":false,\"proposals\":[{\"actions_count\":1,\"approvals_received\":0,\"approvals_required\":4,\"created_at\":\"2025-11-24T01:46:09.500\",\"created_trx_id\":\"0909090909090909090909090909090909090909090909090909090909090909\",\"expiration\":\"2025-12-24T01:16:09.500\",\"globalseq\":1033,\"my_approval_status\":\"pending\",\"my_approval_time\":null,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"provided_approvals\":[],\"requested_approvals\":[{\"actor\":\"bob\",\"permission\":\"active\"},{\"actor\":\"charlie\",\"permission\":\"active\"},{\"actor\":\"dave\",\"permission\":\"active\"},{\"actor\":\"eve\",\"permission\":\"active\"}],\"status\":\"proposed\",\"time_remaining_seconds\":5180902}],\"total\":1}"
+}

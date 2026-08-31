@@ -1,0 +1,53 @@
+@PACKAGE_INIT@
+
+# Dwarfkit: imported targets for the installed static libraries. Hand-rolled
+# rather than an export set so the FetchContent-built dependencies
+# (secp256k1) need no export support of their own.
+
+if(TARGET Dwarfkit::dwarfkit)
+    return()
+endif()
+
+set(_dk_lib_dir "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_LIBDIR@")
+set(_dk_include_dir "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@")
+
+function(_dk_import_lib name)
+    find_library(_dk_${name}_lib
+        NAMES ${name} lib${name}
+        PATHS "${_dk_lib_dir}"
+        NO_DEFAULT_PATH)
+    if(NOT _dk_${name}_lib)
+        set(Dwarfkit_FOUND FALSE PARENT_SCOPE)
+        set(Dwarfkit_NOT_FOUND_MESSAGE "missing library: ${name}" PARENT_SCOPE)
+        return()
+    endif()
+    add_library(Dwarfkit::${name} STATIC IMPORTED)
+    set_target_properties(Dwarfkit::${name} PROPERTIES
+        IMPORTED_LOCATION "${_dk_${name}_lib}")
+endfunction()
+
+_dk_import_lib(dwarfkit)
+_dk_import_lib(dk_trezor_crypto)
+_dk_import_lib(dk_zlib)
+_dk_import_lib(secp256k1)
+_dk_import_lib(secp256k1_precomputed)
+
+if(TARGET Dwarfkit::dwarfkit)
+    set_target_properties(Dwarfkit::dwarfkit PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${_dk_include_dir}"
+        INTERFACE_COMPILE_FEATURES "cxx_std_20"
+        # the DK_FIELDS variadic macros need the conformant preprocessor
+        INTERFACE_COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:MSVC>:/Zc:preprocessor>")
+    set(_dk_deps
+        Dwarfkit::dk_trezor_crypto
+        Dwarfkit::dk_zlib
+        Dwarfkit::secp256k1
+        Dwarfkit::secp256k1_precomputed)
+    if(WIN32)
+        list(APPEND _dk_deps bcrypt)
+    endif()
+    set_target_properties(Dwarfkit::dwarfkit PROPERTIES
+        INTERFACE_LINK_LIBRARIES "${_dk_deps}")
+endif()
+
+check_required_components(Dwarfkit)

@@ -1,0 +1,17 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"table\":\"accounts\",\"code\":\"eosio.token\",\"scope\":\"notanaccount\",\"limit\":1,\"key_type\":\"name\",\"json\":false}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [],
+        "more": false,
+        "next_key": ""
+    },
+    "text": "{\"rows\":[],\"more\":false,\"next_key\":\"\"}"
+}

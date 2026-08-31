@@ -1,0 +1,57 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_proposal_history",
+        "params": {
+            "method": "POST",
+            "body": "{\"proposer\":\"alice\",\"proposal_name\":\"upgrade\",\"status\":\"cancelled\"}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "more": false,
+        "proposal_name": "upgrade",
+        "proposer": "alice",
+        "total": 1,
+        "versions": [
+            {
+                "actions_count": 1,
+                "cancelled_at": "2025-11-24T01:37:49.500",
+                "cancelled_by": "alice",
+                "cancelled_trx_id": "2727272727272727272727272727272727272727272727272727272727272727",
+                "created_at": "2025-11-24T01:36:09.500",
+                "created_block": 100240,
+                "created_trx_id": "f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5",
+                "executed_at": null,
+                "executed_by": null,
+                "executed_trx_id": null,
+                "expiration": "2025-12-24T01:16:09.500",
+                "globalseq": 1013,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "provided_approvals": [
+                    {
+                        "actor": "bob",
+                        "permission": "active"
+                    }
+                ],
+                "requested_approvals": [
+                    {
+                        "actor": "bob",
+                        "permission": "active"
+                    },
+                    {
+                        "actor": "charlie",
+                        "permission": "active"
+                    }
+                ],
+                "status": "cancelled",
+                "transaction": {
+                    "actions": [],
+                    "expiration": "2025-12-22T00:00:00"
+                }
+            }
+        ]
+    },
+    "text": "{\"more\":false,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"total\":1,\"versions\":[{\"actions_count\":1,\"cancelled_at\":\"2025-11-24T01:37:49.500\",\"cancelled_by\":\"alice\",\"cancelled_trx_id\":\"2727272727272727272727272727272727272727272727272727272727272727\",\"created_at\":\"2025-11-24T01:36:09.500\",\"created_block\":100240,\"created_trx_id\":\"f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5\",\"executed_at\":null,\"executed_by\":null,\"executed_trx_id\":null,\"expiration\":\"2025-12-24T01:16:09.500\",\"globalseq\":1013,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"provided_approvals\":[{\"actor\":\"bob\",\"permission\":\"active\"}],\"requested_approvals\":[{\"actor\":\"bob\",\"permission\":\"active\"},{\"actor\":\"charlie\",\"permission\":\"active\"}],\"status\":\"cancelled\",\"transaction\":{\"actions\":[],\"expiration\":\"2025-12-22T00:00:00\"}}]}"
+}

@@ -1,0 +1,39 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v1/buyoffers/2432258/logs",
+        "params": {
+            "method": "POST",
+            "body": "{\"limit\":\"10\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "log_id": "86071295616",
+                "name": "lognewbuyo",
+                "data": {
+                    "collection_fee": 0.06,
+                    "maker_marketplace": ""
+                },
+                "txid": "127a259a8476b4a437f19a1613e28708f59fa9ddf178a1440bc479b716bb0505",
+                "created_at_block": "272883167",
+                "created_at_time": "1697912913000"
+            },
+            {
+                "log_id": "86079551142",
+                "name": "cancelbuyo",
+                "data": {},
+                "txid": "e3a7367801208b0739c34a312ea5c88bff0d5453b626ecc10d98739a856dda6c",
+                "created_at_block": "272934790",
+                "created_at_time": "1697938724500"
+            }
+        ],
+        "query_time": 1756585626014
+    },
+    "text": "{\"success\":true,\"data\":[{\"log_id\":\"86071295616\",\"name\":\"lognewbuyo\",\"data\":{\"collection_fee\":0.06,\"maker_marketplace\":\"\"},\"txid\":\"127a259a8476b4a437f19a1613e28708f59fa9ddf178a1440bc479b716bb0505\",\"created_at_block\":\"272883167\",\"created_at_time\":\"1697912913000\"},{\"log_id\":\"86079551142\",\"name\":\"cancelbuyo\",\"data\":{},\"txid\":\"e3a7367801208b0739c34a312ea5c88bff0d5453b626ecc10d98739a856dda6c\",\"created_at_block\":\"272934790\",\"created_at_time\":\"1697938724500\"}],\"query_time\":1756585626014}"
+}

@@ -1,0 +1,114 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_proposals",
+        "params": {
+            "method": "POST",
+            "body": "{\"status\":\"cancelled\",\"limit\":10}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "more": false,
+        "proposals": [
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:38:11.500",
+                "created_trx_id": "d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3029,
+                "proposal_name": "prop3",
+                "proposer": "zach",
+                "status": "cancelled"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:37:21.500",
+                "created_trx_id": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3028,
+                "proposal_name": "prop2",
+                "proposer": "zach",
+                "status": "cancelled"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:36:31.500",
+                "created_trx_id": "d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3027,
+                "proposal_name": "prop2",
+                "proposer": "zach",
+                "status": "cancelled"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:35:41.500",
+                "created_trx_id": "d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3026,
+                "proposal_name": "prop2",
+                "proposer": "zach",
+                "status": "cancelled"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:34:51.500",
+                "created_trx_id": "d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 3025,
+                "proposal_name": "prop2",
+                "proposer": "zach",
+                "status": "cancelled"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 1,
+                "approvals_required": 1,
+                "created_at": "2027-12-12T12:44:51.500",
+                "created_trx_id": "f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 1015,
+                "proposal_name": "transfer",
+                "proposer": "dave",
+                "status": "cancelled"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 1,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:34:01.500",
+                "created_trx_id": "f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 1013,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "status": "cancelled"
+            },
+            {
+                "actions_count": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2027-12-12T12:24:51.500",
+                "created_trx_id": "edededededededededededededededededededededededededededededededed",
+                "expiration": "2027-12-27T12:14:01.500",
+                "globalseq": 1005,
+                "proposal_name": "config",
+                "proposer": "ivan",
+                "status": "cancelled"
+            }
+        ],
+        "total": 8
+    },
+    "text": "{\"more\":false,\"proposals\":[{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:38:11.500\",\"created_trx_id\":\"d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3029,\"proposal_name\":\"prop3\",\"proposer\":\"zach\",\"status\":\"cancelled\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:37:21.500\",\"created_trx_id\":\"d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3028,\"proposal_name\":\"prop2\",\"proposer\":\"zach\",\"status\":\"cancelled\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:36:31.500\",\"created_trx_id\":\"d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3027,\"proposal_name\":\"prop2\",\"proposer\":\"zach\",\"status\":\"cancelled\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:35:41.500\",\"created_trx_id\":\"d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3026,\"proposal_name\":\"prop2\",\"proposer\":\"zach\",\"status\":\"cancelled\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:34:51.500\",\"created_trx_id\":\"d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":3025,\"proposal_name\":\"prop2\",\"proposer\":\"zach\",\"status\":\"cancelled\"},{\"actions_count\":1,\"approvals_received\":1,\"approvals_required\":1,\"created_at\":\"2027-12-12T12:44:51.500\",\"created_trx_id\":\"f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":1015,\"proposal_name\":\"transfer\",\"proposer\":\"dave\",\"status\":\"cancelled\"},{\"actions_count\":1,\"approvals_received\":1,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:34:01.500\",\"created_trx_id\":\"f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":1013,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"status\":\"cancelled\"},{\"actions_count\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2027-12-12T12:24:51.500\",\"created_trx_id\":\"edededededededededededededededededededededededededededededededed\",\"expiration\":\"2027-12-27T12:14:01.500\",\"globalseq\":1005,\"proposal_name\":\"config\",\"proposer\":\"ivan\",\"status\":\"cancelled\"}],\"total\":8}"
+}

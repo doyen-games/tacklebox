@@ -1,0 +1,2220 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v1/sales/templates",
+        "params": {
+            "method": "POST",
+            "body": "{\"symbol\":\"WAX\",\"collection_name\":\"taco\",\"limit\":\"10\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "market_contract": "atomicmarket",
+                "assets_contract": "atomicassets",
+                "sale_id": "163012983",
+                "seller": "arcticwolf11",
+                "buyer": null,
+                "offer_id": "171319737",
+                "price": {
+                    "token_contract": "eosio.token",
+                    "token_symbol": "WAX",
+                    "token_precision": 8,
+                    "median": null,
+                    "amount": "1500000000"
+                },
+                "listing_price": "1500000000",
+                "listing_symbol": "WAX",
+                "assets": [
+                    {
+                        "contract": "atomicassets",
+                        "asset_id": "1099949996288",
+                        "owner": "arcticwolf11",
+                        "is_transferable": true,
+                        "is_burnable": true,
+                        "collection": {
+                            "collection_name": "taco",
+                            "name": "Taco",
+                            "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                            "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                            "author": "taco",
+                            "allow_notify": true,
+                            "authorized_accounts": [
+                                "taco",
+                                "atomicdropsx",
+                                "atomicpacksx",
+                                "neftyblocksd",
+                                "s.taco",
+                                "blend.nefty",
+                                "blenderizerx",
+                                "g.taco",
+                                "brigade.taco",
+                                "b.taco",
+                                "mkt.taco",
+                                "acr.taco",
+                                "takitakiboom",
+                                "l.taco",
+                                "worker.taco",
+                                "tacotacopool",
+                                "primarysale1",
+                                "combz.taco",
+                                "v.taco"
+                            ],
+                            "notify_accounts": [
+                                "g.taco",
+                                "brigade.taco",
+                                "stake.taco",
+                                "swap.taco",
+                                "blend.nefty",
+                                "neftyblocksd",
+                                "neftyblocksp",
+                                "rent.taco",
+                                "a.taco"
+                            ],
+                            "market_fee": 0.06,
+                            "created_at_block": "123329591",
+                            "created_at_time": "1623106508500"
+                        },
+                        "schema": {
+                            "schema_name": "acr.skin",
+                            "format": [
+                                {
+                                    "name": "name",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "img",
+                                    "type": "image"
+                                },
+                                {
+                                    "name": "video",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "rarity",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "series",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "description",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "acr_owner",
+                                    "type": "string"
+                                }
+                            ],
+                            "created_at_block": "235848165",
+                            "created_at_time": "1679393814000"
+                        },
+                        "template": {
+                            "template_id": "851884",
+                            "max_supply": "0",
+                            "is_transferable": true,
+                            "is_burnable": true,
+                            "issued_supply": "100",
+                            "immutable_data": {
+                                "img": "https://assets.tacostudios.io/acryptia/skins/s7_seat.png",
+                                "name": "S7 - Seat",
+                                "type": "Seat",
+                                "rarity": "limited",
+                                "series": "5",
+                                "description": "This skin can be used to customize your Acryptia Dungeon"
+                            },
+                            "created_at_time": "1730376191500",
+                            "created_at_block": "337798041"
+                        },
+                        "mutable_data": {},
+                        "immutable_data": {},
+                        "template_mint": "45",
+                        "backed_tokens": [],
+                        "burned_by_account": null,
+                        "burned_at_block": null,
+                        "burned_at_time": null,
+                        "updated_at_block": "341043498",
+                        "updated_at_time": "1731999053500",
+                        "transferred_at_block": "341043498",
+                        "transferred_at_time": "1731999053500",
+                        "minted_at_block": "340344187",
+                        "minted_at_time": "1731649390000",
+                        "sales": [],
+                        "auctions": [],
+                        "prices": [
+                            {
+                                "market_contract": "atomicmarket",
+                                "token": {
+                                    "token_symbol": "WAX",
+                                    "token_precision": 8,
+                                    "token_contract": "eosio.token"
+                                },
+                                "median": "147000000",
+                                "average": "241550990",
+                                "suggested_median": "425499900",
+                                "suggested_average": "396099980",
+                                "min": "40000000",
+                                "max": "500000000",
+                                "sales": "10"
+                            }
+                        ],
+                        "template_buyoffers": [],
+                        "data": {
+                            "img": "https://assets.tacostudios.io/acryptia/skins/s7_seat.png",
+                            "name": "S7 - Seat",
+                            "type": "Seat",
+                            "rarity": "limited",
+                            "series": "5",
+                            "description": "This skin can be used to customize your Acryptia Dungeon"
+                        },
+                        "name": "S7 - Seat"
+                    }
+                ],
+                "maker_marketplace": "nft.hive",
+                "taker_marketplace": null,
+                "collection_name": "taco",
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "is_seller_contract": false,
+                "updated_at_block": "341043547",
+                "updated_at_time": "1731999078000",
+                "created_at_block": "341043547",
+                "created_at_time": "1731999078000",
+                "ordinality": "1",
+                "state": 1
+            },
+            {
+                "market_contract": "atomicmarket",
+                "assets_contract": "atomicassets",
+                "sale_id": "163814862",
+                "seller": "sskqy.wam",
+                "buyer": null,
+                "offer_id": "172193320",
+                "price": {
+                    "token_contract": "eosio.token",
+                    "token_symbol": "WAX",
+                    "token_precision": 8,
+                    "median": null,
+                    "amount": "6000000000"
+                },
+                "listing_price": "6000000000",
+                "listing_symbol": "WAX",
+                "assets": [
+                    {
+                        "contract": "atomicassets",
+                        "asset_id": "1099951345687",
+                        "owner": "sskqy.wam",
+                        "is_transferable": true,
+                        "is_burnable": true,
+                        "collection": {
+                            "collection_name": "taco",
+                            "name": "Taco",
+                            "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                            "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                            "author": "taco",
+                            "allow_notify": true,
+                            "authorized_accounts": [
+                                "taco",
+                                "atomicdropsx",
+                                "atomicpacksx",
+                                "neftyblocksd",
+                                "s.taco",
+                                "blend.nefty",
+                                "blenderizerx",
+                                "g.taco",
+                                "brigade.taco",
+                                "b.taco",
+                                "mkt.taco",
+                                "acr.taco",
+                                "takitakiboom",
+                                "l.taco",
+                                "worker.taco",
+                                "tacotacopool",
+                                "primarysale1",
+                                "combz.taco",
+                                "v.taco"
+                            ],
+                            "notify_accounts": [
+                                "g.taco",
+                                "brigade.taco",
+                                "stake.taco",
+                                "swap.taco",
+                                "blend.nefty",
+                                "neftyblocksd",
+                                "neftyblocksp",
+                                "rent.taco",
+                                "a.taco"
+                            ],
+                            "market_fee": 0.06,
+                            "created_at_block": "123329591",
+                            "created_at_time": "1623106508500"
+                        },
+                        "schema": {
+                            "schema_name": "acr.skin",
+                            "format": [
+                                {
+                                    "name": "name",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "img",
+                                    "type": "image"
+                                },
+                                {
+                                    "name": "video",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "rarity",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "series",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "description",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "acr_owner",
+                                    "type": "string"
+                                }
+                            ],
+                            "created_at_block": "235848165",
+                            "created_at_time": "1679393814000"
+                        },
+                        "template": {
+                            "template_id": "851883",
+                            "max_supply": "0",
+                            "is_transferable": true,
+                            "is_burnable": true,
+                            "issued_supply": "61",
+                            "immutable_data": {
+                                "img": "https://assets.tacostudios.io/acryptia/skins/s7_hero.png",
+                                "name": "S7 - Hero",
+                                "type": "Hero",
+                                "rarity": "limited",
+                                "series": "5",
+                                "description": "This skin can be used to customize your Acryptia Dungeon"
+                            },
+                            "created_at_time": "1730376191500",
+                            "created_at_block": "337798041"
+                        },
+                        "mutable_data": {},
+                        "immutable_data": {},
+                        "template_mint": "47",
+                        "backed_tokens": [],
+                        "burned_by_account": null,
+                        "burned_at_block": null,
+                        "burned_at_time": null,
+                        "updated_at_block": "344744916",
+                        "updated_at_time": "1733849944000",
+                        "transferred_at_block": "344744916",
+                        "transferred_at_time": "1733849944000",
+                        "minted_at_block": "344744874",
+                        "minted_at_time": "1733849923000",
+                        "sales": [],
+                        "auctions": [],
+                        "prices": [
+                            {
+                                "market_contract": "atomicmarket",
+                                "token": {
+                                    "token_symbol": "WAX",
+                                    "token_precision": 8,
+                                    "token_contract": "eosio.token"
+                                },
+                                "median": "499900000",
+                                "average": "545704300",
+                                "suggested_median": "500000000",
+                                "suggested_average": "594845160",
+                                "min": "300000000",
+                                "max": "936975600",
+                                "sales": "6"
+                            }
+                        ],
+                        "template_buyoffers": [],
+                        "data": {
+                            "img": "https://assets.tacostudios.io/acryptia/skins/s7_hero.png",
+                            "name": "S7 - Hero",
+                            "type": "Hero",
+                            "rarity": "limited",
+                            "series": "5",
+                            "description": "This skin can be used to customize your Acryptia Dungeon"
+                        },
+                        "name": "S7 - Hero"
+                    }
+                ],
+                "maker_marketplace": "nft.hive",
+                "taker_marketplace": null,
+                "collection_name": "taco",
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "is_seller_contract": false,
+                "updated_at_block": "345275894",
+                "updated_at_time": "1734115433000",
+                "created_at_block": "345275894",
+                "created_at_time": "1734115433000",
+                "ordinality": "2",
+                "state": 1
+            },
+            {
+                "market_contract": "atomicmarket",
+                "assets_contract": "atomicassets",
+                "sale_id": "170649564",
+                "seller": "addeladlestj",
+                "buyer": null,
+                "offer_id": "179392671",
+                "price": {
+                    "token_contract": "eosio.token",
+                    "token_symbol": "WAX",
+                    "token_precision": 8,
+                    "median": null,
+                    "amount": "1150000000"
+                },
+                "listing_price": "1150000000",
+                "listing_symbol": "WAX",
+                "assets": [
+                    {
+                        "contract": "atomicassets",
+                        "asset_id": "1099953534480",
+                        "owner": "addeladlestj",
+                        "is_transferable": true,
+                        "is_burnable": true,
+                        "collection": {
+                            "collection_name": "taco",
+                            "name": "Taco",
+                            "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                            "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                            "author": "taco",
+                            "allow_notify": true,
+                            "authorized_accounts": [
+                                "taco",
+                                "atomicdropsx",
+                                "atomicpacksx",
+                                "neftyblocksd",
+                                "s.taco",
+                                "blend.nefty",
+                                "blenderizerx",
+                                "g.taco",
+                                "brigade.taco",
+                                "b.taco",
+                                "mkt.taco",
+                                "acr.taco",
+                                "takitakiboom",
+                                "l.taco",
+                                "worker.taco",
+                                "tacotacopool",
+                                "primarysale1",
+                                "combz.taco",
+                                "v.taco"
+                            ],
+                            "notify_accounts": [
+                                "g.taco",
+                                "brigade.taco",
+                                "stake.taco",
+                                "swap.taco",
+                                "blend.nefty",
+                                "neftyblocksd",
+                                "neftyblocksp",
+                                "rent.taco",
+                                "a.taco"
+                            ],
+                            "market_fee": 0.06,
+                            "created_at_block": "123329591",
+                            "created_at_time": "1623106508500"
+                        },
+                        "schema": {
+                            "schema_name": "acr.skin",
+                            "format": [
+                                {
+                                    "name": "name",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "img",
+                                    "type": "image"
+                                },
+                                {
+                                    "name": "video",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "rarity",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "series",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "description",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "acr_owner",
+                                    "type": "string"
+                                }
+                            ],
+                            "created_at_block": "235848165",
+                            "created_at_time": "1679393814000"
+                        },
+                        "template": {
+                            "template_id": "851882",
+                            "max_supply": "0",
+                            "is_transferable": true,
+                            "is_burnable": true,
+                            "issued_supply": "119",
+                            "immutable_data": {
+                                "img": "https://assets.tacostudios.io/acryptia/skins/s7_floor_badge.png",
+                                "name": "S7 - Floor Badge",
+                                "type": "Floor Badge",
+                                "rarity": "limited",
+                                "series": "5",
+                                "description": "This skin can be used to customize your Acryptia Dungeon"
+                            },
+                            "created_at_time": "1730376191500",
+                            "created_at_block": "337798041"
+                        },
+                        "mutable_data": {},
+                        "immutable_data": {},
+                        "template_mint": "116",
+                        "backed_tokens": [],
+                        "burned_by_account": null,
+                        "burned_at_block": null,
+                        "burned_at_time": null,
+                        "updated_at_block": "390075505",
+                        "updated_at_time": "1756517358500",
+                        "transferred_at_block": "390075505",
+                        "transferred_at_time": "1756517358500",
+                        "minted_at_block": "351287659",
+                        "minted_at_time": "1737122247000",
+                        "sales": [],
+                        "auctions": [],
+                        "prices": [
+                            {
+                                "market_contract": "atomicmarket",
+                                "token": {
+                                    "token_symbol": "WAX",
+                                    "token_precision": 8,
+                                    "token_contract": "eosio.token"
+                                },
+                                "median": "79100000",
+                                "average": "389064757",
+                                "suggested_median": "749989900",
+                                "suggested_average": "650795958",
+                                "min": "5000000",
+                                "max": "1999999960",
+                                "sales": "19"
+                            }
+                        ],
+                        "template_buyoffers": [],
+                        "data": {
+                            "img": "https://assets.tacostudios.io/acryptia/skins/s7_floor_badge.png",
+                            "name": "S7 - Floor Badge",
+                            "type": "Floor Badge",
+                            "rarity": "limited",
+                            "series": "5",
+                            "description": "This skin can be used to customize your Acryptia Dungeon"
+                        },
+                        "name": "S7 - Floor Badge"
+                    }
+                ],
+                "maker_marketplace": "",
+                "taker_marketplace": null,
+                "collection_name": "taco",
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "is_seller_contract": false,
+                "updated_at_block": "390110203",
+                "updated_at_time": "1756534707500",
+                "created_at_block": "390110203",
+                "created_at_time": "1756534707500",
+                "ordinality": "3",
+                "state": 1
+            },
+            {
+                "market_contract": "atomicmarket",
+                "assets_contract": "atomicassets",
+                "sale_id": "163814868",
+                "seller": "sskqy.wam",
+                "buyer": null,
+                "offer_id": "172193327",
+                "price": {
+                    "token_contract": "eosio.token",
+                    "token_symbol": "WAX",
+                    "token_precision": 8,
+                    "median": null,
+                    "amount": "6500000000"
+                },
+                "listing_price": "6500000000",
+                "listing_symbol": "WAX",
+                "assets": [
+                    {
+                        "contract": "atomicassets",
+                        "asset_id": "1099951237071",
+                        "owner": "sskqy.wam",
+                        "is_transferable": true,
+                        "is_burnable": true,
+                        "collection": {
+                            "collection_name": "taco",
+                            "name": "Taco",
+                            "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                            "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                            "author": "taco",
+                            "allow_notify": true,
+                            "authorized_accounts": [
+                                "taco",
+                                "atomicdropsx",
+                                "atomicpacksx",
+                                "neftyblocksd",
+                                "s.taco",
+                                "blend.nefty",
+                                "blenderizerx",
+                                "g.taco",
+                                "brigade.taco",
+                                "b.taco",
+                                "mkt.taco",
+                                "acr.taco",
+                                "takitakiboom",
+                                "l.taco",
+                                "worker.taco",
+                                "tacotacopool",
+                                "primarysale1",
+                                "combz.taco",
+                                "v.taco"
+                            ],
+                            "notify_accounts": [
+                                "g.taco",
+                                "brigade.taco",
+                                "stake.taco",
+                                "swap.taco",
+                                "blend.nefty",
+                                "neftyblocksd",
+                                "neftyblocksp",
+                                "rent.taco",
+                                "a.taco"
+                            ],
+                            "market_fee": 0.06,
+                            "created_at_block": "123329591",
+                            "created_at_time": "1623106508500"
+                        },
+                        "schema": {
+                            "schema_name": "acr.skin",
+                            "format": [
+                                {
+                                    "name": "name",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "img",
+                                    "type": "image"
+                                },
+                                {
+                                    "name": "video",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "rarity",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "series",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "description",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "acr_owner",
+                                    "type": "string"
+                                }
+                            ],
+                            "created_at_block": "235848165",
+                            "created_at_time": "1679393814000"
+                        },
+                        "template": {
+                            "template_id": "851881",
+                            "max_supply": "0",
+                            "is_transferable": true,
+                            "is_burnable": true,
+                            "issued_supply": "63",
+                            "immutable_data": {
+                                "img": "https://assets.tacostudios.io/acryptia/skins/s7_cauldron.png",
+                                "name": "S7 - Cauldron",
+                                "type": "Cauldron",
+                                "rarity": "limited",
+                                "series": "5",
+                                "description": "This skin can be used to customize your Acryptia Dungeon"
+                            },
+                            "created_at_time": "1730376191500",
+                            "created_at_block": "337798041"
+                        },
+                        "mutable_data": {},
+                        "immutable_data": {},
+                        "template_mint": "50",
+                        "backed_tokens": [],
+                        "burned_by_account": null,
+                        "burned_at_block": null,
+                        "burned_at_time": null,
+                        "updated_at_block": "344202670",
+                        "updated_at_time": "1733578809000",
+                        "transferred_at_block": "344202670",
+                        "transferred_at_time": "1733578809000",
+                        "minted_at_block": "344202503",
+                        "minted_at_time": "1733578725500",
+                        "sales": [],
+                        "auctions": [],
+                        "prices": [
+                            {
+                                "market_contract": "atomicmarket",
+                                "token": {
+                                    "token_symbol": "WAX",
+                                    "token_precision": 8,
+                                    "token_contract": "eosio.token"
+                                },
+                                "median": "449900000",
+                                "average": "442450000",
+                                "suggested_median": "449900000",
+                                "suggested_average": "442450000",
+                                "min": "320000000",
+                                "max": "500000000",
+                                "sales": "4"
+                            }
+                        ],
+                        "template_buyoffers": [],
+                        "data": {
+                            "img": "https://assets.tacostudios.io/acryptia/skins/s7_cauldron.png",
+                            "name": "S7 - Cauldron",
+                            "type": "Cauldron",
+                            "rarity": "limited",
+                            "series": "5",
+                            "description": "This skin can be used to customize your Acryptia Dungeon"
+                        },
+                        "name": "S7 - Cauldron"
+                    }
+                ],
+                "maker_marketplace": "nft.hive",
+                "taker_marketplace": null,
+                "collection_name": "taco",
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "is_seller_contract": false,
+                "updated_at_block": "345275918",
+                "updated_at_time": "1734115445000",
+                "created_at_block": "345275918",
+                "created_at_time": "1734115445000",
+                "ordinality": "4",
+                "state": 1
+            },
+            {
+                "market_contract": "atomicmarket",
+                "assets_contract": "atomicassets",
+                "sale_id": "165020862",
+                "seller": "xmcmg.c.wam",
+                "buyer": null,
+                "offer_id": "173507980",
+                "price": {
+                    "token_contract": "eosio.token",
+                    "token_symbol": "WAX",
+                    "token_precision": 8,
+                    "median": 200,
+                    "amount": "1600000000"
+                },
+                "listing_price": "32",
+                "listing_symbol": "USD",
+                "assets": [
+                    {
+                        "contract": "atomicassets",
+                        "asset_id": "1099951223899",
+                        "owner": "xmcmg.c.wam",
+                        "is_transferable": true,
+                        "is_burnable": true,
+                        "collection": {
+                            "collection_name": "taco",
+                            "name": "Taco",
+                            "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                            "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                            "author": "taco",
+                            "allow_notify": true,
+                            "authorized_accounts": [
+                                "taco",
+                                "atomicdropsx",
+                                "atomicpacksx",
+                                "neftyblocksd",
+                                "s.taco",
+                                "blend.nefty",
+                                "blenderizerx",
+                                "g.taco",
+                                "brigade.taco",
+                                "b.taco",
+                                "mkt.taco",
+                                "acr.taco",
+                                "takitakiboom",
+                                "l.taco",
+                                "worker.taco",
+                                "tacotacopool",
+                                "primarysale1",
+                                "combz.taco",
+                                "v.taco"
+                            ],
+                            "notify_accounts": [
+                                "g.taco",
+                                "brigade.taco",
+                                "stake.taco",
+                                "swap.taco",
+                                "blend.nefty",
+                                "neftyblocksd",
+                                "neftyblocksp",
+                                "rent.taco",
+                                "a.taco"
+                            ],
+                            "market_fee": 0.06,
+                            "created_at_block": "123329591",
+                            "created_at_time": "1623106508500"
+                        },
+                        "schema": {
+                            "schema_name": "acr.skin",
+                            "format": [
+                                {
+                                    "name": "name",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "img",
+                                    "type": "image"
+                                },
+                                {
+                                    "name": "video",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "rarity",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "series",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "description",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "acr_owner",
+                                    "type": "string"
+                                }
+                            ],
+                            "created_at_block": "235848165",
+                            "created_at_time": "1679393814000"
+                        },
+                        "template": {
+                            "template_id": "851880",
+                            "max_supply": "0",
+                            "is_transferable": true,
+                            "is_burnable": true,
+                            "issued_supply": "56",
+                            "immutable_data": {
+                                "img": "https://assets.tacostudios.io/acryptia/skins/s7_card_dealer.png",
+                                "name": "S7 - Card Dealer",
+                                "type": "Card Dealer",
+                                "rarity": "limited",
+                                "series": "5",
+                                "description": "This skin can be used to customize your Acryptia Dungeon"
+                            },
+                            "created_at_time": "1730376191500",
+                            "created_at_block": "337798041"
+                        },
+                        "mutable_data": {},
+                        "immutable_data": {},
+                        "template_mint": "22",
+                        "backed_tokens": [],
+                        "burned_by_account": null,
+                        "burned_at_block": null,
+                        "burned_at_time": null,
+                        "updated_at_block": "344100169",
+                        "updated_at_time": "1733527558500",
+                        "transferred_at_block": "344100169",
+                        "transferred_at_time": "1733527558500",
+                        "minted_at_block": "344100111",
+                        "minted_at_time": "1733527529500",
+                        "sales": [],
+                        "auctions": [],
+                        "prices": [
+                            {
+                                "market_contract": "atomicmarket",
+                                "token": {
+                                    "token_symbol": "WAX",
+                                    "token_precision": 8,
+                                    "token_contract": "eosio.token"
+                                },
+                                "median": "790000000",
+                                "average": "735800000",
+                                "suggested_median": "790000000",
+                                "suggested_average": "735800000",
+                                "min": "500000000",
+                                "max": "800000000",
+                                "sales": "5"
+                            }
+                        ],
+                        "template_buyoffers": [],
+                        "data": {
+                            "img": "https://assets.tacostudios.io/acryptia/skins/s7_card_dealer.png",
+                            "name": "S7 - Card Dealer",
+                            "type": "Card Dealer",
+                            "rarity": "limited",
+                            "series": "5",
+                            "description": "This skin can be used to customize your Acryptia Dungeon"
+                        },
+                        "name": "S7 - Card Dealer"
+                    }
+                ],
+                "maker_marketplace": "",
+                "taker_marketplace": null,
+                "collection_name": "taco",
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "is_seller_contract": false,
+                "updated_at_block": "351699849",
+                "updated_at_time": "1737328343500",
+                "created_at_block": "351699849",
+                "created_at_time": "1737328343500",
+                "ordinality": "5",
+                "state": 1
+            },
+            {
+                "market_contract": "atomicmarket",
+                "assets_contract": "atomicassets",
+                "sale_id": "163811725",
+                "seller": "rngbi.wam",
+                "buyer": null,
+                "offer_id": "172189317",
+                "price": {
+                    "token_contract": "eosio.token",
+                    "token_symbol": "WAX",
+                    "token_precision": 8,
+                    "median": null,
+                    "amount": "6500000000"
+                },
+                "listing_price": "6500000000",
+                "listing_symbol": "WAX",
+                "assets": [
+                    {
+                        "contract": "atomicassets",
+                        "asset_id": "1099951031636",
+                        "owner": "rngbi.wam",
+                        "is_transferable": true,
+                        "is_burnable": true,
+                        "collection": {
+                            "collection_name": "taco",
+                            "name": "Taco",
+                            "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                            "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                            "author": "taco",
+                            "allow_notify": true,
+                            "authorized_accounts": [
+                                "taco",
+                                "atomicdropsx",
+                                "atomicpacksx",
+                                "neftyblocksd",
+                                "s.taco",
+                                "blend.nefty",
+                                "blenderizerx",
+                                "g.taco",
+                                "brigade.taco",
+                                "b.taco",
+                                "mkt.taco",
+                                "acr.taco",
+                                "takitakiboom",
+                                "l.taco",
+                                "worker.taco",
+                                "tacotacopool",
+                                "primarysale1",
+                                "combz.taco",
+                                "v.taco"
+                            ],
+                            "notify_accounts": [
+                                "g.taco",
+                                "brigade.taco",
+                                "stake.taco",
+                                "swap.taco",
+                                "blend.nefty",
+                                "neftyblocksd",
+                                "neftyblocksp",
+                                "rent.taco",
+                                "a.taco"
+                            ],
+                            "market_fee": 0.06,
+                            "created_at_block": "123329591",
+                            "created_at_time": "1623106508500"
+                        },
+                        "schema": {
+                            "schema_name": "acr.skin",
+                            "format": [
+                                {
+                                    "name": "name",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "img",
+                                    "type": "image"
+                                },
+                                {
+                                    "name": "video",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "rarity",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "series",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "description",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "acr_owner",
+                                    "type": "string"
+                                }
+                            ],
+                            "created_at_block": "235848165",
+                            "created_at_time": "1679393814000"
+                        },
+                        "template": {
+                            "template_id": "851878",
+                            "max_supply": "0",
+                            "is_transferable": true,
+                            "is_burnable": true,
+                            "issued_supply": "71",
+                            "immutable_data": {
+                                "img": "https://assets.tacostudios.io/acryptia/skins/s7_board.png",
+                                "name": "S7 - Board",
+                                "type": "Board",
+                                "rarity": "limited",
+                                "series": "5",
+                                "description": "This skin can be used to customize your Acryptia Dungeon"
+                            },
+                            "created_at_time": "1730376191500",
+                            "created_at_block": "337798041"
+                        },
+                        "mutable_data": {},
+                        "immutable_data": {},
+                        "template_mint": "53",
+                        "backed_tokens": [],
+                        "burned_by_account": null,
+                        "burned_at_block": null,
+                        "burned_at_time": null,
+                        "updated_at_block": "345258554",
+                        "updated_at_time": "1734106763000",
+                        "transferred_at_block": "345258554",
+                        "transferred_at_time": "1734106763000",
+                        "minted_at_block": "343192073",
+                        "minted_at_time": "1733073372000",
+                        "sales": [],
+                        "auctions": [],
+                        "prices": [
+                            {
+                                "market_contract": "atomicmarket",
+                                "token": {
+                                    "token_symbol": "WAX",
+                                    "token_precision": 8,
+                                    "token_contract": "eosio.token"
+                                },
+                                "median": "355731225",
+                                "average": "368077119",
+                                "suggested_median": "489069000",
+                                "suggested_average": "442723391",
+                                "min": "200000000",
+                                "max": "500000000",
+                                "sales": "8"
+                            }
+                        ],
+                        "template_buyoffers": [],
+                        "data": {
+                            "img": "https://assets.tacostudios.io/acryptia/skins/s7_board.png",
+                            "name": "S7 - Board",
+                            "type": "Board",
+                            "rarity": "limited",
+                            "series": "5",
+                            "description": "This skin can be used to customize your Acryptia Dungeon"
+                        },
+                        "name": "S7 - Board"
+                    }
+                ],
+                "maker_marketplace": "market.nefty",
+                "taker_marketplace": null,
+                "collection_name": "taco",
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "is_seller_contract": false,
+                "updated_at_block": "345259052",
+                "updated_at_time": "1734107012000",
+                "created_at_block": "345259052",
+                "created_at_time": "1734107012000",
+                "ordinality": "6",
+                "state": 1
+            },
+            {
+                "market_contract": "atomicmarket",
+                "assets_contract": "atomicassets",
+                "sale_id": "170401449",
+                "seller": "cnlnk.c.wam",
+                "buyer": null,
+                "offer_id": "179132446",
+                "price": {
+                    "token_contract": "eosio.token",
+                    "token_symbol": "WAX",
+                    "token_precision": 8,
+                    "median": null,
+                    "amount": "4000000000"
+                },
+                "listing_price": "4000000000",
+                "listing_symbol": "WAX",
+                "assets": [
+                    {
+                        "contract": "atomicassets",
+                        "asset_id": "1099951862218",
+                        "owner": "cnlnk.c.wam",
+                        "is_transferable": true,
+                        "is_burnable": true,
+                        "collection": {
+                            "collection_name": "taco",
+                            "name": "Taco",
+                            "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                            "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                            "author": "taco",
+                            "allow_notify": true,
+                            "authorized_accounts": [
+                                "taco",
+                                "atomicdropsx",
+                                "atomicpacksx",
+                                "neftyblocksd",
+                                "s.taco",
+                                "blend.nefty",
+                                "blenderizerx",
+                                "g.taco",
+                                "brigade.taco",
+                                "b.taco",
+                                "mkt.taco",
+                                "acr.taco",
+                                "takitakiboom",
+                                "l.taco",
+                                "worker.taco",
+                                "tacotacopool",
+                                "primarysale1",
+                                "combz.taco",
+                                "v.taco"
+                            ],
+                            "notify_accounts": [
+                                "g.taco",
+                                "brigade.taco",
+                                "stake.taco",
+                                "swap.taco",
+                                "blend.nefty",
+                                "neftyblocksd",
+                                "neftyblocksp",
+                                "rent.taco",
+                                "a.taco"
+                            ],
+                            "market_fee": 0.06,
+                            "created_at_block": "123329591",
+                            "created_at_time": "1623106508500"
+                        },
+                        "schema": {
+                            "schema_name": "acr.skin",
+                            "format": [
+                                {
+                                    "name": "name",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "img",
+                                    "type": "image"
+                                },
+                                {
+                                    "name": "video",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "rarity",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "series",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "description",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "acr_owner",
+                                    "type": "string"
+                                }
+                            ],
+                            "created_at_block": "235848165",
+                            "created_at_time": "1679393814000"
+                        },
+                        "template": {
+                            "template_id": "851877",
+                            "max_supply": "0",
+                            "is_transferable": true,
+                            "is_burnable": true,
+                            "issued_supply": "51",
+                            "immutable_data": {
+                                "img": "https://assets.tacostudios.io/acryptia/skins/the_tavern_background.png",
+                                "name": "The Tavern - Background",
+                                "type": "Background",
+                                "rarity": "mythic",
+                                "series": "5",
+                                "description": "This skin can be used to customize your Acryptia Dungeon"
+                            },
+                            "created_at_time": "1730376191500",
+                            "created_at_block": "337798041"
+                        },
+                        "mutable_data": {},
+                        "immutable_data": {},
+                        "template_mint": "9",
+                        "backed_tokens": [],
+                        "burned_by_account": null,
+                        "burned_at_block": null,
+                        "burned_at_time": null,
+                        "updated_at_block": "368956206",
+                        "updated_at_time": "1745956793000",
+                        "transferred_at_block": "368956206",
+                        "transferred_at_time": "1745956793000",
+                        "minted_at_block": "345216649",
+                        "minted_at_time": "1734085810500",
+                        "sales": [],
+                        "auctions": [],
+                        "prices": [
+                            {
+                                "market_contract": "atomicmarket",
+                                "token": {
+                                    "token_symbol": "WAX",
+                                    "token_precision": 8,
+                                    "token_contract": "eosio.token"
+                                },
+                                "median": "5400000000",
+                                "average": "5459380000",
+                                "suggested_median": "4000000000",
+                                "suggested_average": "4000000000",
+                                "min": "2000000000",
+                                "max": "8498000000",
+                                "sales": "5"
+                            }
+                        ],
+                        "template_buyoffers": [],
+                        "data": {
+                            "img": "https://assets.tacostudios.io/acryptia/skins/the_tavern_background.png",
+                            "name": "The Tavern - Background",
+                            "type": "Background",
+                            "rarity": "mythic",
+                            "series": "5",
+                            "description": "This skin can be used to customize your Acryptia Dungeon"
+                        },
+                        "name": "The Tavern - Background"
+                    }
+                ],
+                "maker_marketplace": "market.nefty",
+                "taker_marketplace": null,
+                "collection_name": "taco",
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "is_seller_contract": false,
+                "updated_at_block": "386892581",
+                "updated_at_time": "1754925730500",
+                "created_at_block": "386892581",
+                "created_at_time": "1754925730500",
+                "ordinality": "7",
+                "state": 1
+            },
+            {
+                "market_contract": "atomicmarket",
+                "assets_contract": "atomicassets",
+                "sale_id": "164922480",
+                "seller": "arcticwolf11",
+                "buyer": null,
+                "offer_id": "173402743",
+                "price": {
+                    "token_contract": "eosio.token",
+                    "token_symbol": "WAX",
+                    "token_precision": 8,
+                    "median": null,
+                    "amount": "3000000000"
+                },
+                "listing_price": "3000000000",
+                "listing_symbol": "WAX",
+                "assets": [
+                    {
+                        "contract": "atomicassets",
+                        "asset_id": "1099952440766",
+                        "owner": "arcticwolf11",
+                        "is_transferable": true,
+                        "is_burnable": true,
+                        "collection": {
+                            "collection_name": "taco",
+                            "name": "Taco",
+                            "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                            "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                            "author": "taco",
+                            "allow_notify": true,
+                            "authorized_accounts": [
+                                "taco",
+                                "atomicdropsx",
+                                "atomicpacksx",
+                                "neftyblocksd",
+                                "s.taco",
+                                "blend.nefty",
+                                "blenderizerx",
+                                "g.taco",
+                                "brigade.taco",
+                                "b.taco",
+                                "mkt.taco",
+                                "acr.taco",
+                                "takitakiboom",
+                                "l.taco",
+                                "worker.taco",
+                                "tacotacopool",
+                                "primarysale1",
+                                "combz.taco",
+                                "v.taco"
+                            ],
+                            "notify_accounts": [
+                                "g.taco",
+                                "brigade.taco",
+                                "stake.taco",
+                                "swap.taco",
+                                "blend.nefty",
+                                "neftyblocksd",
+                                "neftyblocksp",
+                                "rent.taco",
+                                "a.taco"
+                            ],
+                            "market_fee": 0.06,
+                            "created_at_block": "123329591",
+                            "created_at_time": "1623106508500"
+                        },
+                        "schema": {
+                            "schema_name": "acr.skin",
+                            "format": [
+                                {
+                                    "name": "name",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "img",
+                                    "type": "image"
+                                },
+                                {
+                                    "name": "video",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "rarity",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "series",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "description",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "acr_owner",
+                                    "type": "string"
+                                }
+                            ],
+                            "created_at_block": "235848165",
+                            "created_at_time": "1679393814000"
+                        },
+                        "template": {
+                            "template_id": "851876",
+                            "max_supply": "0",
+                            "is_transferable": true,
+                            "is_burnable": true,
+                            "issued_supply": "52",
+                            "immutable_data": {
+                                "img": "https://assets.tacostudios.io/acryptia/skins/diamond_hero.png",
+                                "name": "Diamond - Hero",
+                                "type": "Hero",
+                                "rarity": "legendary",
+                                "series": "5",
+                                "description": "This skin can be used to customize your Acryptia Dungeon"
+                            },
+                            "created_at_time": "1730376191500",
+                            "created_at_block": "337798041"
+                        },
+                        "mutable_data": {},
+                        "immutable_data": {},
+                        "template_mint": "46",
+                        "backed_tokens": [],
+                        "burned_by_account": null,
+                        "burned_at_block": null,
+                        "burned_at_time": null,
+                        "updated_at_block": "348027246",
+                        "updated_at_time": "1735491129000",
+                        "transferred_at_block": "348027246",
+                        "transferred_at_time": "1735491129000",
+                        "minted_at_block": "348026960",
+                        "minted_at_time": "1735490986000",
+                        "sales": [],
+                        "auctions": [],
+                        "prices": [
+                            {
+                                "market_contract": "atomicmarket",
+                                "token": {
+                                    "token_symbol": "WAX",
+                                    "token_precision": 8,
+                                    "token_contract": "eosio.token"
+                                },
+                                "median": "2600000000",
+                                "average": "2391666667",
+                                "suggested_median": "2690000000",
+                                "suggested_average": "2630000000",
+                                "min": "1200000000",
+                                "max": "3000000000",
+                                "sales": "6"
+                            }
+                        ],
+                        "template_buyoffers": [],
+                        "data": {
+                            "img": "https://assets.tacostudios.io/acryptia/skins/diamond_hero.png",
+                            "name": "Diamond - Hero",
+                            "type": "Hero",
+                            "rarity": "legendary",
+                            "series": "5",
+                            "description": "This skin can be used to customize your Acryptia Dungeon"
+                        },
+                        "name": "Diamond - Hero"
+                    }
+                ],
+                "maker_marketplace": "nft.hive",
+                "taker_marketplace": null,
+                "collection_name": "taco",
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "is_seller_contract": false,
+                "updated_at_block": "351129518",
+                "updated_at_time": "1737043133000",
+                "created_at_block": "351129518",
+                "created_at_time": "1737043133000",
+                "ordinality": "8",
+                "state": 1
+            },
+            {
+                "market_contract": "atomicmarket",
+                "assets_contract": "atomicassets",
+                "sale_id": "170114506",
+                "seller": "dkgbw.wam",
+                "buyer": null,
+                "offer_id": "178830021",
+                "price": {
+                    "token_contract": "eosio.token",
+                    "token_symbol": "WAX",
+                    "token_precision": 8,
+                    "median": null,
+                    "amount": "1900000000"
+                },
+                "listing_price": "1900000000",
+                "listing_symbol": "WAX",
+                "assets": [
+                    {
+                        "contract": "atomicassets",
+                        "asset_id": "1099951153450",
+                        "owner": "dkgbw.wam",
+                        "is_transferable": true,
+                        "is_burnable": true,
+                        "collection": {
+                            "collection_name": "taco",
+                            "name": "Taco",
+                            "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                            "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                            "author": "taco",
+                            "allow_notify": true,
+                            "authorized_accounts": [
+                                "taco",
+                                "atomicdropsx",
+                                "atomicpacksx",
+                                "neftyblocksd",
+                                "s.taco",
+                                "blend.nefty",
+                                "blenderizerx",
+                                "g.taco",
+                                "brigade.taco",
+                                "b.taco",
+                                "mkt.taco",
+                                "acr.taco",
+                                "takitakiboom",
+                                "l.taco",
+                                "worker.taco",
+                                "tacotacopool",
+                                "primarysale1",
+                                "combz.taco",
+                                "v.taco"
+                            ],
+                            "notify_accounts": [
+                                "g.taco",
+                                "brigade.taco",
+                                "stake.taco",
+                                "swap.taco",
+                                "blend.nefty",
+                                "neftyblocksd",
+                                "neftyblocksp",
+                                "rent.taco",
+                                "a.taco"
+                            ],
+                            "market_fee": 0.06,
+                            "created_at_block": "123329591",
+                            "created_at_time": "1623106508500"
+                        },
+                        "schema": {
+                            "schema_name": "acr.skin",
+                            "format": [
+                                {
+                                    "name": "name",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "img",
+                                    "type": "image"
+                                },
+                                {
+                                    "name": "video",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "rarity",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "series",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "description",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "acr_owner",
+                                    "type": "string"
+                                }
+                            ],
+                            "created_at_block": "235848165",
+                            "created_at_time": "1679393814000"
+                        },
+                        "template": {
+                            "template_id": "851875",
+                            "max_supply": "0",
+                            "is_transferable": true,
+                            "is_burnable": true,
+                            "issued_supply": "74",
+                            "immutable_data": {
+                                "img": "https://assets.tacostudios.io/acryptia/skins/sprinkles_sketch_card_back.png",
+                                "name": "Sprinkles Sketch - Card Back",
+                                "type": "Card Back",
+                                "rarity": "epic",
+                                "series": "5",
+                                "description": "This skin can be used to customize your Acryptia Dungeon"
+                            },
+                            "created_at_time": "1730376191500",
+                            "created_at_block": "337798041"
+                        },
+                        "mutable_data": {},
+                        "immutable_data": {},
+                        "template_mint": "31",
+                        "backed_tokens": [],
+                        "burned_by_account": null,
+                        "burned_at_block": null,
+                        "burned_at_time": null,
+                        "updated_at_block": "343745773",
+                        "updated_at_time": "1733350222000",
+                        "transferred_at_block": "343745773",
+                        "transferred_at_time": "1733350222000",
+                        "minted_at_block": "343745678",
+                        "minted_at_time": "1733350174500",
+                        "sales": [],
+                        "auctions": [],
+                        "prices": [
+                            {
+                                "market_contract": "atomicmarket",
+                                "token": {
+                                    "token_symbol": "WAX",
+                                    "token_precision": 8,
+                                    "token_contract": "eosio.token"
+                                },
+                                "median": "300000000",
+                                "average": "356629547",
+                                "suggested_median": "499900000",
+                                "suggested_average": "492785004",
+                                "min": "225000000",
+                                "max": "500000000",
+                                "sales": "11"
+                            }
+                        ],
+                        "template_buyoffers": [],
+                        "data": {
+                            "img": "https://assets.tacostudios.io/acryptia/skins/sprinkles_sketch_card_back.png",
+                            "name": "Sprinkles Sketch - Card Back",
+                            "type": "Card Back",
+                            "rarity": "epic",
+                            "series": "5",
+                            "description": "This skin can be used to customize your Acryptia Dungeon"
+                        },
+                        "name": "Sprinkles Sketch - Card Back"
+                    }
+                ],
+                "maker_marketplace": "nft.hive",
+                "taker_marketplace": null,
+                "collection_name": "taco",
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "is_seller_contract": false,
+                "updated_at_block": "383443916",
+                "updated_at_time": "1753201339500",
+                "created_at_block": "383443916",
+                "created_at_time": "1753201339500",
+                "ordinality": "9",
+                "state": 1
+            },
+            {
+                "market_contract": "atomicmarket",
+                "assets_contract": "atomicassets",
+                "sale_id": "163811739",
+                "seller": "rngbi.wam",
+                "buyer": null,
+                "offer_id": "172189332",
+                "price": {
+                    "token_contract": "eosio.token",
+                    "token_symbol": "WAX",
+                    "token_precision": 8,
+                    "median": null,
+                    "amount": "7000000000"
+                },
+                "listing_price": "7000000000",
+                "listing_symbol": "WAX",
+                "assets": [
+                    {
+                        "contract": "atomicassets",
+                        "asset_id": "1099951872600",
+                        "owner": "rngbi.wam",
+                        "is_transferable": true,
+                        "is_burnable": true,
+                        "collection": {
+                            "collection_name": "taco",
+                            "name": "Taco",
+                            "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                            "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                            "author": "taco",
+                            "allow_notify": true,
+                            "authorized_accounts": [
+                                "taco",
+                                "atomicdropsx",
+                                "atomicpacksx",
+                                "neftyblocksd",
+                                "s.taco",
+                                "blend.nefty",
+                                "blenderizerx",
+                                "g.taco",
+                                "brigade.taco",
+                                "b.taco",
+                                "mkt.taco",
+                                "acr.taco",
+                                "takitakiboom",
+                                "l.taco",
+                                "worker.taco",
+                                "tacotacopool",
+                                "primarysale1",
+                                "combz.taco",
+                                "v.taco"
+                            ],
+                            "notify_accounts": [
+                                "g.taco",
+                                "brigade.taco",
+                                "stake.taco",
+                                "swap.taco",
+                                "blend.nefty",
+                                "neftyblocksd",
+                                "neftyblocksp",
+                                "rent.taco",
+                                "a.taco"
+                            ],
+                            "market_fee": 0.06,
+                            "created_at_block": "123329591",
+                            "created_at_time": "1623106508500"
+                        },
+                        "schema": {
+                            "schema_name": "acr.skin",
+                            "format": [
+                                {
+                                    "name": "name",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "img",
+                                    "type": "image"
+                                },
+                                {
+                                    "name": "video",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "rarity",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "series",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "description",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "acr_owner",
+                                    "type": "string"
+                                }
+                            ],
+                            "created_at_block": "235848165",
+                            "created_at_time": "1679393814000"
+                        },
+                        "template": {
+                            "template_id": "851874",
+                            "max_supply": "0",
+                            "is_transferable": true,
+                            "is_burnable": true,
+                            "issued_supply": "56",
+                            "immutable_data": {
+                                "img": "https://assets.tacostudios.io/acryptia/skins/sprinkles_cuts_cauldron.png",
+                                "name": "Sprinkles Cuts - Cauldron",
+                                "type": "Cauldron",
+                                "rarity": "epic",
+                                "series": "5",
+                                "description": "This skin can be used to customize your Acryptia Dungeon"
+                            },
+                            "created_at_time": "1730376188000",
+                            "created_at_block": "337798034"
+                        },
+                        "mutable_data": {},
+                        "immutable_data": {},
+                        "template_mint": "40",
+                        "backed_tokens": [],
+                        "burned_by_account": null,
+                        "burned_at_block": null,
+                        "burned_at_time": null,
+                        "updated_at_block": "345258121",
+                        "updated_at_time": "1734106546500",
+                        "transferred_at_block": "345258121",
+                        "transferred_at_time": "1734106546500",
+                        "minted_at_block": "345257010",
+                        "minted_at_time": "1734105991000",
+                        "sales": [],
+                        "auctions": [],
+                        "prices": [
+                            {
+                                "market_contract": "atomicmarket",
+                                "token": {
+                                    "token_symbol": "WAX",
+                                    "token_precision": 8,
+                                    "token_contract": "eosio.token"
+                                },
+                                "median": "799899000",
+                                "average": "620171304",
+                                "suggested_median": "800000000",
+                                "suggested_average": "820674086",
+                                "min": "278000000",
+                                "max": "900000000",
+                                "sales": "8"
+                            }
+                        ],
+                        "template_buyoffers": [],
+                        "data": {
+                            "img": "https://assets.tacostudios.io/acryptia/skins/sprinkles_cuts_cauldron.png",
+                            "name": "Sprinkles Cuts - Cauldron",
+                            "type": "Cauldron",
+                            "rarity": "epic",
+                            "series": "5",
+                            "description": "This skin can be used to customize your Acryptia Dungeon"
+                        },
+                        "name": "Sprinkles Cuts - Cauldron"
+                    }
+                ],
+                "maker_marketplace": "market.nefty",
+                "taker_marketplace": null,
+                "collection_name": "taco",
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "is_seller_contract": false,
+                "updated_at_block": "345259073",
+                "updated_at_time": "1734107022500",
+                "created_at_block": "345259073",
+                "created_at_time": "1734107022500",
+                "ordinality": "10",
+                "state": 1
+            }
+        ],
+        "query_time": 1756585624776
+    },
+    "text": "{\"success\":true,\"data\":[{\"market_contract\":\"atomicmarket\",\"assets_contract\":\"atomicassets\",\"sale_id\":\"163012983\",\"seller\":\"arcticwolf11\",\"buyer\":null,\"offer_id\":\"171319737\",\"price\":{\"token_contract\":\"eosio.token\",\"token_symbol\":\"WAX\",\"token_precision\":8,\"median\":null,\"amount\":\"1500000000\"},\"listing_price\":\"1500000000\",\"listing_symbol\":\"WAX\",\"assets\":[{\"contract\":\"atomicassets\",\"asset_id\":\"1099949996288\",\"owner\":\"arcticwolf11\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"acr.skin\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"video\",\"type\":\"string\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"rarity\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"235848165\",\"created_at_time\":\"1679393814000\"},\"template\":{\"template_id\":\"851884\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"100\",\"immutable_data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/s7_seat.png\",\"name\":\"S7 - Seat\",\"type\":\"Seat\",\"rarity\":\"limited\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"created_at_time\":\"1730376191500\",\"created_at_block\":\"337798041\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"45\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"341043498\",\"updated_at_time\":\"1731999053500\",\"transferred_at_block\":\"341043498\",\"transferred_at_time\":\"1731999053500\",\"minted_at_block\":\"340344187\",\"minted_at_time\":\"1731649390000\",\"sales\":[],\"auctions\":[],\"prices\":[{\"market_contract\":\"atomicmarket\",\"token\":{\"token_symbol\":\"WAX\",\"token_precision\":8,\"token_contract\":\"eosio.token\"},\"median\":\"147000000\",\"average\":\"241550990\",\"suggested_median\":\"425499900\",\"suggested_average\":\"396099980\",\"min\":\"40000000\",\"max\":\"500000000\",\"sales\":\"10\"}],\"template_buyoffers\":[],\"data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/s7_seat.png\",\"name\":\"S7 - Seat\",\"type\":\"Seat\",\"rarity\":\"limited\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"name\":\"S7 - Seat\"}],\"maker_marketplace\":\"nft.hive\",\"taker_marketplace\":null,\"collection_name\":\"taco\",\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"is_seller_contract\":false,\"updated_at_block\":\"341043547\",\"updated_at_time\":\"1731999078000\",\"created_at_block\":\"341043547\",\"created_at_time\":\"1731999078000\",\"ordinality\":\"1\",\"state\":1},{\"market_contract\":\"atomicmarket\",\"assets_contract\":\"atomicassets\",\"sale_id\":\"163814862\",\"seller\":\"sskqy.wam\",\"buyer\":null,\"offer_id\":\"172193320\",\"price\":{\"token_contract\":\"eosio.token\",\"token_symbol\":\"WAX\",\"token_precision\":8,\"median\":null,\"amount\":\"6000000000\"},\"listing_price\":\"6000000000\",\"listing_symbol\":\"WAX\",\"assets\":[{\"contract\":\"atomicassets\",\"asset_id\":\"1099951345687\",\"owner\":\"sskqy.wam\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"acr.skin\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"video\",\"type\":\"string\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"rarity\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"235848165\",\"created_at_time\":\"1679393814000\"},\"template\":{\"template_id\":\"851883\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"61\",\"immutable_data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/s7_hero.png\",\"name\":\"S7 - Hero\",\"type\":\"Hero\",\"rarity\":\"limited\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"created_at_time\":\"1730376191500\",\"created_at_block\":\"337798041\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"47\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"344744916\",\"updated_at_time\":\"1733849944000\",\"transferred_at_block\":\"344744916\",\"transferred_at_time\":\"1733849944000\",\"minted_at_block\":\"344744874\",\"minted_at_time\":\"1733849923000\",\"sales\":[],\"auctions\":[],\"prices\":[{\"market_contract\":\"atomicmarket\",\"token\":{\"token_symbol\":\"WAX\",\"token_precision\":8,\"token_contract\":\"eosio.token\"},\"median\":\"499900000\",\"average\":\"545704300\",\"suggested_median\":\"500000000\",\"suggested_average\":\"594845160\",\"min\":\"300000000\",\"max\":\"936975600\",\"sales\":\"6\"}],\"template_buyoffers\":[],\"data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/s7_hero.png\",\"name\":\"S7 - Hero\",\"type\":\"Hero\",\"rarity\":\"limited\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"name\":\"S7 - Hero\"}],\"maker_marketplace\":\"nft.hive\",\"taker_marketplace\":null,\"collection_name\":\"taco\",\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"is_seller_contract\":false,\"updated_at_block\":\"345275894\",\"updated_at_time\":\"1734115433000\",\"created_at_block\":\"345275894\",\"created_at_time\":\"1734115433000\",\"ordinality\":\"2\",\"state\":1},{\"market_contract\":\"atomicmarket\",\"assets_contract\":\"atomicassets\",\"sale_id\":\"170649564\",\"seller\":\"addeladlestj\",\"buyer\":null,\"offer_id\":\"179392671\",\"price\":{\"token_contract\":\"eosio.token\",\"token_symbol\":\"WAX\",\"token_precision\":8,\"median\":null,\"amount\":\"1150000000\"},\"listing_price\":\"1150000000\",\"listing_symbol\":\"WAX\",\"assets\":[{\"contract\":\"atomicassets\",\"asset_id\":\"1099953534480\",\"owner\":\"addeladlestj\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"acr.skin\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"video\",\"type\":\"string\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"rarity\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"235848165\",\"created_at_time\":\"1679393814000\"},\"template\":{\"template_id\":\"851882\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"119\",\"immutable_data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/s7_floor_badge.png\",\"name\":\"S7 - Floor Badge\",\"type\":\"Floor Badge\",\"rarity\":\"limited\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"created_at_time\":\"1730376191500\",\"created_at_block\":\"337798041\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"116\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"390075505\",\"updated_at_time\":\"1756517358500\",\"transferred_at_block\":\"390075505\",\"transferred_at_time\":\"1756517358500\",\"minted_at_block\":\"351287659\",\"minted_at_time\":\"1737122247000\",\"sales\":[],\"auctions\":[],\"prices\":[{\"market_contract\":\"atomicmarket\",\"token\":{\"token_symbol\":\"WAX\",\"token_precision\":8,\"token_contract\":\"eosio.token\"},\"median\":\"79100000\",\"average\":\"389064757\",\"suggested_median\":\"749989900\",\"suggested_average\":\"650795958\",\"min\":\"5000000\",\"max\":\"1999999960\",\"sales\":\"19\"}],\"template_buyoffers\":[],\"data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/s7_floor_badge.png\",\"name\":\"S7 - Floor Badge\",\"type\":\"Floor Badge\",\"rarity\":\"limited\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"name\":\"S7 - Floor Badge\"}],\"maker_marketplace\":\"\",\"taker_marketplace\":null,\"collection_name\":\"taco\",\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"is_seller_contract\":false,\"updated_at_block\":\"390110203\",\"updated_at_time\":\"1756534707500\",\"created_at_block\":\"390110203\",\"created_at_time\":\"1756534707500\",\"ordinality\":\"3\",\"state\":1},{\"market_contract\":\"atomicmarket\",\"assets_contract\":\"atomicassets\",\"sale_id\":\"163814868\",\"seller\":\"sskqy.wam\",\"buyer\":null,\"offer_id\":\"172193327\",\"price\":{\"token_contract\":\"eosio.token\",\"token_symbol\":\"WAX\",\"token_precision\":8,\"median\":null,\"amount\":\"6500000000\"},\"listing_price\":\"6500000000\",\"listing_symbol\":\"WAX\",\"assets\":[{\"contract\":\"atomicassets\",\"asset_id\":\"1099951237071\",\"owner\":\"sskqy.wam\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"acr.skin\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"video\",\"type\":\"string\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"rarity\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"235848165\",\"created_at_time\":\"1679393814000\"},\"template\":{\"template_id\":\"851881\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"63\",\"immutable_data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/s7_cauldron.png\",\"name\":\"S7 - Cauldron\",\"type\":\"Cauldron\",\"rarity\":\"limited\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"created_at_time\":\"1730376191500\",\"created_at_block\":\"337798041\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"50\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"344202670\",\"updated_at_time\":\"1733578809000\",\"transferred_at_block\":\"344202670\",\"transferred_at_time\":\"1733578809000\",\"minted_at_block\":\"344202503\",\"minted_at_time\":\"1733578725500\",\"sales\":[],\"auctions\":[],\"prices\":[{\"market_contract\":\"atomicmarket\",\"token\":{\"token_symbol\":\"WAX\",\"token_precision\":8,\"token_contract\":\"eosio.token\"},\"median\":\"449900000\",\"average\":\"442450000\",\"suggested_median\":\"449900000\",\"suggested_average\":\"442450000\",\"min\":\"320000000\",\"max\":\"500000000\",\"sales\":\"4\"}],\"template_buyoffers\":[],\"data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/s7_cauldron.png\",\"name\":\"S7 - Cauldron\",\"type\":\"Cauldron\",\"rarity\":\"limited\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"name\":\"S7 - Cauldron\"}],\"maker_marketplace\":\"nft.hive\",\"taker_marketplace\":null,\"collection_name\":\"taco\",\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"is_seller_contract\":false,\"updated_at_block\":\"345275918\",\"updated_at_time\":\"1734115445000\",\"created_at_block\":\"345275918\",\"created_at_time\":\"1734115445000\",\"ordinality\":\"4\",\"state\":1},{\"market_contract\":\"atomicmarket\",\"assets_contract\":\"atomicassets\",\"sale_id\":\"165020862\",\"seller\":\"xmcmg.c.wam\",\"buyer\":null,\"offer_id\":\"173507980\",\"price\":{\"token_contract\":\"eosio.token\",\"token_symbol\":\"WAX\",\"token_precision\":8,\"median\":200,\"amount\":\"1600000000\"},\"listing_price\":\"32\",\"listing_symbol\":\"USD\",\"assets\":[{\"contract\":\"atomicassets\",\"asset_id\":\"1099951223899\",\"owner\":\"xmcmg.c.wam\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"acr.skin\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"video\",\"type\":\"string\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"rarity\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"235848165\",\"created_at_time\":\"1679393814000\"},\"template\":{\"template_id\":\"851880\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"56\",\"immutable_data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/s7_card_dealer.png\",\"name\":\"S7 - Card Dealer\",\"type\":\"Card Dealer\",\"rarity\":\"limited\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"created_at_time\":\"1730376191500\",\"created_at_block\":\"337798041\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"22\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"344100169\",\"updated_at_time\":\"1733527558500\",\"transferred_at_block\":\"344100169\",\"transferred_at_time\":\"1733527558500\",\"minted_at_block\":\"344100111\",\"minted_at_time\":\"1733527529500\",\"sales\":[],\"auctions\":[],\"prices\":[{\"market_contract\":\"atomicmarket\",\"token\":{\"token_symbol\":\"WAX\",\"token_precision\":8,\"token_contract\":\"eosio.token\"},\"median\":\"790000000\",\"average\":\"735800000\",\"suggested_median\":\"790000000\",\"suggested_average\":\"735800000\",\"min\":\"500000000\",\"max\":\"800000000\",\"sales\":\"5\"}],\"template_buyoffers\":[],\"data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/s7_card_dealer.png\",\"name\":\"S7 - Card Dealer\",\"type\":\"Card Dealer\",\"rarity\":\"limited\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"name\":\"S7 - Card Dealer\"}],\"maker_marketplace\":\"\",\"taker_marketplace\":null,\"collection_name\":\"taco\",\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"is_seller_contract\":false,\"updated_at_block\":\"351699849\",\"updated_at_time\":\"1737328343500\",\"created_at_block\":\"351699849\",\"created_at_time\":\"1737328343500\",\"ordinality\":\"5\",\"state\":1},{\"market_contract\":\"atomicmarket\",\"assets_contract\":\"atomicassets\",\"sale_id\":\"163811725\",\"seller\":\"rngbi.wam\",\"buyer\":null,\"offer_id\":\"172189317\",\"price\":{\"token_contract\":\"eosio.token\",\"token_symbol\":\"WAX\",\"token_precision\":8,\"median\":null,\"amount\":\"6500000000\"},\"listing_price\":\"6500000000\",\"listing_symbol\":\"WAX\",\"assets\":[{\"contract\":\"atomicassets\",\"asset_id\":\"1099951031636\",\"owner\":\"rngbi.wam\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"acr.skin\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"video\",\"type\":\"string\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"rarity\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"235848165\",\"created_at_time\":\"1679393814000\"},\"template\":{\"template_id\":\"851878\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"71\",\"immutable_data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/s7_board.png\",\"name\":\"S7 - Board\",\"type\":\"Board\",\"rarity\":\"limited\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"created_at_time\":\"1730376191500\",\"created_at_block\":\"337798041\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"53\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"345258554\",\"updated_at_time\":\"1734106763000\",\"transferred_at_block\":\"345258554\",\"transferred_at_time\":\"1734106763000\",\"minted_at_block\":\"343192073\",\"minted_at_time\":\"1733073372000\",\"sales\":[],\"auctions\":[],\"prices\":[{\"market_contract\":\"atomicmarket\",\"token\":{\"token_symbol\":\"WAX\",\"token_precision\":8,\"token_contract\":\"eosio.token\"},\"median\":\"355731225\",\"average\":\"368077119\",\"suggested_median\":\"489069000\",\"suggested_average\":\"442723391\",\"min\":\"200000000\",\"max\":\"500000000\",\"sales\":\"8\"}],\"template_buyoffers\":[],\"data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/s7_board.png\",\"name\":\"S7 - Board\",\"type\":\"Board\",\"rarity\":\"limited\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"name\":\"S7 - Board\"}],\"maker_marketplace\":\"market.nefty\",\"taker_marketplace\":null,\"collection_name\":\"taco\",\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"is_seller_contract\":false,\"updated_at_block\":\"345259052\",\"updated_at_time\":\"1734107012000\",\"created_at_block\":\"345259052\",\"created_at_time\":\"1734107012000\",\"ordinality\":\"6\",\"state\":1},{\"market_contract\":\"atomicmarket\",\"assets_contract\":\"atomicassets\",\"sale_id\":\"170401449\",\"seller\":\"cnlnk.c.wam\",\"buyer\":null,\"offer_id\":\"179132446\",\"price\":{\"token_contract\":\"eosio.token\",\"token_symbol\":\"WAX\",\"token_precision\":8,\"median\":null,\"amount\":\"4000000000\"},\"listing_price\":\"4000000000\",\"listing_symbol\":\"WAX\",\"assets\":[{\"contract\":\"atomicassets\",\"asset_id\":\"1099951862218\",\"owner\":\"cnlnk.c.wam\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"acr.skin\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"video\",\"type\":\"string\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"rarity\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"235848165\",\"created_at_time\":\"1679393814000\"},\"template\":{\"template_id\":\"851877\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"51\",\"immutable_data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/the_tavern_background.png\",\"name\":\"The Tavern - Background\",\"type\":\"Background\",\"rarity\":\"mythic\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"created_at_time\":\"1730376191500\",\"created_at_block\":\"337798041\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"9\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"368956206\",\"updated_at_time\":\"1745956793000\",\"transferred_at_block\":\"368956206\",\"transferred_at_time\":\"1745956793000\",\"minted_at_block\":\"345216649\",\"minted_at_time\":\"1734085810500\",\"sales\":[],\"auctions\":[],\"prices\":[{\"market_contract\":\"atomicmarket\",\"token\":{\"token_symbol\":\"WAX\",\"token_precision\":8,\"token_contract\":\"eosio.token\"},\"median\":\"5400000000\",\"average\":\"5459380000\",\"suggested_median\":\"4000000000\",\"suggested_average\":\"4000000000\",\"min\":\"2000000000\",\"max\":\"8498000000\",\"sales\":\"5\"}],\"template_buyoffers\":[],\"data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/the_tavern_background.png\",\"name\":\"The Tavern - Background\",\"type\":\"Background\",\"rarity\":\"mythic\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"name\":\"The Tavern - Background\"}],\"maker_marketplace\":\"market.nefty\",\"taker_marketplace\":null,\"collection_name\":\"taco\",\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"is_seller_contract\":false,\"updated_at_block\":\"386892581\",\"updated_at_time\":\"1754925730500\",\"created_at_block\":\"386892581\",\"created_at_time\":\"1754925730500\",\"ordinality\":\"7\",\"state\":1},{\"market_contract\":\"atomicmarket\",\"assets_contract\":\"atomicassets\",\"sale_id\":\"164922480\",\"seller\":\"arcticwolf11\",\"buyer\":null,\"offer_id\":\"173402743\",\"price\":{\"token_contract\":\"eosio.token\",\"token_symbol\":\"WAX\",\"token_precision\":8,\"median\":null,\"amount\":\"3000000000\"},\"listing_price\":\"3000000000\",\"listing_symbol\":\"WAX\",\"assets\":[{\"contract\":\"atomicassets\",\"asset_id\":\"1099952440766\",\"owner\":\"arcticwolf11\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"acr.skin\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"video\",\"type\":\"string\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"rarity\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"235848165\",\"created_at_time\":\"1679393814000\"},\"template\":{\"template_id\":\"851876\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"52\",\"immutable_data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/diamond_hero.png\",\"name\":\"Diamond - Hero\",\"type\":\"Hero\",\"rarity\":\"legendary\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"created_at_time\":\"1730376191500\",\"created_at_block\":\"337798041\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"46\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"348027246\",\"updated_at_time\":\"1735491129000\",\"transferred_at_block\":\"348027246\",\"transferred_at_time\":\"1735491129000\",\"minted_at_block\":\"348026960\",\"minted_at_time\":\"1735490986000\",\"sales\":[],\"auctions\":[],\"prices\":[{\"market_contract\":\"atomicmarket\",\"token\":{\"token_symbol\":\"WAX\",\"token_precision\":8,\"token_contract\":\"eosio.token\"},\"median\":\"2600000000\",\"average\":\"2391666667\",\"suggested_median\":\"2690000000\",\"suggested_average\":\"2630000000\",\"min\":\"1200000000\",\"max\":\"3000000000\",\"sales\":\"6\"}],\"template_buyoffers\":[],\"data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/diamond_hero.png\",\"name\":\"Diamond - Hero\",\"type\":\"Hero\",\"rarity\":\"legendary\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"name\":\"Diamond - Hero\"}],\"maker_marketplace\":\"nft.hive\",\"taker_marketplace\":null,\"collection_name\":\"taco\",\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"is_seller_contract\":false,\"updated_at_block\":\"351129518\",\"updated_at_time\":\"1737043133000\",\"created_at_block\":\"351129518\",\"created_at_time\":\"1737043133000\",\"ordinality\":\"8\",\"state\":1},{\"market_contract\":\"atomicmarket\",\"assets_contract\":\"atomicassets\",\"sale_id\":\"170114506\",\"seller\":\"dkgbw.wam\",\"buyer\":null,\"offer_id\":\"178830021\",\"price\":{\"token_contract\":\"eosio.token\",\"token_symbol\":\"WAX\",\"token_precision\":8,\"median\":null,\"amount\":\"1900000000\"},\"listing_price\":\"1900000000\",\"listing_symbol\":\"WAX\",\"assets\":[{\"contract\":\"atomicassets\",\"asset_id\":\"1099951153450\",\"owner\":\"dkgbw.wam\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"acr.skin\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"video\",\"type\":\"string\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"rarity\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"235848165\",\"created_at_time\":\"1679393814000\"},\"template\":{\"template_id\":\"851875\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"74\",\"immutable_data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/sprinkles_sketch_card_back.png\",\"name\":\"Sprinkles Sketch - Card Back\",\"type\":\"Card Back\",\"rarity\":\"epic\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"created_at_time\":\"1730376191500\",\"created_at_block\":\"337798041\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"31\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"343745773\",\"updated_at_time\":\"1733350222000\",\"transferred_at_block\":\"343745773\",\"transferred_at_time\":\"1733350222000\",\"minted_at_block\":\"343745678\",\"minted_at_time\":\"1733350174500\",\"sales\":[],\"auctions\":[],\"prices\":[{\"market_contract\":\"atomicmarket\",\"token\":{\"token_symbol\":\"WAX\",\"token_precision\":8,\"token_contract\":\"eosio.token\"},\"median\":\"300000000\",\"average\":\"356629547\",\"suggested_median\":\"499900000\",\"suggested_average\":\"492785004\",\"min\":\"225000000\",\"max\":\"500000000\",\"sales\":\"11\"}],\"template_buyoffers\":[],\"data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/sprinkles_sketch_card_back.png\",\"name\":\"Sprinkles Sketch - Card Back\",\"type\":\"Card Back\",\"rarity\":\"epic\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"name\":\"Sprinkles Sketch - Card Back\"}],\"maker_marketplace\":\"nft.hive\",\"taker_marketplace\":null,\"collection_name\":\"taco\",\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"is_seller_contract\":false,\"updated_at_block\":\"383443916\",\"updated_at_time\":\"1753201339500\",\"created_at_block\":\"383443916\",\"created_at_time\":\"1753201339500\",\"ordinality\":\"9\",\"state\":1},{\"market_contract\":\"atomicmarket\",\"assets_contract\":\"atomicassets\",\"sale_id\":\"163811739\",\"seller\":\"rngbi.wam\",\"buyer\":null,\"offer_id\":\"172189332\",\"price\":{\"token_contract\":\"eosio.token\",\"token_symbol\":\"WAX\",\"token_precision\":8,\"median\":null,\"amount\":\"7000000000\"},\"listing_price\":\"7000000000\",\"listing_symbol\":\"WAX\",\"assets\":[{\"contract\":\"atomicassets\",\"asset_id\":\"1099951872600\",\"owner\":\"rngbi.wam\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"acr.skin\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"video\",\"type\":\"string\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"rarity\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"string\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"235848165\",\"created_at_time\":\"1679393814000\"},\"template\":{\"template_id\":\"851874\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"56\",\"immutable_data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/sprinkles_cuts_cauldron.png\",\"name\":\"Sprinkles Cuts - Cauldron\",\"type\":\"Cauldron\",\"rarity\":\"epic\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"created_at_time\":\"1730376188000\",\"created_at_block\":\"337798034\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"40\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"345258121\",\"updated_at_time\":\"1734106546500\",\"transferred_at_block\":\"345258121\",\"transferred_at_time\":\"1734106546500\",\"minted_at_block\":\"345257010\",\"minted_at_time\":\"1734105991000\",\"sales\":[],\"auctions\":[],\"prices\":[{\"market_contract\":\"atomicmarket\",\"token\":{\"token_symbol\":\"WAX\",\"token_precision\":8,\"token_contract\":\"eosio.token\"},\"median\":\"799899000\",\"average\":\"620171304\",\"suggested_median\":\"800000000\",\"suggested_average\":\"820674086\",\"min\":\"278000000\",\"max\":\"900000000\",\"sales\":\"8\"}],\"template_buyoffers\":[],\"data\":{\"img\":\"https://assets.tacostudios.io/acryptia/skins/sprinkles_cuts_cauldron.png\",\"name\":\"Sprinkles Cuts - Cauldron\",\"type\":\"Cauldron\",\"rarity\":\"epic\",\"series\":\"5\",\"description\":\"This skin can be used to customize your Acryptia Dungeon\"},\"name\":\"Sprinkles Cuts - Cauldron\"}],\"maker_marketplace\":\"market.nefty\",\"taker_marketplace\":null,\"collection_name\":\"taco\",\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"is_seller_contract\":false,\"updated_at_block\":\"345259073\",\"updated_at_time\":\"1734107022500\",\"created_at_block\":\"345259073\",\"created_at_time\":\"1734107022500\",\"ordinality\":\"10\",\"state\":1}],\"query_time\":1756585624776}"
+}

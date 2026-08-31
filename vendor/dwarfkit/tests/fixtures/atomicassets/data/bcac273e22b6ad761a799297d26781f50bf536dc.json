@@ -1,0 +1,38 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/collections/testfighters",
+        "params": {
+            "method": "GET",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "contract": "atomicassets",
+            "collection_name": "testfighters",
+            "name": null,
+            "img": null,
+            "author": "4je.m.wam",
+            "allow_notify": true,
+            "authorized_accounts": [
+                "4je.m.wam",
+                "lg5nw.wam",
+                "5ql.s.wam",
+                "unbox.nft",
+                "config.nft",
+                "craft.nft"
+            ],
+            "notify_accounts": [],
+            "market_fee": 0.09,
+            "data": {
+                "description": "Test Fighters on wax!"
+            },
+            "created_at_time": "1612898547500",
+            "created_at_block": "102925412"
+        },
+        "query_time": 1756585607194
+    },
+    "text": "{\"success\":true,\"data\":{\"contract\":\"atomicassets\",\"collection_name\":\"testfighters\",\"name\":null,\"img\":null,\"author\":\"4je.m.wam\",\"allow_notify\":true,\"authorized_accounts\":[\"4je.m.wam\",\"lg5nw.wam\",\"5ql.s.wam\",\"unbox.nft\",\"config.nft\",\"craft.nft\"],\"notify_accounts\":[],\"market_fee\":0.09,\"data\":{\"description\":\"Test Fighters on wax!\"},\"created_at_time\":\"1612898547500\",\"created_at_block\":\"102925412\"},\"query_time\":1756585607194}"
+}

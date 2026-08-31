@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+# Dwarfkit GDExtension (BLUEPRINT.md 8.2). Requires godot-cpp checked out in
+# godot-cpp/ (4.3+) and the prebuilt dwarfkit static library:
+#   cmake -S <dwarfkit> -B build-godot -DDK_WITH_CURL=OFF -DDK_BUILD_TESTS=OFF \
+#         -DDK_BUILD_TOOLS=OFF -DDK_BUILD_EXAMPLES=OFF
+#   cmake --build build-godot --config Release --target dwarfkit
+# then place the lib in lib/<platform>/ and point DWARFKIT_ROOT at the repo.
+import os
+
+env = SConscript("godot-cpp/SConstruct")
+
+dwarfkit_root = os.environ.get("DWARFKIT_ROOT", "../..")
+env.Append(CPPPATH=[
+    "src/",
+    os.path.join(dwarfkit_root, "include"),
+    os.path.join(dwarfkit_root, "third_party/expected/include"),
+    os.path.join(dwarfkit_root, "third_party/nlohmann/include"),
+])
+env.Append(LIBPATH=["lib/" + env["platform"]])
+env.Append(LIBS=["dwarfkit"])
+
+sources = Glob("src/*.cpp")
+
+if env["platform"] == "windows":
+    library = env.SharedLibrary(
+        "demo/bin/dwarfkit{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
+        source=sources,
+    )
+else:
+    library = env.SharedLibrary(
+        "demo/bin/libdwarfkit{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
+        source=sources,
+    )
+
+Default(library)

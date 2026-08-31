@@ -1,0 +1,18 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"table\":\"namebids\",\"code\":\"eosio\",\"scope\":\"eosio\",\"limit\":1,\"index_position\":\"primary\",\"key_type\":\"name\",\"json\":false}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            "0000000000000000a09863fe4d96bc66b80b000000000000a002d1d51e6f0500"
+        ],
+        "more": true,
+        "next_key": "594475150812905472"
+    },
+    "text": "{\"rows\":[\"0000000000000000a09863fe4d96bc66b80b000000000000a002d1d51e6f0500\"],\"more\":true,\"next_key\":\"594475150812905472\"}"
+}

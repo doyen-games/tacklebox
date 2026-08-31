@@ -1,0 +1,252 @@
+cmake_minimum_required(VERSION 3.24)
+project(TackleBox VERSION 0.1.0 LANGUAGES C CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_C_STANDARD 11)
+
+option(TB_BUILD_TESTS "Build tacklebox_tests" ${PROJECT_IS_TOP_LEVEL})
+
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
+endif()
+
+# ---------------------------------------------------------------------------
+# Dwarfkit (vendored) - the Antelope SDK layer. We consume the static library
+# plus its curl transport; its own tests/tools/examples stay out of the build.
+# ---------------------------------------------------------------------------
+set(DK_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(DK_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+set(DK_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(DK_WITH_CURL ON CACHE BOOL "" FORCE)
+
+# Mobile TLS for the curl dwarfkit fetches: Android has no system TLS library
+# curl can see, so pull mbedTLS first and point curl at it; iOS uses the OS
+# Secure Transport stack.
+if(ANDROID)
+  include(FetchContent)
+  set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+  set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
+  FetchContent_Declare(mbedtls
+    GIT_REPOSITORY https://github.com/Mbed-TLS/mbedtls
+    GIT_TAG v3.6.2
+    GIT_SHALLOW TRUE)
+  FetchContent_MakeAvailable(mbedtls)
+  set(CURL_USE_MBEDTLS ON CACHE BOOL "" FORCE)
+  set(MBEDTLS_INCLUDE_DIRS ${mbedtls_SOURCE_DIR}/include CACHE PATH "" FORCE)
+  set(MBEDTLS_LIBRARY mbedtls CACHE STRING "" FORCE)
+  set(MBEDX509_LIBRARY mbedx509 CACHE STRING "" FORCE)
+  set(MBEDCRYPTO_LIBRARY mbedcrypto CACHE STRING "" FORCE)
+elseif(APPLE AND CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  set(CURL_USE_SECTRANSP ON CACHE BOOL "" FORCE)
+  set(CURL_USE_OPENSSL OFF CACHE BOOL "" FORCE)
+endif()
+
+add_subdirectory(vendor/dwarfkit)
+
+# ---------------------------------------------------------------------------
+# SDL3 - one windowing/input/lifecycle layer for desktop AND mobile.
+# TB_MOBILE marks iOS/Android configurations (GLES context, touch, fullscreen).
+# ---------------------------------------------------------------------------
+option(TB_MOBILE "Build for a touch-first mobile platform (iOS/Android)" OFF)
+if(ANDROID OR (APPLE AND CMAKE_SYSTEM_NAME STREQUAL "iOS"))
+  set(TB_MOBILE ON CACHE BOOL "" FORCE)
+endif()
+
+set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+set(SDL_STATIC ON CACHE BOOL "" FORCE)
+set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
+set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(vendor/sdl)
+
+# ---------------------------------------------------------------------------
+# Dear ImGui - core + SDL3/OpenGL3 backends as a static library.
+# ---------------------------------------------------------------------------
+add_library(imgui STATIC
+  vendor/imgui/imgui.cpp
+  vendor/imgui/imgui_draw.cpp
+  vendor/imgui/imgui_tables.cpp
+  vendor/imgui/imgui_widgets.cpp
+  vendor/imgui/backends/imgui_impl_sdl3.cpp
+  vendor/imgui/backends/imgui_impl_opengl3.cpp)
+target_include_directories(imgui SYSTEM PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui
+  ${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui/backends)
+target_link_libraries(imgui PUBLIC SDL3::SDL3-static)
+target_compile_definitions(imgui PUBLIC IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
+if(TB_MOBILE)
+  target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_ES3)
+endif()
+
+# ---------------------------------------------------------------------------
+# Embedded assets: fonts are baked into the binary so the app is one file.
+# A tiny host tool converts each TTF into a C header at build time.
+# ---------------------------------------------------------------------------
+add_executable(tb_embed tools/embed.c)
+
+set(TB_EMBED_DIR ${CMAKE_CURRENT_BINARY_DIR}/embedded)
+file(MAKE_DIRECTORY ${TB_EMBED_DIR})
+
+function(tb_embed_font NAME FILE)
+  add_custom_command(
+    OUTPUT ${TB_EMBED_DIR}/${NAME}.h
+    COMMAND tb_embed ${CMAKE_CURRENT_SOURCE_DIR}/${FILE} ${TB_EMBED_DIR}/${NAME}.h ${NAME}
+    DEPENDS tb_embed ${CMAKE_CURRENT_SOURCE_DIR}/${FILE}
+    COMMENT "Embedding ${FILE}")
+  set(TB_EMBED_HEADERS ${TB_EMBED_HEADERS} ${TB_EMBED_DIR}/${NAME}.h PARENT_SCOPE)
+endfunction()
+
+tb_embed_font(font_rajdhani_regular  assets/fonts/Rajdhani-Regular.ttf)
+tb_embed_font(font_rajdhani_medium   assets/fonts/Rajdhani-Medium.ttf)
+tb_embed_font(font_rajdhani_semibold assets/fonts/Rajdhani-SemiBold.ttf)
+tb_embed_font(font_rajdhani_bold     assets/fonts/Rajdhani-Bold.ttf)
+tb_embed_font(font_sharetech_mono    assets/fonts/ShareTechMono-Regular.ttf)
+
+add_custom_target(tb_embedded_assets DEPENDS ${TB_EMBED_HEADERS})
+
+# ---------------------------------------------------------------------------
+# tacklebox_core - everything below the UI: vault, guard, chain services,
+# application controller. UI-free so the test binary can link it.
+# ---------------------------------------------------------------------------
+add_library(tacklebox_core STATIC
+  src/core/clipboard.cpp
+  src/core/log.cpp
+  src/core/paths.cpp
+  src/core/rng.cpp
+  src/core/secure.cpp
+  src/core/task_runner.cpp
+  src/core/util.cpp
+  src/vault/cipher.cpp
+  src/vault/kdf.cpp
+  src/vault/vault.cpp
+  src/guard/engine.cpp
+  src/guard/risk.cpp
+  src/guard/rules.cpp
+  src/chain/netreg.cpp
+  src/chain/service.cpp
+  src/app/autopilot_util.cpp
+  src/app/bridge.cpp
+  src/app/link.cpp
+  src/app/controller.cpp)
+target_include_directories(tacklebox_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(tacklebox_core PUBLIC dwarfkit dwarfkit_curl dk_trezor_crypto)
+
+if(WIN32)
+  target_link_libraries(tacklebox_core PUBLIC bcrypt)
+endif()
+
+# MinGW: fold the GCC runtime into the binary so the app runs without the
+# toolchain's DLLs next to it (single-file portability).
+if(MINGW)
+  add_link_options(-static-libgcc -static-libstdc++ -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive,-Bdynamic)
+endif()
+
+# Warnings for our own code only.
+function(tb_warnings target)
+  if(MSVC)
+    target_compile_options(${target} PRIVATE /W4 /permissive- /utf-8 /Zc:preprocessor)
+  else()
+    target_compile_options(${target} PRIVATE -Wall -Wextra -Wno-missing-field-initializers)
+  endif()
+endfunction()
+tb_warnings(tacklebox_core)
+
+# ---------------------------------------------------------------------------
+# tacklebox - the application.
+# ---------------------------------------------------------------------------
+set(TB_APP_SOURCES
+  src/main.cpp
+  src/ui/app_ui.cpp
+  src/ui/fx.cpp
+  src/ui/layout.cpp
+  src/ui/qa.cpp
+  src/ui/texcache.cpp
+  src/ui/theme.cpp
+  src/ui/widgets.cpp
+  src/ui/views/assets.cpp
+  src/ui/views/autopilot.cpp
+  src/ui/views/contracts.cpp
+  src/ui/views/dashboard.cpp
+  src/ui/views/explore.cpp
+  src/ui/views/governance.cpp
+  src/ui/views/history.cpp
+  src/ui/views/msig.cpp
+  src/ui/views/onboarding.cpp
+  src/ui/views/resources.cpp
+  src/ui/views/settings.cpp
+  src/ui/views/setup.cpp
+  src/ui/views/shell.cpp
+  src/ui/views/signmodal.cpp
+  src/ui/views/transfer.cpp
+  src/ui/views/unlock.cpp
+  src/ui/views/vaultview.cpp
+  src/ui/views/whitelist.cpp)
+
+if(ANDROID)
+  # SDL's Android activity loads the app as libmain.so.
+  add_library(tacklebox SHARED ${TB_APP_SOURCES})
+  set_target_properties(tacklebox PROPERTIES OUTPUT_NAME main)
+else()
+  add_executable(tacklebox ${TB_APP_SOURCES})
+endif()
+add_dependencies(tacklebox tb_embedded_assets)
+target_include_directories(tacklebox PRIVATE ${TB_EMBED_DIR})
+target_include_directories(tacklebox SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/vendor/stb)
+target_link_libraries(tacklebox PRIVATE tacklebox_core imgui dk_qrcodegen)
+tb_warnings(tacklebox)
+
+if(TB_MOBILE)
+  target_compile_definitions(tacklebox PRIVATE TB_MOBILE)
+  target_compile_definitions(tacklebox_core PUBLIC TB_MOBILE)
+endif()
+
+if(WIN32)
+  target_link_libraries(tacklebox PRIVATE opengl32 dwmapi)
+  # Release builds are pure GUI apps; Debug keeps the console for logs.
+  set_target_properties(tacklebox PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
+elseif(ANDROID)
+  # Built as a shared library loaded by SDL's Android activity
+  # (platform/android). GLES comes from the NDK.
+  target_link_libraries(tacklebox PRIVATE GLESv3 EGL android log)
+elseif(APPLE AND CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  target_link_libraries(tacklebox PRIVATE "-framework OpenGLES" "-framework UIKit")
+  set_target_properties(tacklebox PROPERTIES
+    MACOSX_BUNDLE TRUE
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/platform/ios/Info.plist.in
+    MACOSX_BUNDLE_GUI_IDENTIFIER "io.tacklebox.wallet"
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION})
+elseif(APPLE)
+  find_library(COCOA_LIB Cocoa)
+  find_library(OPENGL_LIB OpenGL)
+  find_library(IOKIT_LIB IOKit)
+  target_link_libraries(tacklebox PRIVATE ${COCOA_LIB} ${OPENGL_LIB} ${IOKIT_LIB})
+  set_target_properties(tacklebox PROPERTIES
+    MACOSX_BUNDLE TRUE
+    MACOSX_BUNDLE_BUNDLE_NAME "TackleBox"
+    MACOSX_BUNDLE_GUI_IDENTIFIER "io.tacklebox.wallet"
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION})
+else()
+  find_package(OpenGL REQUIRED)
+  target_link_libraries(tacklebox PRIVATE OpenGL::GL)
+endif()
+
+# ---------------------------------------------------------------------------
+# Tests (doctest comes vendored with dwarfkit).
+# ---------------------------------------------------------------------------
+if(TB_BUILD_TESTS)
+  enable_testing()
+  add_executable(tacklebox_tests
+    tests/main.cpp
+    tests/test_autopilot.cpp
+    tests/test_cipher.cpp
+    tests/test_guard.cpp
+    tests/test_kdf.cpp
+    tests/test_risk.cpp
+    tests/test_vault.cpp)
+  target_link_libraries(tacklebox_tests PRIVATE tacklebox_core dk_doctest)
+  tb_warnings(tacklebox_tests)
+  add_test(NAME tacklebox_tests COMMAND tacklebox_tests)
+endif()

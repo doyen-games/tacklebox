@@ -1,0 +1,44 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_by_scope",
+        "params": {
+            "method": "POST",
+            "body": "{\"code\":\"eosio.msig\",\"table\":\"proposal\",\"limit\":1000,\"lower_bound\":\"teamgreymass\",\"upper_bound\":\"telosdompet1\"}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            {
+                "code": "eosio.msig",
+                "scope": "teamgreymass",
+                "table": "proposal",
+                "payer": "teamgreymass",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "teegway2day1",
+                "table": "proposal",
+                "payer": "teegway2day1",
+                "count": 4
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "tella15.ftw",
+                "table": "proposal",
+                "payer": "tella15.ftw",
+                "count": 1
+            },
+            {
+                "code": "eosio.msig",
+                "scope": "telosdompet1",
+                "table": "proposal",
+                "payer": "telosdompet1",
+                "count": 1
+            }
+        ],
+        "more": ""
+    },
+    "text": "{\"rows\":[{\"code\":\"eosio.msig\",\"scope\":\"teamgreymass\",\"table\":\"proposal\",\"payer\":\"teamgreymass\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"teegway2day1\",\"table\":\"proposal\",\"payer\":\"teegway2day1\",\"count\":4},{\"code\":\"eosio.msig\",\"scope\":\"tella15.ftw\",\"table\":\"proposal\",\"payer\":\"tella15.ftw\",\"count\":1},{\"code\":\"eosio.msig\",\"scope\":\"telosdompet1\",\"table\":\"proposal\",\"payer\":\"telosdompet1\",\"count\":1}],\"more\":\"\"}"
+}

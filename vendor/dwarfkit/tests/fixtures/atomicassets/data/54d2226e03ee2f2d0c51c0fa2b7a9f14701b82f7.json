@@ -1,0 +1,1308 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/assets",
+        "params": {
+            "method": "POST",
+            "body": "{\"collection_name\":\"taco,alien.worlds\",\"owner\":\"taco\",\"limit\":\"10\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "contract": "atomicassets",
+                "asset_id": "1099851897745",
+                "owner": "taco",
+                "is_transferable": true,
+                "is_burnable": true,
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "schema": {
+                    "schema_name": "item",
+                    "format": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "name": "img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "description",
+                            "type": "string"
+                        },
+                        {
+                            "name": "static_img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "blend_link",
+                            "type": "string"
+                        },
+                        {
+                            "name": "power",
+                            "type": "string"
+                        },
+                        {
+                            "name": "rarity",
+                            "type": "string"
+                        },
+                        {
+                            "name": "acr_owner",
+                            "type": "string"
+                        },
+                        {
+                            "name": "size",
+                            "type": "string"
+                        },
+                        {
+                            "name": "value",
+                            "type": "string"
+                        }
+                    ],
+                    "created_at_block": "159727801",
+                    "created_at_time": "1641318996000"
+                },
+                "template": {
+                    "template_id": "654240",
+                    "max_supply": "0",
+                    "is_transferable": true,
+                    "is_burnable": true,
+                    "issued_supply": "1568",
+                    "immutable_data": {
+                        "img": "QmUZaMua7betQF4dPUGXEHoyNfi3dC73gDVkyDHqCNSpBx",
+                        "name": "Seeds",
+                        "rarity": "uncommon"
+                    },
+                    "created_at_time": "1674954067500",
+                    "created_at_block": "226972647"
+                },
+                "mutable_data": {},
+                "immutable_data": {},
+                "template_mint": "1",
+                "backed_tokens": [],
+                "burned_by_account": null,
+                "burned_at_block": null,
+                "burned_at_time": null,
+                "updated_at_block": "226985756",
+                "updated_at_time": "1674960622500",
+                "transferred_at_block": "226985756",
+                "transferred_at_time": "1674960622500",
+                "minted_at_block": "226985756",
+                "minted_at_time": "1674960622500",
+                "data": {
+                    "img": "QmUZaMua7betQF4dPUGXEHoyNfi3dC73gDVkyDHqCNSpBx",
+                    "name": "Seeds",
+                    "rarity": "uncommon"
+                },
+                "name": "Seeds"
+            },
+            {
+                "contract": "atomicassets",
+                "asset_id": "1099851897197",
+                "owner": "taco",
+                "is_transferable": true,
+                "is_burnable": true,
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "schema": {
+                    "schema_name": "pack",
+                    "format": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "name": "img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "description",
+                            "type": "string"
+                        },
+                        {
+                            "name": "series",
+                            "type": "uint64"
+                        },
+                        {
+                            "name": "type",
+                            "type": "string"
+                        },
+                        {
+                            "name": "website",
+                            "type": "string"
+                        },
+                        {
+                            "name": "size",
+                            "type": "string"
+                        },
+                        {
+                            "name": "acr_owner",
+                            "type": "string"
+                        }
+                    ],
+                    "created_at_block": "128484359",
+                    "created_at_time": "1625685127500"
+                },
+                "template": {
+                    "template_id": "654285",
+                    "max_supply": "0",
+                    "is_transferable": true,
+                    "is_burnable": true,
+                    "issued_supply": "36348",
+                    "immutable_data": {
+                        "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                        "name": "Universe Pack - Series One",
+                        "size": "single",
+                        "type": "universe",
+                        "series": "1",
+                        "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                    },
+                    "created_at_time": "1674959892000",
+                    "created_at_block": "226984295"
+                },
+                "mutable_data": {},
+                "immutable_data": {},
+                "template_mint": "7",
+                "backed_tokens": [],
+                "burned_by_account": null,
+                "burned_at_block": null,
+                "burned_at_time": null,
+                "updated_at_block": "226985207",
+                "updated_at_time": "1674960348000",
+                "transferred_at_block": "226985207",
+                "transferred_at_time": "1674960348000",
+                "minted_at_block": "226985207",
+                "minted_at_time": "1674960348000",
+                "data": {
+                    "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                    "name": "Universe Pack - Series One",
+                    "size": "single",
+                    "type": "universe",
+                    "series": "1",
+                    "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                },
+                "name": "Universe Pack - Series One"
+            },
+            {
+                "contract": "atomicassets",
+                "asset_id": "1099851897196",
+                "owner": "taco",
+                "is_transferable": true,
+                "is_burnable": true,
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "schema": {
+                    "schema_name": "pack",
+                    "format": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "name": "img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "description",
+                            "type": "string"
+                        },
+                        {
+                            "name": "series",
+                            "type": "uint64"
+                        },
+                        {
+                            "name": "type",
+                            "type": "string"
+                        },
+                        {
+                            "name": "website",
+                            "type": "string"
+                        },
+                        {
+                            "name": "size",
+                            "type": "string"
+                        },
+                        {
+                            "name": "acr_owner",
+                            "type": "string"
+                        }
+                    ],
+                    "created_at_block": "128484359",
+                    "created_at_time": "1625685127500"
+                },
+                "template": {
+                    "template_id": "654285",
+                    "max_supply": "0",
+                    "is_transferable": true,
+                    "is_burnable": true,
+                    "issued_supply": "36348",
+                    "immutable_data": {
+                        "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                        "name": "Universe Pack - Series One",
+                        "size": "single",
+                        "type": "universe",
+                        "series": "1",
+                        "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                    },
+                    "created_at_time": "1674959892000",
+                    "created_at_block": "226984295"
+                },
+                "mutable_data": {},
+                "immutable_data": {},
+                "template_mint": "6",
+                "backed_tokens": [],
+                "burned_by_account": null,
+                "burned_at_block": null,
+                "burned_at_time": null,
+                "updated_at_block": "226985207",
+                "updated_at_time": "1674960348000",
+                "transferred_at_block": "226985207",
+                "transferred_at_time": "1674960348000",
+                "minted_at_block": "226985207",
+                "minted_at_time": "1674960348000",
+                "data": {
+                    "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                    "name": "Universe Pack - Series One",
+                    "size": "single",
+                    "type": "universe",
+                    "series": "1",
+                    "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                },
+                "name": "Universe Pack - Series One"
+            },
+            {
+                "contract": "atomicassets",
+                "asset_id": "1099851897195",
+                "owner": "taco",
+                "is_transferable": true,
+                "is_burnable": true,
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "schema": {
+                    "schema_name": "pack",
+                    "format": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "name": "img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "description",
+                            "type": "string"
+                        },
+                        {
+                            "name": "series",
+                            "type": "uint64"
+                        },
+                        {
+                            "name": "type",
+                            "type": "string"
+                        },
+                        {
+                            "name": "website",
+                            "type": "string"
+                        },
+                        {
+                            "name": "size",
+                            "type": "string"
+                        },
+                        {
+                            "name": "acr_owner",
+                            "type": "string"
+                        }
+                    ],
+                    "created_at_block": "128484359",
+                    "created_at_time": "1625685127500"
+                },
+                "template": {
+                    "template_id": "654285",
+                    "max_supply": "0",
+                    "is_transferable": true,
+                    "is_burnable": true,
+                    "issued_supply": "36348",
+                    "immutable_data": {
+                        "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                        "name": "Universe Pack - Series One",
+                        "size": "single",
+                        "type": "universe",
+                        "series": "1",
+                        "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                    },
+                    "created_at_time": "1674959892000",
+                    "created_at_block": "226984295"
+                },
+                "mutable_data": {},
+                "immutable_data": {},
+                "template_mint": "5",
+                "backed_tokens": [],
+                "burned_by_account": null,
+                "burned_at_block": null,
+                "burned_at_time": null,
+                "updated_at_block": "226985207",
+                "updated_at_time": "1674960348000",
+                "transferred_at_block": "226985207",
+                "transferred_at_time": "1674960348000",
+                "minted_at_block": "226985207",
+                "minted_at_time": "1674960348000",
+                "data": {
+                    "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                    "name": "Universe Pack - Series One",
+                    "size": "single",
+                    "type": "universe",
+                    "series": "1",
+                    "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                },
+                "name": "Universe Pack - Series One"
+            },
+            {
+                "contract": "atomicassets",
+                "asset_id": "1099851897194",
+                "owner": "taco",
+                "is_transferable": true,
+                "is_burnable": true,
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "schema": {
+                    "schema_name": "pack",
+                    "format": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "name": "img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "description",
+                            "type": "string"
+                        },
+                        {
+                            "name": "series",
+                            "type": "uint64"
+                        },
+                        {
+                            "name": "type",
+                            "type": "string"
+                        },
+                        {
+                            "name": "website",
+                            "type": "string"
+                        },
+                        {
+                            "name": "size",
+                            "type": "string"
+                        },
+                        {
+                            "name": "acr_owner",
+                            "type": "string"
+                        }
+                    ],
+                    "created_at_block": "128484359",
+                    "created_at_time": "1625685127500"
+                },
+                "template": {
+                    "template_id": "654285",
+                    "max_supply": "0",
+                    "is_transferable": true,
+                    "is_burnable": true,
+                    "issued_supply": "36348",
+                    "immutable_data": {
+                        "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                        "name": "Universe Pack - Series One",
+                        "size": "single",
+                        "type": "universe",
+                        "series": "1",
+                        "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                    },
+                    "created_at_time": "1674959892000",
+                    "created_at_block": "226984295"
+                },
+                "mutable_data": {},
+                "immutable_data": {},
+                "template_mint": "4",
+                "backed_tokens": [],
+                "burned_by_account": null,
+                "burned_at_block": null,
+                "burned_at_time": null,
+                "updated_at_block": "226985207",
+                "updated_at_time": "1674960348000",
+                "transferred_at_block": "226985207",
+                "transferred_at_time": "1674960348000",
+                "minted_at_block": "226985207",
+                "minted_at_time": "1674960348000",
+                "data": {
+                    "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                    "name": "Universe Pack - Series One",
+                    "size": "single",
+                    "type": "universe",
+                    "series": "1",
+                    "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                },
+                "name": "Universe Pack - Series One"
+            },
+            {
+                "contract": "atomicassets",
+                "asset_id": "1099851897193",
+                "owner": "taco",
+                "is_transferable": true,
+                "is_burnable": true,
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "schema": {
+                    "schema_name": "pack",
+                    "format": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "name": "img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "description",
+                            "type": "string"
+                        },
+                        {
+                            "name": "series",
+                            "type": "uint64"
+                        },
+                        {
+                            "name": "type",
+                            "type": "string"
+                        },
+                        {
+                            "name": "website",
+                            "type": "string"
+                        },
+                        {
+                            "name": "size",
+                            "type": "string"
+                        },
+                        {
+                            "name": "acr_owner",
+                            "type": "string"
+                        }
+                    ],
+                    "created_at_block": "128484359",
+                    "created_at_time": "1625685127500"
+                },
+                "template": {
+                    "template_id": "654285",
+                    "max_supply": "0",
+                    "is_transferable": true,
+                    "is_burnable": true,
+                    "issued_supply": "36348",
+                    "immutable_data": {
+                        "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                        "name": "Universe Pack - Series One",
+                        "size": "single",
+                        "type": "universe",
+                        "series": "1",
+                        "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                    },
+                    "created_at_time": "1674959892000",
+                    "created_at_block": "226984295"
+                },
+                "mutable_data": {},
+                "immutable_data": {},
+                "template_mint": "3",
+                "backed_tokens": [],
+                "burned_by_account": null,
+                "burned_at_block": null,
+                "burned_at_time": null,
+                "updated_at_block": "226985207",
+                "updated_at_time": "1674960348000",
+                "transferred_at_block": "226985207",
+                "transferred_at_time": "1674960348000",
+                "minted_at_block": "226985207",
+                "minted_at_time": "1674960348000",
+                "data": {
+                    "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                    "name": "Universe Pack - Series One",
+                    "size": "single",
+                    "type": "universe",
+                    "series": "1",
+                    "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                },
+                "name": "Universe Pack - Series One"
+            },
+            {
+                "contract": "atomicassets",
+                "asset_id": "1099851897192",
+                "owner": "taco",
+                "is_transferable": true,
+                "is_burnable": true,
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "schema": {
+                    "schema_name": "pack",
+                    "format": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "name": "img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "description",
+                            "type": "string"
+                        },
+                        {
+                            "name": "series",
+                            "type": "uint64"
+                        },
+                        {
+                            "name": "type",
+                            "type": "string"
+                        },
+                        {
+                            "name": "website",
+                            "type": "string"
+                        },
+                        {
+                            "name": "size",
+                            "type": "string"
+                        },
+                        {
+                            "name": "acr_owner",
+                            "type": "string"
+                        }
+                    ],
+                    "created_at_block": "128484359",
+                    "created_at_time": "1625685127500"
+                },
+                "template": {
+                    "template_id": "654285",
+                    "max_supply": "0",
+                    "is_transferable": true,
+                    "is_burnable": true,
+                    "issued_supply": "36348",
+                    "immutable_data": {
+                        "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                        "name": "Universe Pack - Series One",
+                        "size": "single",
+                        "type": "universe",
+                        "series": "1",
+                        "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                    },
+                    "created_at_time": "1674959892000",
+                    "created_at_block": "226984295"
+                },
+                "mutable_data": {},
+                "immutable_data": {},
+                "template_mint": "2",
+                "backed_tokens": [],
+                "burned_by_account": null,
+                "burned_at_block": null,
+                "burned_at_time": null,
+                "updated_at_block": "226985207",
+                "updated_at_time": "1674960348000",
+                "transferred_at_block": "226985207",
+                "transferred_at_time": "1674960348000",
+                "minted_at_block": "226985207",
+                "minted_at_time": "1674960348000",
+                "data": {
+                    "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                    "name": "Universe Pack - Series One",
+                    "size": "single",
+                    "type": "universe",
+                    "series": "1",
+                    "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                },
+                "name": "Universe Pack - Series One"
+            },
+            {
+                "contract": "atomicassets",
+                "asset_id": "1099851897191",
+                "owner": "taco",
+                "is_transferable": true,
+                "is_burnable": true,
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "schema": {
+                    "schema_name": "pack",
+                    "format": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "name": "img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "description",
+                            "type": "string"
+                        },
+                        {
+                            "name": "series",
+                            "type": "uint64"
+                        },
+                        {
+                            "name": "type",
+                            "type": "string"
+                        },
+                        {
+                            "name": "website",
+                            "type": "string"
+                        },
+                        {
+                            "name": "size",
+                            "type": "string"
+                        },
+                        {
+                            "name": "acr_owner",
+                            "type": "string"
+                        }
+                    ],
+                    "created_at_block": "128484359",
+                    "created_at_time": "1625685127500"
+                },
+                "template": {
+                    "template_id": "654285",
+                    "max_supply": "0",
+                    "is_transferable": true,
+                    "is_burnable": true,
+                    "issued_supply": "36348",
+                    "immutable_data": {
+                        "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                        "name": "Universe Pack - Series One",
+                        "size": "single",
+                        "type": "universe",
+                        "series": "1",
+                        "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                    },
+                    "created_at_time": "1674959892000",
+                    "created_at_block": "226984295"
+                },
+                "mutable_data": {},
+                "immutable_data": {},
+                "template_mint": "1",
+                "backed_tokens": [],
+                "burned_by_account": null,
+                "burned_at_block": null,
+                "burned_at_time": null,
+                "updated_at_block": "226985207",
+                "updated_at_time": "1674960348000",
+                "transferred_at_block": "226985207",
+                "transferred_at_time": "1674960348000",
+                "minted_at_block": "226985207",
+                "minted_at_time": "1674960348000",
+                "data": {
+                    "img": "QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW",
+                    "name": "Universe Pack - Series One",
+                    "size": "single",
+                    "type": "universe",
+                    "series": "1",
+                    "description": "This pack contains 1 crafting item or a common Brigade equipment"
+                },
+                "name": "Universe Pack - Series One"
+            },
+            {
+                "contract": "atomicassets",
+                "asset_id": "1099851887066",
+                "owner": "taco",
+                "is_transferable": true,
+                "is_burnable": true,
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "schema": {
+                    "schema_name": "item",
+                    "format": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "name": "img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "description",
+                            "type": "string"
+                        },
+                        {
+                            "name": "static_img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "blend_link",
+                            "type": "string"
+                        },
+                        {
+                            "name": "power",
+                            "type": "string"
+                        },
+                        {
+                            "name": "rarity",
+                            "type": "string"
+                        },
+                        {
+                            "name": "acr_owner",
+                            "type": "string"
+                        },
+                        {
+                            "name": "size",
+                            "type": "string"
+                        },
+                        {
+                            "name": "value",
+                            "type": "string"
+                        }
+                    ],
+                    "created_at_block": "159727801",
+                    "created_at_time": "1641318996000"
+                },
+                "template": {
+                    "template_id": "654236",
+                    "max_supply": "0",
+                    "is_transferable": true,
+                    "is_burnable": true,
+                    "issued_supply": "4688",
+                    "immutable_data": {
+                        "img": "Qmf99bHtGm43Rd7d7R1RfqybMyo8FRFJCDEvo1j9tkEUyi",
+                        "name": "Water",
+                        "rarity": "common"
+                    },
+                    "created_at_time": "1674953760000",
+                    "created_at_block": "226972032"
+                },
+                "mutable_data": {},
+                "immutable_data": {},
+                "template_mint": "1",
+                "backed_tokens": [],
+                "burned_by_account": null,
+                "burned_at_block": null,
+                "burned_at_time": null,
+                "updated_at_block": "226981601",
+                "updated_at_time": "1674958545000",
+                "transferred_at_block": "226981601",
+                "transferred_at_time": "1674958545000",
+                "minted_at_block": "226981601",
+                "minted_at_time": "1674958545000",
+                "data": {
+                    "img": "Qmf99bHtGm43Rd7d7R1RfqybMyo8FRFJCDEvo1j9tkEUyi",
+                    "name": "Water",
+                    "rarity": "common"
+                },
+                "name": "Water"
+            },
+            {
+                "contract": "atomicassets",
+                "asset_id": "1099795046474",
+                "owner": "taco",
+                "is_transferable": true,
+                "is_burnable": true,
+                "collection": {
+                    "collection_name": "taco",
+                    "name": "Taco",
+                    "img": "QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3",
+                    "images": "{\"banner_1920x500\":\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\",\"logo_512x512\":\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\"}",
+                    "author": "taco",
+                    "allow_notify": true,
+                    "authorized_accounts": [
+                        "taco",
+                        "atomicdropsx",
+                        "atomicpacksx",
+                        "neftyblocksd",
+                        "s.taco",
+                        "blend.nefty",
+                        "blenderizerx",
+                        "g.taco",
+                        "brigade.taco",
+                        "b.taco",
+                        "mkt.taco",
+                        "acr.taco",
+                        "takitakiboom",
+                        "l.taco",
+                        "worker.taco",
+                        "tacotacopool",
+                        "primarysale1",
+                        "combz.taco",
+                        "v.taco"
+                    ],
+                    "notify_accounts": [
+                        "g.taco",
+                        "brigade.taco",
+                        "stake.taco",
+                        "swap.taco",
+                        "blend.nefty",
+                        "neftyblocksd",
+                        "neftyblocksp",
+                        "rent.taco",
+                        "a.taco"
+                    ],
+                    "market_fee": 0.06,
+                    "created_at_block": "123329591",
+                    "created_at_time": "1623106508500"
+                },
+                "schema": {
+                    "schema_name": "item",
+                    "format": [
+                        {
+                            "name": "name",
+                            "type": "string"
+                        },
+                        {
+                            "name": "img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "description",
+                            "type": "string"
+                        },
+                        {
+                            "name": "static_img",
+                            "type": "image"
+                        },
+                        {
+                            "name": "blend_link",
+                            "type": "string"
+                        },
+                        {
+                            "name": "power",
+                            "type": "string"
+                        },
+                        {
+                            "name": "rarity",
+                            "type": "string"
+                        },
+                        {
+                            "name": "acr_owner",
+                            "type": "string"
+                        },
+                        {
+                            "name": "size",
+                            "type": "string"
+                        },
+                        {
+                            "name": "value",
+                            "type": "string"
+                        }
+                    ],
+                    "created_at_block": "159727801",
+                    "created_at_time": "1641318996000"
+                },
+                "template": {
+                    "template_id": "531613",
+                    "max_supply": "1234",
+                    "is_transferable": true,
+                    "is_burnable": true,
+                    "issued_supply": "639",
+                    "immutable_data": {
+                        "img": "QmbuM6brNUqvU6jxPswdF5fqoPosDcWbcinZzAy5ibyJ1V",
+                        "name": "Common License",
+                        "rarity": "common",
+                        "description": "Convert your Series 1 Venue into a Series 2 Venue. The Venue maintains its rarity, level and custom name"
+                    },
+                    "created_at_time": "1655124252500",
+                    "created_at_block": "187331427"
+                },
+                "mutable_data": {},
+                "immutable_data": {},
+                "template_mint": "2",
+                "backed_tokens": [],
+                "burned_by_account": null,
+                "burned_at_block": null,
+                "burned_at_time": null,
+                "updated_at_block": "187995971",
+                "updated_at_time": "1655457017500",
+                "transferred_at_block": "187995971",
+                "transferred_at_time": "1655457017500",
+                "minted_at_block": "187995971",
+                "minted_at_time": "1655457017500",
+                "data": {
+                    "img": "QmbuM6brNUqvU6jxPswdF5fqoPosDcWbcinZzAy5ibyJ1V",
+                    "name": "Common License",
+                    "rarity": "common",
+                    "description": "Convert your Series 1 Venue into a Series 2 Venue. The Venue maintains its rarity, level and custom name"
+                },
+                "name": "Common License"
+            }
+        ],
+        "query_time": 1756585609720
+    },
+    "text": "{\"success\":true,\"data\":[{\"contract\":\"atomicassets\",\"asset_id\":\"1099851897745\",\"owner\":\"taco\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"item\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"static_img\",\"type\":\"image\"},{\"name\":\"blend_link\",\"type\":\"string\"},{\"name\":\"power\",\"type\":\"string\"},{\"name\":\"rarity\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"},{\"name\":\"size\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"string\"}],\"created_at_block\":\"159727801\",\"created_at_time\":\"1641318996000\"},\"template\":{\"template_id\":\"654240\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"1568\",\"immutable_data\":{\"img\":\"QmUZaMua7betQF4dPUGXEHoyNfi3dC73gDVkyDHqCNSpBx\",\"name\":\"Seeds\",\"rarity\":\"uncommon\"},\"created_at_time\":\"1674954067500\",\"created_at_block\":\"226972647\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"1\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"226985756\",\"updated_at_time\":\"1674960622500\",\"transferred_at_block\":\"226985756\",\"transferred_at_time\":\"1674960622500\",\"minted_at_block\":\"226985756\",\"minted_at_time\":\"1674960622500\",\"data\":{\"img\":\"QmUZaMua7betQF4dPUGXEHoyNfi3dC73gDVkyDHqCNSpBx\",\"name\":\"Seeds\",\"rarity\":\"uncommon\"},\"name\":\"Seeds\"},{\"contract\":\"atomicassets\",\"asset_id\":\"1099851897197\",\"owner\":\"taco\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"pack\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"uint64\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"website\",\"type\":\"string\"},{\"name\":\"size\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"128484359\",\"created_at_time\":\"1625685127500\"},\"template\":{\"template_id\":\"654285\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"36348\",\"immutable_data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"created_at_time\":\"1674959892000\",\"created_at_block\":\"226984295\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"7\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"226985207\",\"updated_at_time\":\"1674960348000\",\"transferred_at_block\":\"226985207\",\"transferred_at_time\":\"1674960348000\",\"minted_at_block\":\"226985207\",\"minted_at_time\":\"1674960348000\",\"data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"name\":\"Universe Pack - Series One\"},{\"contract\":\"atomicassets\",\"asset_id\":\"1099851897196\",\"owner\":\"taco\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"pack\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"uint64\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"website\",\"type\":\"string\"},{\"name\":\"size\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"128484359\",\"created_at_time\":\"1625685127500\"},\"template\":{\"template_id\":\"654285\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"36348\",\"immutable_data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"created_at_time\":\"1674959892000\",\"created_at_block\":\"226984295\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"6\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"226985207\",\"updated_at_time\":\"1674960348000\",\"transferred_at_block\":\"226985207\",\"transferred_at_time\":\"1674960348000\",\"minted_at_block\":\"226985207\",\"minted_at_time\":\"1674960348000\",\"data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"name\":\"Universe Pack - Series One\"},{\"contract\":\"atomicassets\",\"asset_id\":\"1099851897195\",\"owner\":\"taco\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"pack\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"uint64\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"website\",\"type\":\"string\"},{\"name\":\"size\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"128484359\",\"created_at_time\":\"1625685127500\"},\"template\":{\"template_id\":\"654285\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"36348\",\"immutable_data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"created_at_time\":\"1674959892000\",\"created_at_block\":\"226984295\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"5\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"226985207\",\"updated_at_time\":\"1674960348000\",\"transferred_at_block\":\"226985207\",\"transferred_at_time\":\"1674960348000\",\"minted_at_block\":\"226985207\",\"minted_at_time\":\"1674960348000\",\"data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"name\":\"Universe Pack - Series One\"},{\"contract\":\"atomicassets\",\"asset_id\":\"1099851897194\",\"owner\":\"taco\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"pack\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"uint64\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"website\",\"type\":\"string\"},{\"name\":\"size\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"128484359\",\"created_at_time\":\"1625685127500\"},\"template\":{\"template_id\":\"654285\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"36348\",\"immutable_data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"created_at_time\":\"1674959892000\",\"created_at_block\":\"226984295\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"4\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"226985207\",\"updated_at_time\":\"1674960348000\",\"transferred_at_block\":\"226985207\",\"transferred_at_time\":\"1674960348000\",\"minted_at_block\":\"226985207\",\"minted_at_time\":\"1674960348000\",\"data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"name\":\"Universe Pack - Series One\"},{\"contract\":\"atomicassets\",\"asset_id\":\"1099851897193\",\"owner\":\"taco\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"pack\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"uint64\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"website\",\"type\":\"string\"},{\"name\":\"size\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"128484359\",\"created_at_time\":\"1625685127500\"},\"template\":{\"template_id\":\"654285\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"36348\",\"immutable_data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"created_at_time\":\"1674959892000\",\"created_at_block\":\"226984295\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"3\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"226985207\",\"updated_at_time\":\"1674960348000\",\"transferred_at_block\":\"226985207\",\"transferred_at_time\":\"1674960348000\",\"minted_at_block\":\"226985207\",\"minted_at_time\":\"1674960348000\",\"data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"name\":\"Universe Pack - Series One\"},{\"contract\":\"atomicassets\",\"asset_id\":\"1099851897192\",\"owner\":\"taco\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"pack\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"uint64\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"website\",\"type\":\"string\"},{\"name\":\"size\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"128484359\",\"created_at_time\":\"1625685127500\"},\"template\":{\"template_id\":\"654285\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"36348\",\"immutable_data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"created_at_time\":\"1674959892000\",\"created_at_block\":\"226984295\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"2\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"226985207\",\"updated_at_time\":\"1674960348000\",\"transferred_at_block\":\"226985207\",\"transferred_at_time\":\"1674960348000\",\"minted_at_block\":\"226985207\",\"minted_at_time\":\"1674960348000\",\"data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"name\":\"Universe Pack - Series One\"},{\"contract\":\"atomicassets\",\"asset_id\":\"1099851897191\",\"owner\":\"taco\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"pack\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"series\",\"type\":\"uint64\"},{\"name\":\"type\",\"type\":\"string\"},{\"name\":\"website\",\"type\":\"string\"},{\"name\":\"size\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"}],\"created_at_block\":\"128484359\",\"created_at_time\":\"1625685127500\"},\"template\":{\"template_id\":\"654285\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"36348\",\"immutable_data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"created_at_time\":\"1674959892000\",\"created_at_block\":\"226984295\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"1\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"226985207\",\"updated_at_time\":\"1674960348000\",\"transferred_at_block\":\"226985207\",\"transferred_at_time\":\"1674960348000\",\"minted_at_block\":\"226985207\",\"minted_at_time\":\"1674960348000\",\"data\":{\"img\":\"QmRhAvyiDgiZaJsisHuscFJttcWDyhZauZh4XYycMhqUAW\",\"name\":\"Universe Pack - Series One\",\"size\":\"single\",\"type\":\"universe\",\"series\":\"1\",\"description\":\"This pack contains 1 crafting item or a common Brigade equipment\"},\"name\":\"Universe Pack - Series One\"},{\"contract\":\"atomicassets\",\"asset_id\":\"1099851887066\",\"owner\":\"taco\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"item\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"static_img\",\"type\":\"image\"},{\"name\":\"blend_link\",\"type\":\"string\"},{\"name\":\"power\",\"type\":\"string\"},{\"name\":\"rarity\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"},{\"name\":\"size\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"string\"}],\"created_at_block\":\"159727801\",\"created_at_time\":\"1641318996000\"},\"template\":{\"template_id\":\"654236\",\"max_supply\":\"0\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"4688\",\"immutable_data\":{\"img\":\"Qmf99bHtGm43Rd7d7R1RfqybMyo8FRFJCDEvo1j9tkEUyi\",\"name\":\"Water\",\"rarity\":\"common\"},\"created_at_time\":\"1674953760000\",\"created_at_block\":\"226972032\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"1\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"226981601\",\"updated_at_time\":\"1674958545000\",\"transferred_at_block\":\"226981601\",\"transferred_at_time\":\"1674958545000\",\"minted_at_block\":\"226981601\",\"minted_at_time\":\"1674958545000\",\"data\":{\"img\":\"Qmf99bHtGm43Rd7d7R1RfqybMyo8FRFJCDEvo1j9tkEUyi\",\"name\":\"Water\",\"rarity\":\"common\"},\"name\":\"Water\"},{\"contract\":\"atomicassets\",\"asset_id\":\"1099795046474\",\"owner\":\"taco\",\"is_transferable\":true,\"is_burnable\":true,\"collection\":{\"collection_name\":\"taco\",\"name\":\"Taco\",\"img\":\"QmSNEtW5r6K4md8n12d8P7SMmJXFLfxZGABK2XPKUgwJy3\",\"images\":\"{\\\"banner_1920x500\\\":\\\"QmXsppfVwKw1SyY3C1oMEM9Fro1e1HGSUfFhL4J3ZkkmZ4\\\",\\\"logo_512x512\\\":\\\"QmV1PsD9anLHPMeR5mvz2AduXHKr8B6gJmjxSBZKti6ioc\\\"}\",\"author\":\"taco\",\"allow_notify\":true,\"authorized_accounts\":[\"taco\",\"atomicdropsx\",\"atomicpacksx\",\"neftyblocksd\",\"s.taco\",\"blend.nefty\",\"blenderizerx\",\"g.taco\",\"brigade.taco\",\"b.taco\",\"mkt.taco\",\"acr.taco\",\"takitakiboom\",\"l.taco\",\"worker.taco\",\"tacotacopool\",\"primarysale1\",\"combz.taco\",\"v.taco\"],\"notify_accounts\":[\"g.taco\",\"brigade.taco\",\"stake.taco\",\"swap.taco\",\"blend.nefty\",\"neftyblocksd\",\"neftyblocksp\",\"rent.taco\",\"a.taco\"],\"market_fee\":0.06,\"created_at_block\":\"123329591\",\"created_at_time\":\"1623106508500\"},\"schema\":{\"schema_name\":\"item\",\"format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"image\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"static_img\",\"type\":\"image\"},{\"name\":\"blend_link\",\"type\":\"string\"},{\"name\":\"power\",\"type\":\"string\"},{\"name\":\"rarity\",\"type\":\"string\"},{\"name\":\"acr_owner\",\"type\":\"string\"},{\"name\":\"size\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"string\"}],\"created_at_block\":\"159727801\",\"created_at_time\":\"1641318996000\"},\"template\":{\"template_id\":\"531613\",\"max_supply\":\"1234\",\"is_transferable\":true,\"is_burnable\":true,\"issued_supply\":\"639\",\"immutable_data\":{\"img\":\"QmbuM6brNUqvU6jxPswdF5fqoPosDcWbcinZzAy5ibyJ1V\",\"name\":\"Common License\",\"rarity\":\"common\",\"description\":\"Convert your Series 1 Venue into a Series 2 Venue. The Venue maintains its rarity, level and custom name\"},\"created_at_time\":\"1655124252500\",\"created_at_block\":\"187331427\"},\"mutable_data\":{},\"immutable_data\":{},\"template_mint\":\"2\",\"backed_tokens\":[],\"burned_by_account\":null,\"burned_at_block\":null,\"burned_at_time\":null,\"updated_at_block\":\"187995971\",\"updated_at_time\":\"1655457017500\",\"transferred_at_block\":\"187995971\",\"transferred_at_time\":\"1655457017500\",\"minted_at_block\":\"187995971\",\"minted_at_time\":\"1655457017500\",\"data\":{\"img\":\"QmbuM6brNUqvU6jxPswdF5fqoPosDcWbcinZzAy5ibyJ1V\",\"name\":\"Common License\",\"rarity\":\"common\",\"description\":\"Convert your Series 1 Venue into a Series 2 Venue. The Venue maintains its rarity, level and custom name\"},\"name\":\"Common License\"}],\"query_time\":1756585609720}"
+}

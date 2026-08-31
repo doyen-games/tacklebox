@@ -1,0 +1,28 @@
+{
+    "request": {
+        "path": "https://jungle4.greymass.com/v1/chain/get_raw_abi",
+        "params": {
+            "method": "POST",
+            "body": "{\"account_name\":\"greymassnoop\"}"
+        }
+    },
+    "headers": {
+        "access-control-allow-headers": "X-Requested-With,Accept,Content-Type,Origin",
+        "access-control-allow-methods": "GET, POST, OPTIONS",
+        "access-control-allow-origin": "*",
+        "connection": "close",
+        "content-length": "290",
+        "content-type": "application/json",
+        "date": "Mon, 31 Jul 2023 20:44:43 GMT",
+        "host": "jungle4.greymass.com",
+        "server": "nginx/1.18.0 (Ubuntu)"
+    },
+    "status": 200,
+    "json": {
+        "account_name": "greymassnoop",
+        "code_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "abi_hash": "1245e8954bce991492621cd66ffe556ef2c2925ee03071a3fba996c83040f867",
+        "abi": "DmVvc2lvOjphYmkvMS4xAAEEbm9vcAAAAQAAAAAAUCmdBG5vb3AZVGhpcyBhY3Rpb24gZG9lcyBub3RoaW5nLgAAAAAA="
+    },
+    "text": "{\"account_name\":\"greymassnoop\",\"code_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"abi_hash\":\"1245e8954bce991492621cd66ffe556ef2c2925ee03071a3fba996c83040f867\",\"abi\":\"DmVvc2lvOjphYmkvMS4xAAEEbm9vcAAAAQAAAAAAUCmdBG5vb3AZVGhpcyBhY3Rpb24gZG9lcyBub3RoaW5nLgAAAAAA=\"}"
+}

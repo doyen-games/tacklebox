@@ -1,0 +1,40 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v1/auctions/1301765/logs",
+        "params": {
+            "method": "POST",
+            "body": "{\"limit\":\"10\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "log_id": "85927836500",
+                "name": "lognewauct",
+                "data": {
+                    "starting_bid": "12.50000000 WAX",
+                    "collection_fee": 0.06,
+                    "maker_marketplace": ""
+                },
+                "txid": "b6e6c3095e26e131fc28950392aee33fffad3494fa227cbb939bd4157c194343",
+                "created_at_block": "272038338",
+                "created_at_time": "1697490472500"
+            },
+            {
+                "log_id": "85927836513",
+                "name": "logauctstart",
+                "data": {},
+                "txid": "b6e6c3095e26e131fc28950392aee33fffad3494fa227cbb939bd4157c194343",
+                "created_at_block": "272038338",
+                "created_at_time": "1697490472500"
+            }
+        ],
+        "query_time": 1756585625527
+    },
+    "text": "{\"success\":true,\"data\":[{\"log_id\":\"85927836500\",\"name\":\"lognewauct\",\"data\":{\"starting_bid\":\"12.50000000 WAX\",\"collection_fee\":0.06,\"maker_marketplace\":\"\"},\"txid\":\"b6e6c3095e26e131fc28950392aee33fffad3494fa227cbb939bd4157c194343\",\"created_at_block\":\"272038338\",\"created_at_time\":\"1697490472500\"},{\"log_id\":\"85927836513\",\"name\":\"logauctstart\",\"data\":{},\"txid\":\"b6e6c3095e26e131fc28950392aee33fffad3494fa227cbb939bd4157c194343\",\"created_at_block\":\"272038338\",\"created_at_time\":\"1697490472500\"}],\"query_time\":1756585625527}"
+}

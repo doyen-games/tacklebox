@@ -1,0 +1,46 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomictools/v1/links/1451754/logs",
+        "params": {
+            "method": "POST",
+            "body": "{\"limit\":\"10\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "log_id": "60337127685",
+                "name": "lognewlink",
+                "data": {},
+                "txid": "3d060d75e59563ae991dc61941d6611d2e88d41a5237eeff7c9fa2a1894a3be6",
+                "created_at_block": "200658297",
+                "created_at_time": "1661788727000"
+            },
+            {
+                "log_id": "60337127695",
+                "name": "loglinkstart",
+                "data": {},
+                "txid": "3d060d75e59563ae991dc61941d6611d2e88d41a5237eeff7c9fa2a1894a3be6",
+                "created_at_block": "200658297",
+                "created_at_time": "1661788727000"
+            },
+            {
+                "log_id": "60347639693",
+                "name": "claimlink",
+                "data": {
+                    "claimer_signature": "1451754"
+                },
+                "txid": "384137ccea1e70f5b29737ef2151b4d14f1d3f2ed56cfb0f55e2c92311dc328b",
+                "created_at_block": "200672796",
+                "created_at_time": "1661795978500"
+            }
+        ],
+        "query_time": 1756585622622
+    },
+    "text": "{\"success\":true,\"data\":[{\"log_id\":\"60337127685\",\"name\":\"lognewlink\",\"data\":{},\"txid\":\"3d060d75e59563ae991dc61941d6611d2e88d41a5237eeff7c9fa2a1894a3be6\",\"created_at_block\":\"200658297\",\"created_at_time\":\"1661788727000\"},{\"log_id\":\"60337127695\",\"name\":\"loglinkstart\",\"data\":{},\"txid\":\"3d060d75e59563ae991dc61941d6611d2e88d41a5237eeff7c9fa2a1894a3be6\",\"created_at_block\":\"200658297\",\"created_at_time\":\"1661788727000\"},{\"log_id\":\"60347639693\",\"name\":\"claimlink\",\"data\":{\"claimer_signature\":\"1451754\"},\"txid\":\"384137ccea1e70f5b29737ef2151b4d14f1d3f2ed56cfb0f55e2c92311dc328b\",\"created_at_block\":\"200672796\",\"created_at_time\":\"1661795978500\"}],\"query_time\":1756585622622}"
+}

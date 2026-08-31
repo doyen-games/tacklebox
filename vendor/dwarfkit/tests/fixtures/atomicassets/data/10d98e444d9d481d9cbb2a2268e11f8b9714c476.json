@@ -1,0 +1,20 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomictools/v1/config",
+        "params": {
+            "method": "GET",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "atomictools_contract": "atomictoolsx",
+            "atomicassets_contract": "atomicassets",
+            "version": "1.0.0"
+        },
+        "query_time": 1756585622685
+    },
+    "text": "{\"success\":true,\"data\":{\"atomictools_contract\":\"atomictoolsx\",\"atomicassets_contract\":\"atomicassets\",\"version\":\"1.0.0\"},\"query_time\":1756585622685}"
+}

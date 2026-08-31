@@ -1,0 +1,19 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomictools/v1/links/_count",
+        "params": {
+            "method": "POST",
+            "body": "{\"creator\":\"taco,federation\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": "849",
+        "query_time": 1756585622440
+    },
+    "text": "{\"success\":true,\"data\":\"849\",\"query_time\":1756585622440}"
+}

@@ -1,0 +1,33 @@
+{
+    "request": {
+        "path": "https://jungle4.greymass.com/v1/chain/get_transaction_status",
+        "params": {
+            "method": "POST",
+            "body": "{\"id\":\"3283c8967d6d1def7fd6746ed299cdeffdda17ab3e779f956f13ecd566d285a5\"}"
+        }
+    },
+    "headers": {
+        "access-control-allow-headers": "X-Requested-With,Accept,Content-Type,Origin",
+        "access-control-allow-methods": "GET, POST, OPTIONS",
+        "access-control-allow-origin": "*",
+        "connection": "close",
+        "content-length": "465",
+        "content-type": "application/json",
+        "date": "Wed, 12 Apr 2023 21:26:41 GMT",
+        "host": "jungle4.greymass.com",
+        "server": "nginx/1.18.0 (Ubuntu)"
+    },
+    "status": 200,
+    "json": {
+        "state": "IRREVERSIBLE",
+        "head_number": 71197598,
+        "head_id": "043e639ebf4f676702f904cce15b1fad8726a2b9c58a005e844f6c1fce504472",
+        "head_timestamp": "2023-04-12T21:26:41.000",
+        "irreversible_number": 71197263,
+        "irreversible_id": "043e624fce689b7051d9b5a72649d7312c432b5f8cf9f8e473fa09555e299bbe",
+        "irreversible_timestamp": "2023-04-12T21:23:53.500",
+        "earliest_tracked_block_id": "043e47632e49ba098cf99f94a9ee95a709d380a3ccedabaca99d41fd6043cae3",
+        "earliest_tracked_block_number": 71190371
+    },
+    "text": "{\"state\":\"UNKNOWN\",\"head_number\":71197598,\"head_id\":\"043e639ebf4f676702f904cce15b1fad8726a2b9c58a005e844f6c1fce504472\",\"head_timestamp\":\"2023-04-12T21:26:41.000\",\"irreversible_number\":71197263,\"irreversible_id\":\"043e624fce689b7051d9b5a72649d7312c432b5f8cf9f8e473fa09555e299bbe\",\"irreversible_timestamp\":\"2023-04-12T21:23:53.500\",\"earliest_tracked_block_id\":\"043e47632e49ba098cf99f94a9ee95a709d380a3ccedabaca99d41fd6043cae3\",\"earliest_tracked_block_number\":71190371}"
+}

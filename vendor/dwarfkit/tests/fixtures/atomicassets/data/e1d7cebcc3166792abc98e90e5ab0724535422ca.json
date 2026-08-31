@@ -1,0 +1,52 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v1/sales/89024803/logs",
+        "params": {
+            "method": "POST",
+            "body": "{\"limit\":\"10\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "log_id": "61679627313",
+                "name": "lognewsale",
+                "data": {
+                    "collection_fee": 0.06,
+                    "maker_marketplace": ""
+                },
+                "txid": "434c62b8206aa207b30537b9566f0d2c95de0021463b1c6feed72d9a411a7204",
+                "created_at_block": "203079488",
+                "created_at_time": "1662999792500"
+            },
+            {
+                "log_id": "61679627319",
+                "name": "logsalestart",
+                "data": {
+                    "offer_id": "92285703"
+                },
+                "txid": "434c62b8206aa207b30537b9566f0d2c95de0021463b1c6feed72d9a411a7204",
+                "created_at_block": "203079488",
+                "created_at_time": "1662999792500"
+            },
+            {
+                "log_id": "61992643235",
+                "name": "purchasesale",
+                "data": {
+                    "taker_marketplace": "",
+                    "intended_delphi_median": "0"
+                },
+                "txid": "48238fefab01ba8b5bf7de80c1937fb92ffb3d440243532b5dac8576ef926ba2",
+                "created_at_block": "203583478",
+                "created_at_time": "1663251917000"
+            }
+        ],
+        "query_time": 1756585624663
+    },
+    "text": "{\"success\":true,\"data\":[{\"log_id\":\"61679627313\",\"name\":\"lognewsale\",\"data\":{\"collection_fee\":0.06,\"maker_marketplace\":\"\"},\"txid\":\"434c62b8206aa207b30537b9566f0d2c95de0021463b1c6feed72d9a411a7204\",\"created_at_block\":\"203079488\",\"created_at_time\":\"1662999792500\"},{\"log_id\":\"61679627319\",\"name\":\"logsalestart\",\"data\":{\"offer_id\":\"92285703\"},\"txid\":\"434c62b8206aa207b30537b9566f0d2c95de0021463b1c6feed72d9a411a7204\",\"created_at_block\":\"203079488\",\"created_at_time\":\"1662999792500\"},{\"log_id\":\"61992643235\",\"name\":\"purchasesale\",\"data\":{\"taker_marketplace\":\"\",\"intended_delphi_median\":\"0\"},\"txid\":\"48238fefab01ba8b5bf7de80c1937fb92ffb3d440243532b5dac8576ef926ba2\",\"created_at_block\":\"203583478\",\"created_at_time\":\"1663251917000\"}],\"query_time\":1756585624663}"
+}

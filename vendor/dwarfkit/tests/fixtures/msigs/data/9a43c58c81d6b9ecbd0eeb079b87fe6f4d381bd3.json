@@ -1,0 +1,88 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_proposals",
+        "params": {
+            "method": "POST",
+            "body": "{\"proposer\":\"alice\",\"status\":\"proposed\",\"limit\":10}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "more": false,
+        "proposals": [
+            {
+                "actions_count": 1,
+                "approval_ratio": 0,
+                "approvals_received": 0,
+                "approvals_required": 4,
+                "created_at": "2025-11-24T01:46:09.500",
+                "created_trx_id": "0909090909090909090909090909090909090909090909090909090909090909",
+                "expiration": "2025-12-24T01:16:09.500",
+                "globalseq": 1033,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "status": "proposed",
+                "time_remaining_seconds": 5180902
+            },
+            {
+                "actions_count": 1,
+                "approval_ratio": 1,
+                "approvals_received": 2,
+                "approvals_required": 2,
+                "created_at": "2025-11-24T01:43:39.500",
+                "created_trx_id": "0505050505050505050505050505050505050505050505050505050505050505",
+                "expiration": "2025-12-24T01:16:09.500",
+                "globalseq": 1029,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "status": "proposed",
+                "time_remaining_seconds": 5180902
+            },
+            {
+                "actions_count": 1,
+                "approval_ratio": 0.3333333333333333,
+                "approvals_received": 1,
+                "approvals_required": 3,
+                "created_at": "2025-11-24T01:41:59.500",
+                "created_trx_id": "0101010101010101010101010101010101010101010101010101010101010101",
+                "expiration": "2025-12-24T01:16:09.500",
+                "globalseq": 1025,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "status": "proposed",
+                "time_remaining_seconds": 5180902
+            },
+            {
+                "actions_count": 1,
+                "approval_ratio": 0,
+                "approvals_received": 0,
+                "approvals_required": 2,
+                "created_at": "2025-11-24T01:30:19.500",
+                "created_trx_id": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+                "expiration": "2025-12-24T01:16:09.500",
+                "globalseq": 1007,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "status": "proposed",
+                "time_remaining_seconds": 5180902
+            },
+            {
+                "actions_count": 1,
+                "approval_ratio": 0.6666666666666666,
+                "approvals_received": 2,
+                "approvals_required": 3,
+                "created_at": "2025-11-24T01:21:59.500",
+                "created_trx_id": "ebebebebebebebebebebebebebebebebebebebebebebebebebebebebebebebeb",
+                "expiration": "2025-12-24T01:16:09.500",
+                "globalseq": 1003,
+                "proposal_name": "newperm",
+                "proposer": "alice",
+                "status": "proposed",
+                "time_remaining_seconds": 5180902
+            }
+        ],
+        "total": 5
+    },
+    "text": "{\"more\":false,\"proposals\":[{\"actions_count\":1,\"approval_ratio\":0,\"approvals_received\":0,\"approvals_required\":4,\"created_at\":\"2025-11-24T01:46:09.500\",\"created_trx_id\":\"0909090909090909090909090909090909090909090909090909090909090909\",\"expiration\":\"2025-12-24T01:16:09.500\",\"globalseq\":1033,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"status\":\"proposed\",\"time_remaining_seconds\":5180902},{\"actions_count\":1,\"approval_ratio\":1,\"approvals_received\":2,\"approvals_required\":2,\"created_at\":\"2025-11-24T01:43:39.500\",\"created_trx_id\":\"0505050505050505050505050505050505050505050505050505050505050505\",\"expiration\":\"2025-12-24T01:16:09.500\",\"globalseq\":1029,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"status\":\"proposed\",\"time_remaining_seconds\":5180902},{\"actions_count\":1,\"approval_ratio\":0.3333333333333333,\"approvals_received\":1,\"approvals_required\":3,\"created_at\":\"2025-11-24T01:41:59.500\",\"created_trx_id\":\"0101010101010101010101010101010101010101010101010101010101010101\",\"expiration\":\"2025-12-24T01:16:09.500\",\"globalseq\":1025,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"status\":\"proposed\",\"time_remaining_seconds\":5180902},{\"actions_count\":1,\"approval_ratio\":0,\"approvals_received\":0,\"approvals_required\":2,\"created_at\":\"2025-11-24T01:30:19.500\",\"created_trx_id\":\"efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef\",\"expiration\":\"2025-12-24T01:16:09.500\",\"globalseq\":1007,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"status\":\"proposed\",\"time_remaining_seconds\":5180902},{\"actions_count\":1,\"approval_ratio\":0.6666666666666666,\"approvals_received\":2,\"approvals_required\":3,\"created_at\":\"2025-11-24T01:21:59.500\",\"created_trx_id\":\"ebebebebebebebebebebebebebebebebebebebebebebebebebebebebebebebeb\",\"expiration\":\"2025-12-24T01:16:09.500\",\"globalseq\":1003,\"proposal_name\":\"newperm\",\"proposer\":\"alice\",\"status\":\"proposed\",\"time_remaining_seconds\":5180902}],\"total\":5}"
+}

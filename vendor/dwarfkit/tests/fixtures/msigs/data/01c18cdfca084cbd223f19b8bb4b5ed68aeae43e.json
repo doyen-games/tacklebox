@@ -1,0 +1,20 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_approvals",
+        "params": {
+            "method": "POST",
+            "body": "{\"proposer\":\"alice\",\"proposal_name\":\"upgrade\"}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "globalseq": 1033,
+        "more": false,
+        "proposal_name": "upgrade",
+        "proposer": "alice",
+        "timeline": [],
+        "total": 0
+    },
+    "text": "{\"globalseq\":1033,\"more\":false,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"timeline\":[],\"total\":0}"
+}

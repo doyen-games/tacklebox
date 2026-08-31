@@ -1,0 +1,18 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"json\":false,\"limit\":1,\"code\":\"eosio\",\"table\":\"delband\",\"scope\":\"eosio\",\"key_type\":\"name\"}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            "0000000000ea305590afc2d800ea3055102700000000000004454f5300000000102700000000000004454f5300000000"
+        ],
+        "more": true,
+        "next_key": "6138663587302227968"
+    },
+    "text": "{\"rows\":[\"0000000000ea305590afc2d800ea3055102700000000000004454f5300000000102700000000000004454f5300000000\"],\"more\":true,\"next_key\":\"6138663587302227968\"}"
+}

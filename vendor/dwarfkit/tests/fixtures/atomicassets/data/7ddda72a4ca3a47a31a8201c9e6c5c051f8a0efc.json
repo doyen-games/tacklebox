@@ -1,0 +1,54 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v1/config",
+        "params": {
+            "method": "GET",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "atomicassets_contract": "atomicassets",
+            "atomicmarket_contract": "atomicmarket",
+            "delphioracle_contract": "delphioracle",
+            "version": "1.3.3",
+            "maker_market_fee": 0.01,
+            "taker_market_fee": 0.01,
+            "minimum_auction_duration": 120,
+            "maximum_auction_duration": 2592000,
+            "minimum_bid_increase": 0.1,
+            "auction_reset_duration": 120,
+            "supported_tokens": [
+                {
+                    "token_contract": "eosio.token",
+                    "token_symbol": "WAX",
+                    "token_precision": 8
+                }
+            ],
+            "supported_pairs": [
+                {
+                    "listing_symbol": "USD",
+                    "settlement_symbol": "WAX",
+                    "delphi_pair_name": "waxpusd",
+                    "invert_delphi_pair": false,
+                    "data": {
+                        "median": 200,
+                        "contract": "delphioracle",
+                        "base_symbol": "WAXP",
+                        "quote_symbol": "USD",
+                        "base_precision": 8,
+                        "quote_precision": 2,
+                        "updated_at_time": 1756585621000,
+                        "delphi_pair_name": "waxpusd",
+                        "median_precision": 4,
+                        "updated_at_block": 390212030
+                    }
+                }
+            ]
+        },
+        "query_time": 1756585630033
+    },
+    "text": "{\"success\":true,\"data\":{\"atomicassets_contract\":\"atomicassets\",\"atomicmarket_contract\":\"atomicmarket\",\"delphioracle_contract\":\"delphioracle\",\"version\":\"1.3.3\",\"maker_market_fee\":0.01,\"taker_market_fee\":0.01,\"minimum_auction_duration\":120,\"maximum_auction_duration\":2592000,\"minimum_bid_increase\":0.1,\"auction_reset_duration\":120,\"supported_tokens\":[{\"token_contract\":\"eosio.token\",\"token_symbol\":\"WAX\",\"token_precision\":8}],\"supported_pairs\":[{\"listing_symbol\":\"USD\",\"settlement_symbol\":\"WAX\",\"delphi_pair_name\":\"waxpusd\",\"invert_delphi_pair\":false,\"data\":{\"median\":200,\"contract\":\"delphioracle\",\"base_symbol\":\"WAXP\",\"quote_symbol\":\"USD\",\"base_precision\":8,\"quote_precision\":2,\"updated_at_time\":1756585621000,\"delphi_pair_name\":\"waxpusd\",\"median_precision\":4,\"updated_at_block\":390212030}}]},\"query_time\":1756585630033}"
+}

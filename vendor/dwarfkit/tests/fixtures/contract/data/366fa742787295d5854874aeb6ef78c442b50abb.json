@@ -1,0 +1,49 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"json\":true,\"limit\":1000,\"table\":\"global\",\"code\":\"eosio\",\"scope\":\"eosio\",\"key_type\":\"name\"}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            {
+                "max_block_net_usage": 1048576,
+                "target_block_net_usage_pct": 10000,
+                "max_transaction_net_usage": 524288,
+                "base_per_transaction_net_usage": 12,
+                "net_usage_leeway": 500,
+                "context_free_discount_net_usage_num": 20,
+                "context_free_discount_net_usage_den": 100,
+                "max_block_cpu_usage": 200000,
+                "target_block_cpu_usage_pct": 10,
+                "max_transaction_cpu_usage": 150000,
+                "min_transaction_cpu_usage": 100,
+                "max_transaction_lifetime": 3600,
+                "deferred_trx_expiration_window": 600,
+                "max_transaction_delay": 3888000,
+                "max_inline_action_size": 524287,
+                "max_inline_action_depth": 10,
+                "max_authority_depth": 10,
+                "max_ram_size": "418945440768",
+                "total_ram_bytes_reserved": "333551148743",
+                "total_ram_stake": "213336801716",
+                "last_producer_schedule_update": "2024-12-21T19:15:00.500",
+                "last_pervote_bucket_fill": "2024-12-21T18:53:42.000",
+                "pervote_bucket": 257850978,
+                "perblock_bucket": 39779454,
+                "total_unpaid_blocks": 82609,
+                "total_activated_stake": "6092900115741",
+                "thresh_activated_stake_time": "2018-06-20T14:44:52.000",
+                "last_producer_schedule_size": 21,
+                "total_producer_vote_weight": "1410584016862351458304.00000000000000000",
+                "last_name_close": "2024-12-21T02:42:47.500"
+            }
+        ],
+        "more": false,
+        "next_key": ""
+    },
+    "text": "{\"rows\":[{\"max_block_net_usage\":1048576,\"target_block_net_usage_pct\":10000,\"max_transaction_net_usage\":524288,\"base_per_transaction_net_usage\":12,\"net_usage_leeway\":500,\"context_free_discount_net_usage_num\":20,\"context_free_discount_net_usage_den\":100,\"max_block_cpu_usage\":200000,\"target_block_cpu_usage_pct\":10,\"max_transaction_cpu_usage\":150000,\"min_transaction_cpu_usage\":100,\"max_transaction_lifetime\":3600,\"deferred_trx_expiration_window\":600,\"max_transaction_delay\":3888000,\"max_inline_action_size\":524287,\"max_inline_action_depth\":10,\"max_authority_depth\":10,\"max_ram_size\":\"418945440768\",\"total_ram_bytes_reserved\":\"333551148743\",\"total_ram_stake\":\"213336801716\",\"last_producer_schedule_update\":\"2024-12-21T19:15:00.500\",\"last_pervote_bucket_fill\":\"2024-12-21T18:53:42.000\",\"pervote_bucket\":257850978,\"perblock_bucket\":39779454,\"total_unpaid_blocks\":82609,\"total_activated_stake\":\"6092900115741\",\"thresh_activated_stake_time\":\"2018-06-20T14:44:52.000\",\"last_producer_schedule_size\":21,\"total_producer_vote_weight\":\"1410584016862351458304.00000000000000000\",\"last_name_close\":\"2024-12-21T02:42:47.500\"}],\"more\":false,\"next_key\":\"\"}"
+}

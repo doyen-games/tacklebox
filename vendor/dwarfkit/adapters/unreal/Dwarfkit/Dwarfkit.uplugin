@@ -1,0 +1,17 @@
+{
+    "FileVersion": 3,
+    "Version": 1,
+    "VersionName": "0.1.0",
+    "FriendlyName": "Dwarfkit",
+    "Description": "Antelope blockchain SDK (native Wharfkit port): sessions, signing, contracts.",
+    "Category": "Blockchain",
+    "CreatedBy": "Dwarfkit",
+    "CanContainContent": false,
+    "Modules": [
+        {
+            "Name": "Dwarfkit",
+            "Type": "Runtime",
+            "LoadingPhase": "Default"
+        }
+    ]
+}

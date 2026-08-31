@@ -1,0 +1,69 @@
+{
+    "request": {
+        "path": "https://jungle4.greymass.com/v1/chain/send_read_only_transaction",
+        "params": {
+            "method": "POST",
+            "body": "{\"transaction\":{\"signatures\":[],\"compression\":1,\"packed_context_free_data\":\"789c63000000010001\",\"packed_trx\":\"789c636040068c0c0d290dbed3379e02b20f840a2f7604d200440c05d1\"}}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "transaction_id": "1fbb7d301410f8d071216f949d216555ad09bb06c719dbec6a7cdcbf366eb642",
+        "processed": {
+            "id": "1fbb7d301410f8d071216f949d216555ad09bb06c719dbec6a7cdcbf366eb642",
+            "block_num": 119346373,
+            "block_time": "2024-01-16T19:40:10.500",
+            "producer_block_id": null,
+            "receipt": {
+                "status": "executed",
+                "cpu_usage_us": 0,
+                "net_usage_words": 8
+            },
+            "elapsed": 34,
+            "net_usage": 64,
+            "scheduled": false,
+            "action_traces": [
+                {
+                    "action_ordinal": 1,
+                    "creator_action_ordinal": 0,
+                    "closest_unnotified_ancestor_action_ordinal": 0,
+                    "receipt": {
+                        "receiver": "testing.gm",
+                        "act_digest": "0bcba5b6899391bd989fe4d3054dd802da3227a6e4377fc2d529ad6df348932d",
+                        "global_sequence": 0,
+                        "recv_sequence": 0,
+                        "auth_sequence": [],
+                        "code_sequence": 265,
+                        "abi_sequence": 96
+                    },
+                    "receiver": "testing.gm",
+                    "act": {
+                        "account": "testing.gm",
+                        "name": "callapi",
+                        "authorization": [],
+                        "data": "",
+                        "hex_data": ""
+                    },
+                    "context_free": false,
+                    "elapsed": 21,
+                    "console": "",
+                    "trx_id": "1fbb7d301410f8d071216f949d216555ad09bb06c719dbec6a7cdcbf366eb642",
+                    "block_num": 119346373,
+                    "block_time": "2024-01-16T19:40:10.500",
+                    "producer_block_id": null,
+                    "account_ram_deltas": [],
+                    "except": null,
+                    "error_code": null,
+                    "return_value_hex_data": "0100000000000000",
+                    "return_value_data": {
+                        "foo": 1
+                    }
+                }
+            ],
+            "account_ram_delta": null,
+            "except": null,
+            "error_code": null
+        }
+    },
+    "text": "{\"transaction_id\":\"1fbb7d301410f8d071216f949d216555ad09bb06c719dbec6a7cdcbf366eb642\",\"processed\":{\"id\":\"1fbb7d301410f8d071216f949d216555ad09bb06c719dbec6a7cdcbf366eb642\",\"block_num\":119346373,\"block_time\":\"2024-01-16T19:40:10.500\",\"producer_block_id\":null,\"receipt\":{\"status\":\"executed\",\"cpu_usage_us\":0,\"net_usage_words\":8},\"elapsed\":34,\"net_usage\":64,\"scheduled\":false,\"action_traces\":[{\"action_ordinal\":1,\"creator_action_ordinal\":0,\"closest_unnotified_ancestor_action_ordinal\":0,\"receipt\":{\"receiver\":\"testing.gm\",\"act_digest\":\"0bcba5b6899391bd989fe4d3054dd802da3227a6e4377fc2d529ad6df348932d\",\"global_sequence\":0,\"recv_sequence\":0,\"auth_sequence\":[],\"code_sequence\":265,\"abi_sequence\":96},\"receiver\":\"testing.gm\",\"act\":{\"account\":\"testing.gm\",\"name\":\"callapi\",\"authorization\":[],\"data\":\"\",\"hex_data\":\"\"},\"context_free\":false,\"elapsed\":21,\"console\":\"\",\"trx_id\":\"1fbb7d301410f8d071216f949d216555ad09bb06c719dbec6a7cdcbf366eb642\",\"block_num\":119346373,\"block_time\":\"2024-01-16T19:40:10.500\",\"producer_block_id\":null,\"account_ram_deltas\":[],\"except\":null,\"error_code\":null,\"return_value_hex_data\":\"0100000000000000\",\"return_value_data\":{\"foo\":1}}],\"account_ram_delta\":null,\"except\":null,\"error_code\":null}}"
+}

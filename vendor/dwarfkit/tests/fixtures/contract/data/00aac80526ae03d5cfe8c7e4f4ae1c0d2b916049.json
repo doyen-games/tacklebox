@@ -1,0 +1,18 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"table\":\"users\",\"code\":\"rewards.gm\",\"scope\":\"rewards.gm\",\"limit\":1,\"index_position\":\"primary\",\"key_type\":\"name\",\"json\":false}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            "0000900ca04b6b35f401000000000000000004454f5300000000"
+        ],
+        "more": true,
+        "next_key": "4352878718026951040"
+    },
+    "text": "{\"rows\":[\"0000900ca04b6b35f401000000000000000004454f5300000000\"],\"more\":true,\"next_key\":\"4352878718026951040\"}"
+}

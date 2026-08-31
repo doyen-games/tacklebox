@@ -1,0 +1,23 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"table\":\"namebids\",\"code\":\"eosio\",\"scope\":\"eosio\",\"limit\":1,\"key_type\":\"name\",\"json\":true}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            {
+                "newname": "",
+                "high_bidder": "guydgnjygige",
+                "high_bid": 3000,
+                "last_bid_time": "2018-06-21T03:51:50.500"
+            }
+        ],
+        "more": true,
+        "next_key": "594475150812905472"
+    },
+    "text": "{\"rows\":[{\"newname\":\"\",\"high_bidder\":\"guydgnjygige\",\"high_bid\":3000,\"last_bid_time\":\"2018-06-21T03:51:50.500\"}],\"more\":true,\"next_key\":\"594475150812905472\"}"
+}

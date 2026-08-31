@@ -1,0 +1,20 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/schemas/taco/cmbz.res/stats",
+        "params": {
+            "method": "GET",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "assets": "2552",
+            "burned": "2227",
+            "templates": "9"
+        },
+        "query_time": 1756585608968
+    },
+    "text": "{\"success\":true,\"data\":{\"assets\":\"2552\",\"burned\":\"2227\",\"templates\":\"9\"},\"query_time\":1756585608968}"
+}

@@ -1,0 +1,55 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_proposal",
+        "params": {
+            "method": "POST",
+            "body": "{\"proposer\":\"victor\",\"proposal_name\":\"expired1\"}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "actions_count": 1,
+        "cancelled_at": null,
+        "cancelled_by": null,
+        "cancelled_trx_id": null,
+        "created_at": "2025-11-23T22:16:09.500",
+        "created_block": 200030,
+        "created_trx_id": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+        "executed_at": null,
+        "executed_by": null,
+        "executed_trx_id": null,
+        "expiration": "2025-11-23T23:16:09.500",
+        "globalseq": 2004,
+        "proposal_name": "expired1",
+        "proposer": "victor",
+        "provided_approvals": [
+            {
+                "actor": "adam",
+                "permission": "active"
+            }
+        ],
+        "requested_approvals": [
+            {
+                "actor": "adam",
+                "permission": "active"
+            },
+            {
+                "actor": "betty",
+                "permission": "active"
+            }
+        ],
+        "status": "expired",
+        "transaction": {
+            "actions": [
+                {
+                    "account": "eosio",
+                    "data": "",
+                    "name": "updateauth"
+                }
+            ],
+            "expiration": "2025-12-22T00:00:00"
+        }
+    },
+    "text": "{\"actions_count\":1,\"cancelled_at\":null,\"cancelled_by\":null,\"cancelled_trx_id\":null,\"created_at\":\"2025-11-23T22:16:09.500\",\"created_block\":200030,\"created_trx_id\":\"d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4\",\"executed_at\":null,\"executed_by\":null,\"executed_trx_id\":null,\"expiration\":\"2025-11-23T23:16:09.500\",\"globalseq\":2004,\"proposal_name\":\"expired1\",\"proposer\":\"victor\",\"provided_approvals\":[{\"actor\":\"adam\",\"permission\":\"active\"}],\"requested_approvals\":[{\"actor\":\"adam\",\"permission\":\"active\"},{\"actor\":\"betty\",\"permission\":\"active\"}],\"status\":\"expired\",\"transaction\":{\"actions\":[{\"account\":\"eosio\",\"data\":\"\",\"name\":\"updateauth\"}],\"expiration\":\"2025-12-22T00:00:00\"}}"
+}

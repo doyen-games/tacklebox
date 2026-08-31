@@ -1,0 +1,18 @@
+{
+    "request": {
+        "path": "https://jungle4.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"table\":\"accounts\",\"code\":\"eosio.token\",\"scope\":\"wharfkittest\",\"limit\":1,\"key_type\":\"name\",\"json\":false}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            "142201000000000004454f5300000000"
+        ],
+        "more": true,
+        "next_key": "76193916147018"
+    },
+    "text": "{\"rows\":[\"142201000000000004454f5300000000\"],\"more\":true,\"next_key\":\"76193916147018\"}"
+}

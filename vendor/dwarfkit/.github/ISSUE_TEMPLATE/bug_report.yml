@@ -1,0 +1,42 @@
+name: Bug report
+description: Something behaves incorrectly or differently from Wharfkit
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What did you do, what did you expect, what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Minimal code or steps that reproduce the problem.
+      render: cpp
+    validations:
+      required: true
+  - type: textarea
+    id: upstream
+    attributes:
+      label: Wharfkit comparison
+      description: >
+        If you know how upstream Wharfkit behaves for the same input, describe
+        it (or link the relevant file in the Wharfkit repo). Dwarfkit aims for
+        byte parity, so "Wharfkit returns X, Dwarfkit returns Y" is the most
+        useful bug report there is. Check DIVERGENCES.md first; some
+        differences are intentional and documented.
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Compiler and version, OS, and engine if applicable.
+      placeholder: MSVC 19.44 / Windows 11 / Unreal 5.4
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: Dwarfkit commit
+      placeholder: git rev-parse --short HEAD

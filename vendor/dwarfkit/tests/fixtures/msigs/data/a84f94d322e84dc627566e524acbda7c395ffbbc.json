@@ -1,0 +1,25 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_status",
+        "params": {
+            "method": "POST",
+            "body": "{}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "accepting_http": true,
+        "database_size": 76736,
+        "database_size_mb": 0,
+        "last_account_action_seq": 1050,
+        "max_approval_results": 100,
+        "max_proposal_results": 20,
+        "synced": true,
+        "total_cancelled": 8,
+        "total_executed": 14,
+        "total_proposals": 55,
+        "total_proposed": 33
+    },
+    "text": "{\"accepting_http\":true,\"database_size\":76736,\"database_size_mb\":0,\"last_account_action_seq\":1050,\"max_approval_results\":100,\"max_proposal_results\":20,\"synced\":true,\"total_cancelled\":8,\"total_executed\":14,\"total_proposals\":55,\"total_proposed\":33}"
+}

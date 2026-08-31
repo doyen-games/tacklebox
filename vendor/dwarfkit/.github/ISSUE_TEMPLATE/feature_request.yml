@@ -1,0 +1,32 @@
+name: Feature request
+description: Propose an addition, an upstream re-sync, or an engine adapter improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should Dwarfkit do, and why?
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options:
+        - Upstream re-sync (Wharfkit moved past the pinned version)
+        - Missing Wharfkit surface
+        - Engine adapter (Unreal / Godot)
+        - Tooling (dkgen, build, packaging)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: upstream
+    attributes:
+      label: Upstream reference
+      description: >
+        If this exists in Wharfkit, link the package and file. Dwarfkit is a
+        1:1 port, so features that exist upstream are ported from the pinned
+        source in reference/, not designed fresh. Anything beyond Wharfkit's
+        surface needs a stronger case (see the YAGNI note in CONTRIBUTING.md).

@@ -1,0 +1,123 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_proposal",
+        "params": {
+            "method": "POST",
+            "body": "{\"proposer\":\"xavier\",\"proposal_name\":\"bigmultisig\"}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "actions_count": 1,
+        "cancelled_at": null,
+        "cancelled_by": null,
+        "cancelled_trx_id": null,
+        "created_at": "2025-11-24T01:20:19.500",
+        "created_block": 400000,
+        "created_trx_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "executed_at": null,
+        "executed_by": null,
+        "executed_trx_id": null,
+        "expiration": "2025-12-01T01:16:09.500",
+        "globalseq": 4001,
+        "proposal_name": "bigmultisig",
+        "proposer": "xavier",
+        "provided_approvals": [
+            {
+                "actor": "approver.1",
+                "permission": "active"
+            },
+            {
+                "actor": "approver.2",
+                "permission": "active"
+            },
+            {
+                "actor": "approver.3",
+                "permission": "active"
+            },
+            {
+                "actor": "approver.4",
+                "permission": "active"
+            },
+            {
+                "actor": "approver.5",
+                "permission": "active"
+            },
+            {
+                "actor": "approver",
+                "permission": "active"
+            },
+            {
+                "actor": "approver",
+                "permission": "active"
+            },
+            {
+                "actor": "approver",
+                "permission": "active"
+            }
+        ],
+        "requested_approvals": [
+            {
+                "actor": "approver.1",
+                "permission": "active"
+            },
+            {
+                "actor": "approver.2",
+                "permission": "active"
+            },
+            {
+                "actor": "approver.3",
+                "permission": "active"
+            },
+            {
+                "actor": "approver.4",
+                "permission": "active"
+            },
+            {
+                "actor": "approver.5",
+                "permission": "active"
+            },
+            {
+                "actor": "approver",
+                "permission": "active"
+            },
+            {
+                "actor": "approver",
+                "permission": "active"
+            },
+            {
+                "actor": "approver",
+                "permission": "active"
+            },
+            {
+                "actor": "approver",
+                "permission": "active"
+            },
+            {
+                "actor": "approver1",
+                "permission": "active"
+            },
+            {
+                "actor": "approver11",
+                "permission": "active"
+            },
+            {
+                "actor": "approver12",
+                "permission": "active"
+            }
+        ],
+        "status": "proposed",
+        "transaction": {
+            "actions": [
+                {
+                    "account": "eosio",
+                    "data": "",
+                    "name": "updateauth"
+                }
+            ],
+            "expiration": "2025-12-25T00:00:00"
+        }
+    },
+    "text": "{\"actions_count\":1,\"cancelled_at\":null,\"cancelled_by\":null,\"cancelled_trx_id\":null,\"created_at\":\"2025-11-24T01:20:19.500\",\"created_block\":400000,\"created_trx_id\":\"a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1\",\"executed_at\":null,\"executed_by\":null,\"executed_trx_id\":null,\"expiration\":\"2025-12-01T01:16:09.500\",\"globalseq\":4001,\"proposal_name\":\"bigmultisig\",\"proposer\":\"xavier\",\"provided_approvals\":[{\"actor\":\"approver.1\",\"permission\":\"active\"},{\"actor\":\"approver.2\",\"permission\":\"active\"},{\"actor\":\"approver.3\",\"permission\":\"active\"},{\"actor\":\"approver.4\",\"permission\":\"active\"},{\"actor\":\"approver.5\",\"permission\":\"active\"},{\"actor\":\"approver\",\"permission\":\"active\"},{\"actor\":\"approver\",\"permission\":\"active\"},{\"actor\":\"approver\",\"permission\":\"active\"}],\"requested_approvals\":[{\"actor\":\"approver.1\",\"permission\":\"active\"},{\"actor\":\"approver.2\",\"permission\":\"active\"},{\"actor\":\"approver.3\",\"permission\":\"active\"},{\"actor\":\"approver.4\",\"permission\":\"active\"},{\"actor\":\"approver.5\",\"permission\":\"active\"},{\"actor\":\"approver\",\"permission\":\"active\"},{\"actor\":\"approver\",\"permission\":\"active\"},{\"actor\":\"approver\",\"permission\":\"active\"},{\"actor\":\"approver\",\"permission\":\"active\"},{\"actor\":\"approver1\",\"permission\":\"active\"},{\"actor\":\"approver11\",\"permission\":\"active\"},{\"actor\":\"approver12\",\"permission\":\"active\"}],\"status\":\"proposed\",\"transaction\":{\"actions\":[{\"account\":\"eosio\",\"data\":\"\",\"name\":\"updateauth\"}],\"expiration\":\"2025-12-25T00:00:00\"}}"
+}

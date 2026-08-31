@@ -1,0 +1,25 @@
+{
+    "api": "https://eos.greymass.com",
+    "headers": {
+        "access-control-allow-headers": "X-Requested-With,Accept,Content-Type,Origin",
+        "access-control-allow-methods": "GET, POST, OPTIONS",
+        "access-control-allow-origin": "*",
+        "connection": "close",
+        "content-length": "125",
+        "content-type": "application/json",
+        "date": "Fri, 04 Aug 2023 18:49:56 GMT",
+        "host": "eos.greymass.com",
+        "server": "nginx",
+        "x-cached": "MISS"
+    },
+    "status": 200,
+    "json": {
+        "rows": [
+            "000038ba2127693662c6747632b80c40",
+            "0000968a8134553cbbed42739d469a3f"
+        ],
+        "more": true,
+        "next_key": "4403566244082619776"
+    },
+    "text": "{\"rows\":[\"000038ba2127693662c6747632b80c40\",\"0000968a8134553cbbed42739d469a3f\"],\"more\":true,\"next_key\":\"4403566244082619776\"}"
+}

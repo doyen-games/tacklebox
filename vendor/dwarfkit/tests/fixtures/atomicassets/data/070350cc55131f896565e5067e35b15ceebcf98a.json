@@ -1,0 +1,36 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/offers/22820296/logs",
+        "params": {
+            "method": "POST",
+            "body": "{\"limit\":\"10\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": [
+            {
+                "log_id": "9933784651",
+                "name": "lognewoffer",
+                "data": {},
+                "txid": "9d1f20104740c5d0e683f2d91b990a05aa702535875e58dfd861bda655d0b677",
+                "created_at_block": "126573564",
+                "created_at_time": "1624728914000"
+            },
+            {
+                "log_id": "9934239533",
+                "name": "acceptoffer",
+                "data": {},
+                "txid": "38e932aeb21cf7fded2db0264e020576c453e08ae9536bef2337f7ee3fe9823f",
+                "created_at_block": "126574166",
+                "created_at_time": "1624729215000"
+            }
+        ],
+        "query_time": 1756585619962
+    },
+    "text": "{\"success\":true,\"data\":[{\"log_id\":\"9933784651\",\"name\":\"lognewoffer\",\"data\":{},\"txid\":\"9d1f20104740c5d0e683f2d91b990a05aa702535875e58dfd861bda655d0b677\",\"created_at_block\":\"126573564\",\"created_at_time\":\"1624728914000\"},{\"log_id\":\"9934239533\",\"name\":\"acceptoffer\",\"data\":{},\"txid\":\"38e932aeb21cf7fded2db0264e020576c453e08ae9536bef2337f7ee3fe9823f\",\"created_at_block\":\"126574166\",\"created_at_time\":\"1624729215000\"}],\"query_time\":1756585619962}"
+}

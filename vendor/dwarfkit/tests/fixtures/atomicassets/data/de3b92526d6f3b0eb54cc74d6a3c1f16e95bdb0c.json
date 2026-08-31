@@ -1,0 +1,30 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicmarket/v1/stats/accounts/taco",
+        "params": {
+            "method": "POST",
+            "body": "{\"symbol\":\"WAX\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "symbol": {
+                "token_symbol": "WAX",
+                "token_contract": "eosio.token",
+                "token_precision": 8
+            },
+            "result": {
+                "account": "taco",
+                "buy_volume": "10565190579013",
+                "sell_volume": "2661846433794"
+            }
+        },
+        "query_time": 1756585628866
+    },
+    "text": "{\"success\":true,\"data\":{\"symbol\":{\"token_symbol\":\"WAX\",\"token_contract\":\"eosio.token\",\"token_precision\":8},\"result\":{\"account\":\"taco\",\"buy_volume\":\"10565190579013\",\"sell_volume\":\"2661846433794\"}},\"query_time\":1756585628866}"
+}

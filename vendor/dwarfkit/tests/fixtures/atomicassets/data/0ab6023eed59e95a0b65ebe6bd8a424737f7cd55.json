@@ -1,0 +1,18 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/assets/1099851897196/stats",
+        "params": {
+            "method": "GET",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "template_mint": "6"
+        },
+        "query_time": 1756585609922
+    },
+    "text": "{\"success\":true,\"data\":{\"template_mint\":\"6\"},\"query_time\":1756585609922}"
+}

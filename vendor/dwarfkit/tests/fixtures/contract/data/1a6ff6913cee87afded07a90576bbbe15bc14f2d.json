@@ -1,0 +1,16 @@
+{
+    "request": {
+        "path": "https://eos.greymass.com/v1/chain/get_table_rows",
+        "params": {
+            "method": "POST",
+            "body": "{\"json\":false,\"limit\":1000,\"table\":\"drop\",\"code\":\"drops\",\"scope\":\"drops\",\"key_type\":\"i64\",\"lower_bound\":\"0\",\"upper_bound\":\"0\"}"
+        }
+    },
+    "status": 200,
+    "json": {
+        "rows": [],
+        "more": false,
+        "next_key": ""
+    },
+    "text": "{\"rows\":[],\"more\":false,\"next_key\":\"\"}"
+}

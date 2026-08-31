@@ -1,0 +1,61 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/config",
+        "params": {
+            "method": "GET",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": {
+            "contract": "atomicassets",
+            "version": "1.2.3",
+            "collection_format": [
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "img",
+                    "type": "ipfs"
+                },
+                {
+                    "name": "description",
+                    "type": "string"
+                },
+                {
+                    "name": "url",
+                    "type": "string"
+                },
+                {
+                    "name": "images",
+                    "type": "string"
+                },
+                {
+                    "name": "socials",
+                    "type": "string"
+                },
+                {
+                    "name": "creator_info",
+                    "type": "string"
+                }
+            ],
+            "supported_tokens": [
+                {
+                    "token_symbol": "WAX",
+                    "token_contract": "eosio.token",
+                    "token_precision": 8
+                },
+                {
+                    "token_symbol": "PGL",
+                    "token_contract": "prospectorsw",
+                    "token_precision": 4
+                }
+            ]
+        },
+        "query_time": 1756585603047
+    },
+    "text": "{\"success\":true,\"data\":{\"contract\":\"atomicassets\",\"version\":\"1.2.3\",\"collection_format\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"img\",\"type\":\"ipfs\"},{\"name\":\"description\",\"type\":\"string\"},{\"name\":\"url\",\"type\":\"string\"},{\"name\":\"images\",\"type\":\"string\"},{\"name\":\"socials\",\"type\":\"string\"},{\"name\":\"creator_info\",\"type\":\"string\"}],\"supported_tokens\":[{\"token_symbol\":\"WAX\",\"token_contract\":\"eosio.token\",\"token_precision\":8},{\"token_symbol\":\"PGL\",\"token_contract\":\"prospectorsw\",\"token_precision\":4}]},\"query_time\":1756585603047}"
+}

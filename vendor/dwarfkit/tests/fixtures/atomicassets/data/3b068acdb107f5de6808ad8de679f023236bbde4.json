@@ -1,0 +1,19 @@
+{
+    "request": {
+        "path": "https://wax-atomic.alcor.exchange/atomicassets/v1/transfers/_count",
+        "params": {
+            "method": "POST",
+            "body": "{\"account\":\"taco\",\"collection_name\":\"taco,alien.worlds\"}",
+            "headers": {
+                "Content-Type": "application/json"
+            }
+        }
+    },
+    "status": 200,
+    "json": {
+        "success": true,
+        "data": "5675",
+        "query_time": 1756585620299
+    },
+    "text": "{\"success\":true,\"data\":\"5675\",\"query_time\":1756585620299}"
+}

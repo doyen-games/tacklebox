@@ -1,0 +1,3 @@
+dwarfkit commit: 2d158891fd4159cedee37c12d31623e82224c4c7
+Local patches: cmake/CompilerWarnings.cmake adds -Wno-missing-field-initializers for GNU (GCC 14+ designated-initializer false positives with -Werror).
+Also suppresses GCC-only -Warray-bounds/-Wstringop-overflow/-Wstringop-overread false positives (GCC bugs 96963/105562 family) in cmake/CompilerWarnings.cmake.

@@ -1,0 +1,167 @@
+# TackleBox
+
+A native C++ wallet and block explorer for [Antelope](https://antelope.io)
+blockchains (EOS/Vaulta, WAX, Telos, and friends) - the toolkit you carry onto
+the open sea. Built on [dwarfkit](https://github.com/on-a-t-break/dwarfkit)
+(the native port of Greymass' Wharfkit SDK) with a Dear ImGui interface on an
+SDL3 shell that spans desktop and mobile.
+
+One binary, one encrypted vault file, no browser, no Electron, no telemetry.
+The UI adapts by form factor: full sidebar on desktop, icon rail on tablets,
+bottom tab bar + sheet modals on phones - try them anywhere with
+`--phone --touch`, `--tablet`, `--desktop`. iOS/Android scaffolds live in
+`platform/`; see [docs/MOBILE.md](docs/MOBILE.md) for the honest status.
+
+![TackleBox](docs/screenshot.png)
+
+## What it does
+
+- **Wallet** - hold K1/R1 keys in an encrypted local vault, link accounts on
+  any configured network, send tokens, inspect resources (CPU/NET/RAM), track
+  every signature in a tamper-resistant audit log.
+- **Whitelist guard** - the centerpiece. Rules scoped by *signer wallet ->
+  contract -> action -> per-parameter constraints* (exact value, one-of set,
+  numeric/asset range, or wildcard). Each rule can **pin the contract's code
+  and ABI hashes**: the wallet re-fetches both live at every signature, and if
+  the deployed contract changed since approval the rule suspends itself until
+  you re-approve the new hashes. Auto-sign is available only for pinned rules,
+  behind a master switch, and never with critical risk flags present.
+- **Risk analysis** - every transaction is statically analyzed before signing:
+  permission changes (`updateauth`, `linkauth`, ...), code deploys
+  (`setcode`/`setabi`), near-balance transfers, scam-pattern memos, first
+  contact with unknown contracts.
+- **Block explorer** - live head/LIB overview, recent block strip, block and
+  transaction detail, and account inspection (permission trees, balances,
+  history where the endpoint serves it) - all against your own configured
+  endpoints.
+- **Contract explorer** - load any deployed contract's ABI, execute actions
+  through forms generated from the ABI, browse tables, read the exact hashes
+  the whitelist pins.
+- **Resources** - live RAM price off the Bancor market with buy/sell/transfer,
+  CPU/NET staking and unstaking, and PowerUp rentals quoted through the
+  resources kit's exact math.
+- **Governance** - block producer table with pick-up-to-30 voting, proxy
+  delegation, and a one-click "schedule this vote" handoff to Autopilot.
+- **Multisig** - browse `eosio.msig` proposals straight from chain tables
+  (decoded through each contract's ABI), stage actions from the contract
+  explorer, propose/approve/execute/cancel.
+- **Autopilot** - recurring transactions (re-vote, claim, top up rentals) that
+  can only ever sign through a pinned auto-sign whitelist rule: the timer has
+  no signing power of its own. Blocked runs are recorded and flagged.
+  Auto-stacking/auto-staking/auto-proxy quick-creates ship built in: amounts
+  can be a fixed X or Y% of the live balance of any token (recomputed each
+  run with exact floor math, optional reserve kept untouched), and memos/
+  fields accept {actor} {amount} {balance} {date} {time} placeholders.
+- **First-run guide + Anchor migration** - create or import a vault, pick the
+  chains to enable, paste keys exported from Anchor (one per line), and
+  TackleBox discovers every account those keys control across the enabled
+  chains (get_accounts_by_authorizers). Chain-first navigation: a chain
+  selector sits left of the account switcher, the account list filters to it,
+  and the wallet remembers the last chain and account you used.
+- **Contract deployment** - drop a `.wasm`/`.abi` on the window, review the
+  local code hash, deploy via hold-to-sign.
+- **NFT gallery** - Atomic Assets owned by the active account, rendered from
+  the network's configured Atomic API node (Alcor's WAX node by default), with
+  transfer and burn.
+- **ESR + dapp links** - paste `esr://` signing requests from dapps, or accept
+  a dapp's login request to open a live anchor-link session (experimental):
+  the dapp then pushes requests straight into the wallet over a sealed
+  channel, each one still passing the guard.
+- **Endpoint pools** - per chain, per node type (RPC / Atomic Assets /
+  Hyperion history / Light API), each endpoint carries a nickname, a priority
+  and an enable toggle. Selection policy per pool: *priority* (always the best
+  enabled node), *round-robin* (split every request across the pool), or
+  *auto* - priority normally, switching to round-robin **IF** more than N
+  queries land within M seconds (both configurable). Hyperion nodes serve
+  account history (`/v2/history`, with automatic v1 fallback); a Light API
+  node replaces per-token registry polling with one all-balances call.
+- **Tokens** - track any token contract/symbol per network; balances appear on
+  the dashboard and in the transfer picker. With a Light API node configured
+  the full token list arrives automatically; the registry remains as fallback.
+- **Pinned queries** - pin any contract table query (or a single field of it)
+  to the dashboard as a live card.
+- **Fuel-style cosigning** - optional resource-provider plugin so low-CPU
+  accounts still transact; quoted fees surface as declinable prompts.
+- **Portable vault** - export/import the sealed `.tbx` vault file between
+  machines (drag & drop a `.tbx` onto the window to import). The wallet
+  remembers your last-used account per vault.
+
+## Security model (short version)
+
+Everything sensitive lives in **one encrypted file**: keys, account list,
+network endpoints, whitelist rules, security settings, and the signing log.
+Endpoints and rules are inside the ciphertext on purpose - nothing outside the
+unlocked wallet can point it at a hostile node or whitelist a drain.
+
+- scrypt (RFC 7914, N=2^15 r=8 p=1) -> AES-256-CBC + HMAC-SHA256
+  encrypt-then-MAC, MAC verified in constant time before any decryption.
+- Keys are wiped from memory on lock (best-effort page-locking while unlocked),
+  auto-lock on inactivity, panic lock on Ctrl+Shift+L.
+- Signing always happens through the guard: whitelist verdict + fresh contract
+  hash verification + risk flags, rendered in a review modal. Critical risk or
+  a changed contract demands hold-to-sign.
+- No third-party services: the app talks only to the chain / Atomic API
+  endpoints you configure. Media for NFTs is fetched over https only.
+
+The full write-up is in [docs/SECURITY.md](docs/SECURITY.md).
+
+## Building
+
+Requires CMake 3.24+, a C++20 compiler (GCC 12+/Clang 15+/MSVC 2022), and an
+internet connection at first configure (FetchContent pulls libsecp256k1 and
+libcurl if not found on the system).
+
+```
+cmake -S . -B build
+cmake --build build
+ctest --test-dir build
+```
+
+- **Windows**: MSVC or MinGW-w64. TLS via schannel (no OpenSSL needed). The
+  MinGW build statically links the GCC runtime - the exe is self-contained.
+- **Linux**: system libcurl development headers recommended (else curl builds
+  from source and needs an SSL backend); X11/Wayland dev packages for SDL3,
+  OpenGL headers.
+- **macOS**: system curl is found automatically; builds as `TackleBox.app`.
+- **iOS / Android**: same CMake tree via `platform/ios` (Xcode toolchain,
+  Secure Transport TLS) and `platform/android` (gradle + NDK, mbedTLS) -
+  build guides and current status in [docs/MOBILE.md](docs/MOBILE.md).
+
+The binary embeds its fonts (Rajdhani + Share Tech Mono, both SIL OFL - see
+`assets/fonts/`). No runtime assets are needed next to the executable.
+
+## Layout
+
+```
+src/core/    logging, worker pool, CSPRNG, secure memory, paths
+src/vault/   scrypt KDF, sealed-box cipher, the vault document
+src/guard/   whitelist rules + evaluation engine + risk analyzer
+src/chain/   network presets, per-network chain service (RPC, AA API)
+src/app/     controller, app state, dwarfkit bridge (wallet plugin + UI hooks)
+src/ui/      theme, fx, widgets, texture cache, views
+vendor/      dwarfkit, Dear ImGui, GLFW, stb_image (pinned snapshots)
+tests/       doctest suites (crypto vectors, guard engine, vault round trips)
+```
+
+Architecture notes live in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Status
+
+Working: vault lifecycle, key/account management, transfers (multi-token),
+contract actions, table browsing, ESR signing, the whitelist guard with hash
+pinning and auto-sign, risk flags, audit log, block/tx/account explorer, NFT
+gallery with transfer/burn, RAM market + staking + PowerUp, producer voting
+and proxying, msig browsing/building, autopilot schedules, pinned table
+queries, contract deployment, resource-provider cosigning, custom chains,
+vault import/export, last-account memory.
+
+Experimental: dapp link sessions (anchor-link wallet side) - login, listener,
+and callback flows are implemented on dwarfkit's byte-parity protocol port but
+have not yet been exercised against live dapps.
+
+Not yet: Ledger/hardware keys, account creation, REX.
+
+## License
+
+MIT. Vendored components keep their own licenses (dwarfkit MIT, Dear ImGui
+MIT, SDL3 zlib, stb public domain/MIT, fonts SIL OFL).

@@ -1,0 +1,18 @@
+{
+  "request": {
+    "path": "http://localhost/v1/proposals/search_proposals",
+    "params": {
+      "method": "POST",
+      "body": "{\"query\":\"xyznonexistent999\",\"limit\":5}",
+      "headers": {}
+    }
+  },
+  "status": 200,
+  "json": {
+    "more": false,
+    "proposals": [],
+    "query": "xyznonexistent999",
+    "status": "",
+    "total": 0
+  }
+}

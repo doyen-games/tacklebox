@@ -1,0 +1,50 @@
+{
+    "request": {
+        "path": "http://localhost/v1/proposals/get_approver_proposals",
+        "params": {
+            "method": "POST",
+            "body": "{\"approver\":\"bob\",\"status\":\"cancelled\",\"include_approved\":true,\"limit\":20}",
+            "headers": {}
+        }
+    },
+    "status": 200,
+    "json": {
+        "approver": "bob",
+        "more": false,
+        "proposals": [
+            {
+                "actions_count": 1,
+                "approvals_received": 1,
+                "approvals_required": 2,
+                "created_at": "2025-11-24T01:36:09.500",
+                "created_trx_id": "f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5",
+                "expiration": "2025-12-24T01:16:09.500",
+                "globalseq": 1013,
+                "my_approval_status": "approved",
+                "my_approval_time": null,
+                "proposal_name": "upgrade",
+                "proposer": "alice",
+                "provided_approvals": [
+                    {
+                        "actor": "bob",
+                        "permission": "active"
+                    }
+                ],
+                "requested_approvals": [
+                    {
+                        "actor": "bob",
+                        "permission": "active"
+                    },
+                    {
+                        "actor": "charlie",
+                        "permission": "active"
+                    }
+                ],
+                "status": "cancelled",
+                "time_remaining_seconds": 5180902
+            }
+        ],
+        "total": 1
+    },
+    "text": "{\"approver\":\"bob\",\"more\":false,\"proposals\":[{\"actions_count\":1,\"approvals_received\":1,\"approvals_required\":2,\"created_at\":\"2025-11-24T01:36:09.500\",\"created_trx_id\":\"f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5\",\"expiration\":\"2025-12-24T01:16:09.500\",\"globalseq\":1013,\"my_approval_status\":\"approved\",\"my_approval_time\":null,\"proposal_name\":\"upgrade\",\"proposer\":\"alice\",\"provided_approvals\":[{\"actor\":\"bob\",\"permission\":\"active\"}],\"requested_approvals\":[{\"actor\":\"bob\",\"permission\":\"active\"},{\"actor\":\"charlie\",\"permission\":\"active\"}],\"status\":\"cancelled\",\"time_remaining_seconds\":5180902}],\"total\":1}"
+}
