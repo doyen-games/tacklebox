@@ -6,6 +6,7 @@
 #include <dwarfkit/resources.hpp>
 #include <dwarfkit/transport/curl_fetch_provider.hpp>
 
+#include "chain/prices.hpp"
 #include "core/log.hpp"
 #include "core/util.hpp"
 
@@ -485,6 +486,84 @@ Result<std::vector<BalanceView>> ChainService::fetchAllBalances(const std::strin
     if (out.empty())
         return dwarfkit::err(ErrorKind::NotFound, "light API returned no balances");
     return out;
+}
+
+Result<json> ChainService::getUrlJson(const std::string& url) {
+    if (url.rfind("https://", 0) != 0)
+        return dwarfkit::err(ErrorKind::Invalid, "oracle endpoints must be https");
+    dwarfkit::FetchRequest request;
+    request.url = url;
+    request.method = "GET";
+    auto response = fetch_->fetch(request);
+    if (!response) return dwarfkit::err(response.error());
+    if (response->status != 200)
+        return dwarfkit::err(ErrorKind::Api, "oracle returned HTTP " +
+                                                 std::to_string(response->status));
+    json parsed = json::parse(response->body, nullptr, false);
+    if (parsed.is_discarded())
+        return dwarfkit::err(ErrorKind::Invalid, "oracle returned invalid JSON");
+    return parsed;
+}
+
+Result<std::map<std::string, double>> ChainService::fetchPrices(const OracleConfig& cfg) {
+    std::map<std::string, double> prices;
+    const std::string coreKey = priceKey("eosio.token", net_.coreSymbolCode());
+    std::string base = cfg.url;
+    while (!base.empty() && base.back() == '/') base.pop_back();
+
+    switch (static_cast<OracleProvider>(cfg.provider)) {
+        case OracleProvider::Off:
+            return prices;
+        case OracleProvider::Alcor: {
+            DK_TRY(body, getUrlJson(base + "/api/v2/tokens"));
+            prices = parseAlcorTokens(body);
+            if (prices.empty())
+                return dwarfkit::err(ErrorKind::Api, "no prices in the Alcor response");
+            return prices;
+        }
+        case OracleProvider::CoinGecko: {
+            if (cfg.coreId.empty())
+                return dwarfkit::err(ErrorKind::Invalid, "set the CoinGecko id first");
+            DK_TRY(body, getUrlJson(base + "/api/v3/simple/price?ids=" + cfg.coreId +
+                                    "&vs_currencies=usd"));
+            auto usd = parseCoinGecko(body, cfg.coreId);
+            if (!usd)
+                return dwarfkit::err(ErrorKind::Api,
+                                     "CoinGecko has no usd price for '" + cfg.coreId + "'");
+            prices[coreKey] = *usd;
+            return prices;
+        }
+        case OracleProvider::Delphi: {
+            if (cfg.coreId.empty())
+                return dwarfkit::err(ErrorKind::Invalid, "set the Delphi pair first");
+            DK_TRY(pairs, rpcCall("/v1/chain/get_table_rows",
+                                  json{{"code", "delphioracle"},
+                                       {"scope", "delphioracle"},
+                                       {"table", "pairs"},
+                                       {"json", true},
+                                       {"limit", 100}}));
+            int precision = -1;
+            for (const json& row : pairs.value("rows", json::array()))
+                if (row.value("name", "") == cfg.coreId)
+                    precision = row.value("quoted_precision", -1);
+            if (precision < 0)
+                return dwarfkit::err(ErrorKind::Api,
+                                     "delphioracle has no pair '" + cfg.coreId + "'");
+            DK_TRY(points, rpcCall("/v1/chain/get_table_rows",
+                                   json{{"code", "delphioracle"},
+                                        {"scope", cfg.coreId},
+                                        {"table", "datapoints"},
+                                        {"json", true},
+                                        {"limit", 30}}));
+            auto usd = parseDelphiDatapoints(points.value("rows", json::array()), precision);
+            if (!usd)
+                return dwarfkit::err(ErrorKind::Api,
+                                     "no datapoints for '" + cfg.coreId + "'");
+            prices[coreKey] = *usd;
+            return prices;
+        }
+    }
+    return prices;
 }
 
 Result<std::vector<uint8_t>> ChainService::fetchUrl(const std::string& url, size_t maxBytes) {

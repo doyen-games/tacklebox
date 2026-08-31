@@ -147,7 +147,15 @@ public:
     // Raw GET of an arbitrary https URL (NFT media). Size-capped.
     Result<std::vector<uint8_t>> fetchUrl(const std::string& url, size_t maxBytes);
 
+    // --- price oracle (display-only) -----------------------------------------
+    // USD prices per the given oracle config (passed in so Settings can test
+    // unsaved edits). Keys are priceKey(contract, SYM); Alcor prices every
+    // listed token, CoinGecko/Delphi only the core symbol.
+    Result<std::map<std::string, double>> fetchPrices(const OracleConfig& cfg);
+
 private:
+    // GET an https URL and parse the body as JSON (oracle endpoints).
+    Result<json> getUrlJson(const std::string& url);
     // Pooled client per base URL (round-robin picks vary per request).
     std::shared_ptr<dwarfkit::APIClient> clientFor(const std::string& url);
     // POST an RPC call to a policy-picked node.

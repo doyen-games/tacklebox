@@ -90,6 +90,22 @@ struct EndpointList {
 enum class NodeType { Rpc, Atomic, Hyperion, Light };
 const char* nodeTypeName(NodeType type);  // "RPC" / "Atomic" / "Hyperion" / "Light"
 
+// Where USD prices come from. Strictly display-only: no signing, whitelist or
+// risk decision may ever read a price.
+enum class OracleProvider {
+    Off = 0,
+    Alcor = 1,      // DEX API: prices every listed token on the chain
+    CoinGecko = 2,  // aggregator: core token only, via its CoinGecko id
+    Delphi = 3,     // delphioracle on-chain medians via the RPC pool: core only
+};
+const char* oracleProviderName(OracleProvider provider);
+
+struct OracleConfig {
+    int provider = static_cast<int>(OracleProvider::Off);
+    std::string url;     // API base for Alcor/CoinGecko; unused for Delphi
+    std::string coreId;  // core-token id: CoinGecko id ("wax") or Delphi pair ("waxpusd")
+};
+
 struct NetworkDef {
     std::string chainId;  // hex
     std::string name;
@@ -102,6 +118,7 @@ struct NetworkDef {
     bool testnet = false;
     std::string explorerTx;  // URL template containing {txid}, may be empty
     std::vector<TokenDef> tokens;  // tracked tokens beyond the core symbol
+    OracleConfig oracle;           // USD price source (display-only)
 
     EndpointList& list(NodeType type) {
         switch (type) {

@@ -335,6 +335,116 @@ void drawNetworks(AppState& state, Controller& controller) {
             }
         }
 
+        // Price oracle: provider selector + its config. Display-only data;
+        // switching providers prefills that provider's defaults.
+        {
+            ImGui::PushID("oracle");
+            const OracleProvider provider =
+                static_cast<OracleProvider>(net.oracle.provider);
+            ImGui::AlignTextToFramePadding();
+            ImGui::PushFont(fonts().uiSemi, kTextSm);
+            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::CyanDim));
+            ImGui::TextUnformatted("Price");
+            ImGui::PopStyleColor();
+            ImGui::PopFont();
+            ImGui::SameLine(::ui::S(86.0f));
+            int mode = net.oracle.provider;
+            ImGui::SetNextItemWidth(::ui::S(150.0f));
+            const char* providers[] = {"off", "Alcor DEX", "CoinGecko",
+                                       "Delphi (on-chain)"};
+            if (ImGui::Combo("##prov", &mode, providers, 4) &&
+                mode != net.oracle.provider) {
+                NetworkDef updated = net;
+                updated.oracle =
+                    oracleDefaults(net.chainId, static_cast<OracleProvider>(mode));
+                controller.addNetwork(updated);
+            }
+            ::ui::HandOnHover();
+            tooltip("USD price source for this chain's tokens. Display-only:\n"
+                    "signing and whitelist decisions never read prices.\n"
+                    "Alcor prices every listed token; CoinGecko and Delphi\n"
+                    "price the core token only.");
+            if (provider != OracleProvider::Off) {
+                ImGui::SameLine(0, 6);
+                if (neonButton("TEST", BtnKind::Subtle, {::ui::S(64.0f), 26}))
+                    controller.testOracle(net, [c = &controller](std::string price,
+                                                                 std::string error) {
+                        if (error.empty())
+                            c->toast(Toast::Success, "Oracle OK: " + price);
+                        else
+                            c->toast(Toast::Error, "Oracle: " + error);
+                    });
+            }
+
+            const bool wantsUrl = provider == OracleProvider::Alcor ||
+                                  provider == OracleProvider::CoinGecko;
+            const bool wantsId = provider == OracleProvider::CoinGecko ||
+                                 provider == OracleProvider::Delphi;
+            if (wantsUrl || wantsId) {
+                static std::map<std::string, std::array<char, 160>> urlBufs;
+                static std::map<std::string, std::array<char, 32>> idBufs;
+                auto& urlBuf = urlBufs[net.chainId];
+                auto& idBuf = idBufs[net.chainId];
+                if (!ImGui::IsAnyItemActive()) {
+                    std::snprintf(urlBuf.data(), urlBuf.size(), "%s",
+                                  net.oracle.url.c_str());
+                    std::snprintf(idBuf.data(), idBuf.size(), "%s",
+                                  net.oracle.coreId.c_str());
+                }
+                if (ImGui::BeginTable("##ocfg", 3, ImGuiTableFlags_SizingFixedFit |
+                                                       ImGuiTableFlags_NoPadOuterX)) {
+                    ImGui::TableSetupColumn("pad", ImGuiTableColumnFlags_WidthFixed,
+                                            ::ui::S(78.0f));
+                    ImGui::TableSetupColumn("main", ImGuiTableColumnFlags_WidthStretch);
+                    ImGui::TableSetupColumn("aux", ImGuiTableColumnFlags_WidthFixed,
+                                            wantsUrl && wantsId ? ::ui::S(120.0f) : 0.0f);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::TableNextColumn();
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::PushFont(fonts().mono, kMonoSm);
+                    if (wantsUrl)
+                        ImGui::InputTextWithHint("##ourl", "https://oracle.example.com",
+                                                 urlBuf.data(), urlBuf.size());
+                    else
+                        ImGui::InputTextWithHint("##oid", "delphi pair (e.g. waxpusd)",
+                                                 idBuf.data(), idBuf.size());
+                    ImGui::PopFont();
+                    if (ImGui::IsItemDeactivatedAfterEdit()) {
+                        NetworkDef updated = net;
+                        if (wantsUrl) {
+                            std::string url = trim(urlBuf.data());
+                            std::string why;
+                            if (!url.empty() && !endpointAllowed(url, &why)) {
+                                controller.toast(Toast::Error, why);
+                            } else {
+                                updated.oracle.url = url;
+                                controller.addNetwork(updated);
+                            }
+                        } else {
+                            updated.oracle.coreId = trim(idBuf.data());
+                            controller.addNetwork(updated);
+                        }
+                    }
+                    ImGui::TableNextColumn();
+                    if (wantsUrl && wantsId) {
+                        ImGui::SetNextItemWidth(-FLT_MIN);
+                        ImGui::PushFont(fonts().mono, kMonoSm);
+                        ImGui::InputTextWithHint("##ocoreid", "coingecko id",
+                                                 idBuf.data(), idBuf.size());
+                        ImGui::PopFont();
+                        if (ImGui::IsItemDeactivatedAfterEdit()) {
+                            NetworkDef updated = net;
+                            updated.oracle.coreId = trim(idBuf.data());
+                            controller.addNetwork(updated);
+                        }
+                    }
+                    ImGui::EndTable();
+                }
+            }
+            ImGui::PopID();
+        }
+
         // Tracked tokens beyond the core symbol (registry fallback when no
         // light API is set).
         for (const auto& token : net.tokens) {
@@ -351,18 +461,20 @@ void drawNetworks(AppState& state, Controller& controller) {
             static std::map<std::string, std::array<char, 32>> tokContractBufs, tokCodeBufs;
             auto& tokContract = tokContractBufs[net.chainId];
             auto& tokCode = tokCodeBufs[net.chainId];
+            const bool phoneRow = layout().phone();
             ImGui::Dummy({::ui::S(8.0f), 0});
             ImGui::SameLine();
-            ImGui::SetNextItemWidth(::ui::S(170.0f));
+            ImGui::SetNextItemWidth(::ui::S(phoneRow ? 128.0f : 170.0f));
             ImGui::PushFont(fonts().mono, kMonoSm);
             ImGui::InputTextWithHint("##tokc", "token contract", tokContract.data(),
                                      tokContract.size());
             ImGui::SameLine(0, 6);
-            ImGui::SetNextItemWidth(::ui::S(80.0f));
+            ImGui::SetNextItemWidth(::ui::S(phoneRow ? 62.0f : 80.0f));
             ImGui::InputTextWithHint("##toks", "CODE", tokCode.data(), tokCode.size());
             ImGui::PopFont();
             ImGui::SameLine(0, 6);
-            if (neonButton("TRACK TOKEN", BtnKind::Subtle, {::ui::S(110.0f), 28}) &&
+            if (neonButton(phoneRow ? "TRACK" : "TRACK TOKEN", BtnKind::Subtle,
+                           {::ui::S(phoneRow ? 70.0f : 110.0f), 28}) &&
                 tokContract[0] && tokCode[0]) {
                 controller.addToken(net.chainId,
                                     {toLower(trim(tokContract.data())),

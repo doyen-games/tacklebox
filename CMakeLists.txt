@@ -124,6 +124,7 @@ add_library(tacklebox_core STATIC
   src/guard/risk.cpp
   src/guard/rules.cpp
   src/chain/netreg.cpp
+  src/chain/prices.cpp
   src/chain/service.cpp
   src/app/autopilot_util.cpp
   src/app/bridge.cpp
@@ -244,6 +245,7 @@ if(TB_BUILD_TESTS)
     tests/test_cipher.cpp
     tests/test_guard.cpp
     tests/test_kdf.cpp
+    tests/test_prices.cpp
     tests/test_risk.cpp
     tests/test_vault.cpp)
   target_link_libraries(tacklebox_tests PRIVATE tacklebox_core dk_doctest)

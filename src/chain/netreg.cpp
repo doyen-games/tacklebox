@@ -43,6 +43,13 @@ void seedExtraNodes(NetworkDef& net) {
         add(net.hyperion, "https://mainnet.telos.net", "Telos Foundation");
         net.lightSlug = "telos";
     }
+    // Mainnets with a known Alcor deployment default to it (prices every
+    // listed token); testnets and unknown chains stay off until the user
+    // opts in.
+    if (!net.testnet) {
+        OracleConfig oracle = oracleDefaults(id, OracleProvider::Alcor);
+        if (!oracle.url.empty()) net.oracle = oracle;
+    }
 }
 
 NetworkDef fromCatalog(const dwarfkit::ChainDefinition& chain, bool testnet) {
@@ -112,6 +119,37 @@ std::vector<NetworkDef> allPresets() {
         fromCatalog(Chains::LibreTestnet(), true),
         fromCatalog(Chains::ProtonTestnet(), true),
     });
+}
+
+OracleConfig oracleDefaults(const std::string& chainId, OracleProvider provider) {
+    namespace Chains = dwarfkit::Chains;
+    OracleConfig cfg;
+    cfg.provider = static_cast<int>(provider);
+    const bool eos = chainId == Chains::EOS().id.hexString();
+    const bool wax = chainId == Chains::WAX().id.hexString();
+    const bool telos = chainId == Chains::Telos().id.hexString();
+    switch (provider) {
+        case OracleProvider::Off:
+            cfg.provider = 0;
+            break;
+        case OracleProvider::Alcor:
+            if (eos) cfg.url = "https://eos.alcor.exchange";
+            if (wax) cfg.url = "https://wax.alcor.exchange";
+            if (telos) cfg.url = "https://telos.alcor.exchange";
+            break;
+        case OracleProvider::CoinGecko:
+            cfg.url = "https://api.coingecko.com";
+            if (eos) cfg.coreId = "eos";
+            if (wax) cfg.coreId = "wax";
+            if (telos) cfg.coreId = "telos";
+            break;
+        case OracleProvider::Delphi:
+            // Reads delphioracle through the RPC pool; no external URL.
+            if (eos) cfg.coreId = "eosusd";
+            if (wax) cfg.coreId = "waxpusd";
+            break;
+    }
+    return cfg;
 }
 
 bool endpointAllowed(const std::string& url, std::string* why) {

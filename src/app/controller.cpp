@@ -16,6 +16,7 @@
 #include "app/bridge.hpp"
 #include "app/link.hpp"
 #include "chain/netreg.hpp"
+#include "chain/prices.hpp"
 #include "core/clipboard.hpp"
 #include "core/log.hpp"
 #include "core/util.hpp"
@@ -440,6 +441,7 @@ void Controller::selectChain(const std::string& chainId) {
     state_.governance = GovernanceViewState{};
     state_.explore = ExploreViewState{};
     state_.assets = AssetsViewState{};
+    state_.prices = {};
     noteActivity();
     if (pick >= 0) refreshAccount(false);
 }
@@ -639,6 +641,59 @@ void Controller::probeEndpoints(const std::string& chainId) {
         runner_.postMain([this, chainId, results] {
             state_.health[chainId] = results;
             state_.busyHealth = false;
+        });
+    });
+}
+
+void Controller::refreshPrices(bool force) {
+    const NetworkDef* network = state_.currentNetwork();
+    if (!network || network->oracle.provider == static_cast<int>(OracleProvider::Off))
+        return;
+    if (state_.prices.loading) return;
+    if (!force && state_.prices.fetchedAt && nowSec() - state_.prices.fetchedAt < 60)
+        return;
+    auto svc = service(network->chainId);
+    if (!svc) return;
+    state_.prices.loading = true;
+    OracleConfig cfg = network->oracle;
+    runner_.run([this, svc, cfg] {
+        auto result = svc->fetchPrices(cfg);
+        runner_.postMain([this, result] {
+            state_.prices.loading = false;
+            state_.prices.fetchedAt = nowSec();
+            if (result) {
+                state_.prices.usd = *result;
+                state_.prices.error.clear();
+            } else {
+                state_.prices.usd.clear();
+                state_.prices.error = result.error().message;
+            }
+        });
+    });
+}
+
+void Controller::testOracle(const NetworkDef& net,
+                            std::function<void(std::string, std::string)> done) {
+    auto svc = service(net.chainId);
+    if (!svc) {
+        done("", "network not loaded");
+        return;
+    }
+    NetworkDef copy = net;
+    runner_.run([this, svc, copy, done = std::move(done)] {
+        auto result = svc->fetchPrices(copy.oracle);
+        runner_.postMain([copy, result, done = std::move(done)] {
+            if (!result) {
+                done("", result.error().message);
+                return;
+            }
+            auto it = result->find(priceKey("eosio.token", copy.coreSymbolCode()));
+            if (it == result->end() && !result->empty()) it = result->begin();
+            if (it == result->end()) {
+                done("", "oracle answered but priced nothing");
+                return;
+            }
+            done(copy.coreSymbolCode() + " = " + formatUsd(it->second), "");
         });
     });
 }

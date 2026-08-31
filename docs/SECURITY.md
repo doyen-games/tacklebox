@@ -116,6 +116,12 @@ look again. The suspended-rule banner shows the pinned vs observed hashes.
   selection mode: a transaction is built and broadcast through one node, and
   the guard's hash pins are verified with a fresh fetch regardless of which
   node answered.
+- The price oracle is **display-only by design**: prices render on the
+  dashboard and nowhere else - the guard, risk analyzer, autopilot amounts
+  and signing paths never read them, so a lying oracle can mislead your eyes
+  but cannot move funds or widen a whitelist. Oracle endpoints are https-only
+  and user-selected (Alcor/CoinGecko), or read on-chain through your own RPC
+  pool (Delphi). Custom chains and testnets default to no oracle at all.
 - A malicious RPC node still cannot steal keys or forge your signature; the
   worst it can do is lie about state and serve wrong ABIs. Wrong ABIs would
   change how action data *decodes for display*; the whitelist's ABI-hash pin

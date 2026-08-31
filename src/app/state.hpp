@@ -245,6 +245,14 @@ struct AppState {
     std::map<std::string, std::vector<EndpointHealth>> health;  // per chainId
     bool busyHealth = false;
 
+    // USD prices for the selected chain (display-only; key = contract/SYM).
+    struct PricesState {
+        std::map<std::string, double> usd;
+        int64_t fetchedAt = 0;
+        bool loading = false;
+        std::string error;
+    } prices;
+
     ContractsViewState contracts;
     ExploreViewState explore;
     AssetsViewState assets;

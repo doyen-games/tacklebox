@@ -17,9 +17,11 @@
 #include "app/controller.hpp"
 #include "app/state.hpp"
 #include "chain/netreg.hpp"
+#include "chain/prices.hpp"
 #include "core/log.hpp"
 #include "core/util.hpp"
 #include "ui/layout.hpp"
+#include "ui/ui_helpers.h"
 
 namespace tb::ui::qa {
 
@@ -28,6 +30,7 @@ namespace {
 std::string g_dir;
 bool g_active = false;
 int g_stepIndex = -1;
+float g_pageScroll = -1.0f;  // set by steps in enter(); shell applies it
 int g_framesLeft = 0;
 bool g_captureDue = false;
 std::string g_pendingName;
@@ -76,6 +79,10 @@ void injectFixtures(AppState& state) {
                                        fixtureNet.hyperion.nodes[0].url,
                                        fixtureNet.hyperion.nodes[0].nickname, false, false,
                                        -1, "", "HTTP 502"});
+    // Oracle prices for the dashboard (fresh stamp suppresses the fetch).
+    state.prices.usd = {{priceKey("eosio.token", "EOS"), 0.5123},
+                        {priceKey("core.vaulta", "A"), 0.5123}};
+    state.prices.fetchedAt = now;
 
     v.keys = {{"PUB_K1_6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV", "", "main key",
                now - 86400 * 30},
@@ -312,6 +319,11 @@ const Step kSteps[] = {
     {"13-vault", [](AppState& s, Controller& c) { showShellPage(s, c, Page::Vault); }},
     {"14-history", [](AppState& s, Controller& c) { showShellPage(s, c, Page::History); }},
     {"15-settings", [](AppState& s, Controller& c) { showShellPage(s, c, Page::Settings); }},
+    {"15b-settings-oracle",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Settings);
+         g_pageScroll = ::ui::S(820.0f);  // land on the first network's oracle row
+     }},
     {"16-signmodal",
      [](AppState& state, Controller& c) {
          showShellPage(state, c, Page::Dashboard);
@@ -332,6 +344,8 @@ void configure(const std::string& outDir) {
 
 bool active() { return g_active; }
 
+float pageScrollY() { return g_pageScroll; }
+
 bool beforeFrame(AppState& state, Controller& controller) {
     if (!g_active) return true;
     if (g_framesLeft > 0) {
@@ -342,6 +356,7 @@ bool beforeFrame(AppState& state, Controller& controller) {
     // Advance to the next step (after the previous frame's capture happened).
     ++g_stepIndex;
     if (g_stepIndex >= kStepCount) return false;  // tour complete: quit
+    g_pageScroll = -1.0f;  // steps opt back in from enter()
     const Step& step = kSteps[g_stepIndex];
     step.enter(state, controller);
     g_pendingName = factorTag() + "-" + step.name;

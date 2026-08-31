@@ -31,6 +31,16 @@ const char* nodeTypeName(NodeType type) {
     return "RPC";
 }
 
+const char* oracleProviderName(OracleProvider provider) {
+    switch (provider) {
+        case OracleProvider::Off: return "off";
+        case OracleProvider::Alcor: return "Alcor DEX";
+        case OracleProvider::CoinGecko: return "CoinGecko";
+        case OracleProvider::Delphi: return "Delphi (on-chain)";
+    }
+    return "off";
+}
+
 std::vector<const Endpoint*> EndpointList::enabledSorted() const {
     std::vector<const Endpoint*> out;
     for (const auto& node : nodes)
@@ -106,7 +116,10 @@ json networkToJson(const NetworkDef& net) {
                 {"coreSymbol", net.coreSymbol},
                 {"testnet", net.testnet},
                 {"explorerTx", net.explorerTx},
-                {"tokens", tokens}};
+                {"tokens", tokens},
+                {"oracle", json{{"provider", net.oracle.provider},
+                                {"url", net.oracle.url},
+                                {"coreId", net.oracle.coreId}}}};
 }
 
 NetworkDef networkFromJson(const json& n) {
@@ -144,6 +157,13 @@ NetworkDef networkFromJson(const json& n) {
     net.explorerTx = n.value("explorerTx", "");
     for (const auto& t : n.value("tokens", json::array()))
         net.tokens.push_back({t.value("contract", ""), t.value("code", "")});
+    if (n.contains("oracle") && n["oracle"].is_object()) {
+        const json& o = n["oracle"];
+        net.oracle.provider = o.value("provider", 0);
+        if (net.oracle.provider < 0 || net.oracle.provider > 3) net.oracle.provider = 0;
+        net.oracle.url = o.value("url", "");
+        net.oracle.coreId = o.value("coreId", "");
+    }
     return net;
 }
 

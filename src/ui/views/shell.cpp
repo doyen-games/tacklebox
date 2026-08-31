@@ -8,6 +8,7 @@
 #include "ui/app_ui.hpp"
 #include "ui/fx.hpp"
 #include "ui/layout.hpp"
+#include "ui/qa.hpp"
 #include "ui/ui_helpers.h"
 #include "ui/widgets.hpp"
 
@@ -520,6 +521,8 @@ void drawShell(AppState& state, Controller& controller) {
     ImGui::BeginChild("##content",
                       {winSize.x - navW, winSize.y - contentTop - contentBottom},
                       ImGuiChildFlags_AlwaysUseWindowPadding);
+    // QA tour steps can pin the page at a scroll offset for deep sections.
+    if (qa::active() && qa::pageScrollY() >= 0.0f) ImGui::SetScrollY(qa::pageScrollY());
 
     // Constrain content width for readability on wide screens.
     float avail = ImGui::GetContentRegionAvail().x;

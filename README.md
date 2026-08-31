@@ -78,6 +78,11 @@ bottom tab bar + sheet modals on phones - try them anywhere with
 - **Tokens** - track any token contract/symbol per network; balances appear on
   the dashboard and in the transfer picker. With a Light API node configured
   the full token list arrives automatically; the registry remains as fallback.
+- **Price oracle** - selectable USD price source per chain: Alcor DEX (prices
+  every listed token), CoinGecko (core token by id), Delphi (delphioracle
+  medians read on-chain through your own RPC pool), or off. The dashboard
+  shows the core position's value, per-token prices and a portfolio total.
+  Strictly display-only: no signing, whitelist or risk decision reads a price.
 - **Pinned queries** - pin any contract table query (or a single field of it)
   to the dashboard as a live card.
 - **Fuel-style cosigning** - optional resource-provider plugin so low-CPU
@@ -100,8 +105,10 @@ unlocked wallet can point it at a hostile node or whitelist a drain.
 - Signing always happens through the guard: whitelist verdict + fresh contract
   hash verification + risk flags, rendered in a review modal. Critical risk or
   a changed contract demands hold-to-sign.
-- No third-party services: the app talks only to the chain / Atomic API
-  endpoints you configure. Media for NFTs is fetched over https only.
+- No unchosen third-party services: the app talks only to the chain / Atomic /
+  history / Light API endpoints you configure, plus the price oracle you
+  explicitly select (display-only; off by default on custom chains). NFT
+  media is fetched over https only.
 
 The full write-up is in [docs/SECURITY.md](docs/SECURITY.md).
 

@@ -198,6 +198,8 @@ TEST_CASE("network json: old vault shapes migrate to endpoint pools") {
     net.hyperion.autoWindowSec = 30;
     net.light.nodes = {{"https://l.invalid", "", 0, true}};
     net.lightSlug = "cthree";
+    net.oracle = {static_cast<int>(OracleProvider::CoinGecko),
+                  "https://api.coingecko.com", "wax"};
     NetworkDef back = networkFromJson(networkToJson(net));
     CHECK(back.rpc.nodes.size() == 2);
     CHECK(back.rpc.nodes[0].nickname == "home node");
@@ -208,6 +210,11 @@ TEST_CASE("network json: old vault shapes migrate to endpoint pools") {
     CHECK(back.hyperion.autoWindowSec == 30);
     CHECK(back.light.primaryUrl() == "https://l.invalid");
     CHECK(back.lightSlug == "cthree");
+    CHECK(back.oracle.provider == static_cast<int>(OracleProvider::CoinGecko));
+    CHECK(back.oracle.url == "https://api.coingecko.com");
+    CHECK(back.oracle.coreId == "wax");
+    // Pre-oracle vaults come through with the oracle off.
+    CHECK(migrated.oracle.provider == static_cast<int>(OracleProvider::Off));
     // A disabled-only pool yields no primary.
     NetworkDef dark;
     dark.rpc.nodes = {{"https://off.invalid", "", 0, false}};

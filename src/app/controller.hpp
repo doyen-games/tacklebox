@@ -73,6 +73,13 @@ public:
     // --- chain data ---------------------------------------------------------
     void refreshAccount(bool force);
     void probeEndpoints(const std::string& chainId);  // all node types
+    // USD prices via the network's oracle (60s TTL unless forced). No-op with
+    // the oracle off. Display-only by design.
+    void refreshPrices(bool force);
+    // Fetch the core price with a candidate (possibly unsaved) config;
+    // callback (formatted price, error) on main. Settings' TEST button.
+    void testOracle(const NetworkDef& net,
+                    std::function<void(std::string, std::string)> done);
     void addNetwork(const NetworkDef& net);  // upsert: also how endpoint edits commit
     void removeNetwork(const std::string& chainId);
 

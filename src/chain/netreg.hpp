@@ -19,4 +19,9 @@ std::vector<NetworkDef> allPresets();
 // Endpoint URL sanity check: https (or http://localhost) and no spaces.
 bool endpointAllowed(const std::string& url, std::string* why = nullptr);
 
+// Sensible oracle url/coreId for a provider on a known chain (empty fields
+// for unknown chains - the user fills them in). Used to seed presets and to
+// prefill the Settings editor when the provider changes.
+OracleConfig oracleDefaults(const std::string& chainId, OracleProvider provider);
+
 }  // namespace tb

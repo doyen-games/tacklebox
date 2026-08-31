@@ -1,5 +1,7 @@
 #include <cinttypes>
+#include <cstdlib>
 
+#include "chain/prices.hpp"
 #include "core/util.hpp"
 #include "guard/engine.hpp"
 #include "guard/rules.hpp"
@@ -38,6 +40,25 @@ std::string formatMicroseconds(int64_t us) {
         std::snprintf(buf, sizeof buf, "%.2f s", static_cast<double>(us) / 1e6);
     }
     return buf;
+}
+
+// "12.3456 WAX" against the oracle map -> {unit usd, position usd}.
+struct PricedBalance {
+    double unit = 0.0;
+    double value = 0.0;
+    bool priced = false;
+};
+PricedBalance priceBalance(const AppState& state, const BalanceView& balance) {
+    PricedBalance out;
+    auto space = balance.quantity.find(' ');
+    if (space == std::string::npos) return out;
+    auto it = state.prices.usd.find(
+        priceKey(balance.contract, balance.quantity.substr(space + 1)));
+    if (it == state.prices.usd.end()) return out;
+    out.unit = it->second;
+    out.value = std::strtod(balance.quantity.c_str(), nullptr) * it->second;
+    out.priced = true;
+    return out;
 }
 
 }  // namespace
@@ -120,14 +141,72 @@ void drawDashboard(AppState& state, Controller& controller) {
                 ImGui::PopStyleColor();
                 ImGui::PopFont();
             }
-            // Registered tokens under the core balance.
-            for (size_t i = 1; i < data.snap.balances.size(); ++i) {
-                const BalanceView& token = data.snap.balances[i];
-                monoText(token.quantity, col::Ice, kMono);
-                ImGui::SameLine();
-                ImGui::PushFont(fonts().ui, kMonoSm);
+            // Live USD line for the core position (oracle-driven, display-only).
+            double portfolioUsd = 0.0;
+            bool anyPriced = false;
+            if (!data.snap.balances.empty()) {
+                PricedBalance core = priceBalance(state, data.snap.balances[0]);
+                if (core.priced) {
+                    portfolioUsd += core.value;
+                    anyPriced = true;
+                    ImGui::PushFont(fonts().mono, kText);
+                    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::CyanDim));
+                    ImGui::TextUnformatted(formatUsd(core.value).c_str());
+                    ImGui::PopStyleColor();
+                    ImGui::PopFont();
+                    ImGui::SameLine(0, 8);
+                    ImGui::PushFont(fonts().ui, kTextSm);
+                    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
+                    ImGui::Text("at %s / %s", formatUsd(core.unit).c_str(),
+                                symbol.c_str());
+                    ImGui::PopStyleColor();
+                    ImGui::PopFont();
+                }
+            }
+            // Registered tokens under the core balance, priced where the
+            // oracle knows them.
+            if (data.snap.balances.size() > 1 &&
+                ImGui::BeginTable("##tokens", 4, ImGuiTableFlags_SizingFixedFit |
+                                                     ImGuiTableFlags_NoPadOuterX)) {
+                ImGui::TableSetupColumn("qty", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("contract", ImGuiTableColumnFlags_WidthStretch);
+                ImGui::TableSetupColumn("price", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("value", ImGuiTableColumnFlags_WidthFixed);
+                for (size_t i = 1; i < data.snap.balances.size(); ++i) {
+                    const BalanceView& token = data.snap.balances[i];
+                    ImGui::PushID(static_cast<int>(i));
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    monoText(token.quantity, col::Ice, kMono);
+                    ImGui::TableNextColumn();
+                    ImGui::PushFont(fonts().ui, kMonoSm);
+                    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
+                    ImGui::TextUnformatted(token.contract.c_str());
+                    ImGui::PopStyleColor();
+                    ImGui::PopFont();
+                    PricedBalance priced = priceBalance(state, token);
+                    ImGui::TableNextColumn();
+                    if (priced.priced) {
+                        portfolioUsd += priced.value;
+                        anyPriced = true;
+                        monoText(formatUsd(priced.unit), col::Slate, kMonoSm);
+                    }
+                    ImGui::TableNextColumn();
+                    if (priced.priced) monoText(formatUsd(priced.value), col::CyanDim, kMonoSm);
+                    ImGui::PopID();
+                }
+                ImGui::EndTable();
+            }
+            if (anyPriced) {
+                ImGui::PushFont(fonts().ui, kTextSm);
                 ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
-                ImGui::TextUnformatted(token.contract.c_str());
+                ImGui::Text("portfolio = %s", formatUsd(portfolioUsd).c_str());
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+            } else if (!state.prices.error.empty()) {
+                ImGui::PushFont(fonts().ui, kMonoSm);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Warn));
+                ImGui::Text("oracle: %s", state.prices.error.c_str());
                 ImGui::PopStyleColor();
                 ImGui::PopFont();
             }
@@ -322,6 +401,7 @@ void drawDashboard(AppState& state, Controller& controller) {
 
     // Kick a lazy refresh when the page shows stale data.
     if (!data.loading && !data.loaded && data.error.empty()) controller.refreshAccount(false);
+    controller.refreshPrices(false);  // TTL-gated; no-op with the oracle off
 }
 
 }  // namespace tb::ui

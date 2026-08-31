@@ -18,6 +18,9 @@ namespace tb::ui::qa {
 
 void configure(const std::string& outDir);  // from --qa-shots
 bool active();
+// Page scroll the active step wants (applied by the shell every frame while
+// the step settles); negative = leave the page at the top.
+float pageScrollY();
 
 // Before NewFrame: advance the tour (inject fixtures, flip pages).
 // Returns false when the tour is finished and the app should quit.
