@@ -15,7 +15,8 @@ function(dk_warnings target)
       # json in dwarfkit TUs. Clang keeps the full set.
       target_compile_options(${target} PRIVATE -Wno-array-bounds
                                                -Wno-stringop-overflow
-                                               -Wno-stringop-overread)
+                                               -Wno-stringop-overread
+                                               -Wno-format-truncation)
     endif()
   endif()
 endfunction()
