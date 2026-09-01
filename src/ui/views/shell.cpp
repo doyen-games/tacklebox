@@ -11,6 +11,7 @@
 #include "ui/qa.hpp"
 #include "ui/ui_helpers.h"
 #include "ui/widgets.hpp"
+#include "tb_version.h"
 
 namespace tb::ui {
 
@@ -120,7 +121,7 @@ void drawSidebar(AppState& state, Controller& controller, float width, float hei
     if (neonButton("LOCK VAULT", BtnKind::Ghost, {width - 28, 36})) controller.lockVault();
     ImGui::PushFont(fonts().mono, kMonoSm);
     dl->AddText({origin.x + 20, origin.y + height - 74}, col::alpha(col::Slate, 0.8f),
-                "v0.2.0  ctrl+shift+L locks");
+                "v" TB_VERSION "  ctrl+shift+L locks");
     ImGui::PopFont();
 }
 

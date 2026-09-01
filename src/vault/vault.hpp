@@ -160,6 +160,8 @@ struct SecurityPrefs {
     bool bgAccountRefresh = true;  // refetch stale account data + balances
     bool bgPinnedRefresh = true;   // pinned dashboard queries on their timers
     bool bgPriceRefresh = true;    // price oracle refetch on its TTL
+    // One GitHub Releases query after unlock (notify-only, never installs).
+    bool bgUpdateCheck = true;
 };
 
 // One tile on the customizable dashboard board. `kind` identifies the

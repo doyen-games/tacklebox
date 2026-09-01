@@ -115,6 +115,25 @@ bottom tab bar + sheet modals on phones - try them anywhere with
 - **Portable vault** - export/import the sealed `.tbx` vault file between
   machines (drag & drop a `.tbx` onto the window to import). The wallet
   remembers your last-used account per vault.
+- **Update notices** - one optional query to this repository's GitHub
+  release feed (after unlock, or on demand from Settings > About) compares
+  versions and offers the release page. Notify-only by design: the wallet
+  never downloads or installs code by itself. Toggleable like every other
+  background call.
+
+## Installing
+
+Tagged releases ship a Windows install wizard (`tacklebox-<version>-Windows.exe`,
+per-user install with the EULA page, Start-menu and desktop shortcuts) and a
+portable ZIP - both built by CI from the tag and attached to the GitHub
+release with SHA-256 checksums. Verify the checksum before running. To
+package locally: `cmake --build build && cd build && cpack -G "NSIS;ZIP"`
+(NSIS generator needs makensis; ZIP works everywhere).
+
+Cutting a release: bump `project(TackleBox VERSION ...)` in CMakeLists.txt,
+tag `v<version>`, push the tag - the release workflow builds, tests,
+packages and attaches everything as a draft release; publish it and running
+wallets start offering the update.
 
 ## Security model (short version)
 

@@ -251,6 +251,17 @@ struct AppState {
     std::map<std::string, std::vector<EndpointHealth>> health;  // per chainId
     bool busyHealth = false;
 
+    // Latest-release check result (notify-only; nothing auto-installs).
+    struct UpdateState {
+        bool checking = false;
+        bool available = false;
+        std::string latestTag;   // "v0.3.0" when a newer release exists
+        std::string releaseUrl;  // GitHub release page to open in the browser
+        std::string notes;       // truncated release notes
+        std::string error;
+        int64_t checkedAt = 0;
+    } update;
+
     // USD prices for the selected chain (display-only; key = contract/SYM).
     struct PricesState {
         std::map<std::string, double> usd;

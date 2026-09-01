@@ -1,0 +1,55 @@
+# Tag vX.Y.Z -> build, test, package the Windows installer (NSIS wizard with
+# the EULA page) + portable ZIP, and attach both to the GitHub release. The
+# in-app updater reads /releases/latest, so publishing the release is what
+# makes wallets start offering the new version.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  windows-installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: seanmiddleditch/gha-setup-ninja@v5
+      - name: Check tag matches PROJECT_VERSION
+        shell: bash
+        run: |
+          cmake_version=$(grep -oP 'project\(TackleBox VERSION \K[0-9.]+' CMakeLists.txt)
+          tag=${GITHUB_REF_NAME#v}
+          if [ "$cmake_version" != "$tag" ]; then
+            echo "::error::tag v$tag != CMakeLists PROJECT_VERSION $cmake_version"
+            exit 1
+          fi
+      - name: Configure
+        shell: bash
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        shell: bash
+        run: cmake --build build
+      - name: Test
+        shell: bash
+        run: ./build/tacklebox_tests.exe
+      - name: Package (NSIS installer + portable ZIP)
+        shell: bash
+        run: cd build && cpack -G "NSIS;ZIP"
+      - name: Checksums
+        shell: bash
+        run: |
+          cd build
+          sha256sum tacklebox-*-Windows.exe tacklebox-*-Windows.zip > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+      - name: Attach to release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          generate_release_notes: true
+          files: |
+            build/tacklebox-*-Windows.exe
+            build/tacklebox-*-Windows.zip
+            build/SHA256SUMS.txt

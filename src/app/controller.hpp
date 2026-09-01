@@ -230,6 +230,13 @@ public:
 
     void updateSecurity(const SecurityPrefs& prefs);
 
+    // --- updates ------------------------------------------------------------
+    // Query GitHub Releases for the latest version. Notify-only: results land
+    // in state.update and the user opens the release page themselves. Manual
+    // checks toast the outcome; the automatic post-unlock check stays silent
+    // unless a newer release exists.
+    void checkForUpdates(bool manual);
+
     // --- misc ---------------------------------------------------------------
     void copyToClipboard(const std::string& text, bool sensitive);
     void toast(Toast::Kind kind, const std::string& text);

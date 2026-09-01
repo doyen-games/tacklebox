@@ -17,6 +17,8 @@
 #include "app/link.hpp"
 #include "chain/netreg.hpp"
 #include "chain/prices.hpp"
+#include "app/update.hpp"
+#include "tb_version.h"
 #include "core/clipboard.hpp"
 #include "core/log.hpp"
 #include "core/util.hpp"
@@ -210,6 +212,12 @@ void Controller::unlockVault(const std::string& password) {
             state_.page = state_.vault.keys.empty() ? Page::Setup : Page::Dashboard;
             noteActivity();
             refreshAccount(false);
+            // One silent release check per process, if the pref allows it.
+            static bool checkedOnce = false;
+            if (!checkedOnce && state_.vault.security.bgUpdateCheck) {
+                checkedOnce = true;
+                checkForUpdates(false);
+            }
         });
     });
 }
@@ -1694,6 +1702,56 @@ void Controller::updateSecurity(const SecurityPrefs& prefs) {
         (void)vault_.save();
     }
     refreshSnapshot();
+}
+
+// --- updates -----------------------------------------------------------------
+
+void Controller::checkForUpdates(bool manual) {
+    if (state_.update.checking) return;
+    state_.update.checking = true;
+    state_.update.error.clear();
+    runner_.run([this, manual] {
+        dk::FetchRequest request;
+        request.url = std::string("https://api.github.com/repos/") + update::kRepo +
+                      "/releases/latest";
+        request.method = "GET";
+        request.headers = {{"User-Agent", "TackleBox/" TB_VERSION},
+                           {"Accept", "application/vnd.github+json"}};
+        dk::CurlFetchProvider fetch(std::chrono::seconds(10));
+        auto response = fetch.fetch(request);
+
+        std::string error;
+        std::optional<update::ReleaseInfo> release;
+        if (!response) {
+            error = "unreachable: " + response.error().message;
+        } else if (response->status == 404) {
+            error = "no published releases yet";
+        } else if (response->status != 200) {
+            error = "GitHub answered HTTP " + std::to_string(response->status);
+        } else {
+            json parsed = json::parse(response->body, nullptr, false);
+            release = update::parseLatestRelease(parsed);
+            if (!release) error = "unexpected release feed shape";
+        }
+        runner_.postMain([this, manual, error, release] {
+            state_.update.checking = false;
+            state_.update.checkedAt = nowSec();
+            if (!error.empty()) {
+                state_.update.error = error;
+                if (manual) toast(Toast::Warn, "Update check: " + error);
+                return;
+            }
+            state_.update.latestTag = release->tag;
+            state_.update.releaseUrl = release->url;
+            state_.update.notes = release->notes;
+            state_.update.available =
+                update::compareVersions(release->tag, TB_VERSION) > 0;
+            if (state_.update.available)
+                toast(Toast::Info, "Update available: TackleBox " + release->tag);
+            else if (manual)
+                toast(Toast::Success, "You are on the latest version (" TB_VERSION ")");
+        });
+    });
 }
 
 // --- resources ---------------------------------------------------------------

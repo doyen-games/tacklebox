@@ -1,0 +1,7 @@
+// Generated from cmake/tb_version.h.in - do not edit.
+#pragma once
+
+#define TB_VERSION "@PROJECT_VERSION@"
+#define TB_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define TB_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define TB_VERSION_PATCH @PROJECT_VERSION_PATCH@

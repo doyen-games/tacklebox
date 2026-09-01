@@ -352,6 +352,18 @@ const Step kSteps[] = {
          if (s.vault.networks.size() > 1) s.vault.networks.resize(1);
          g_pageScroll = ::ui::S(1360.0f);
      }},
+    {"19-settings-about",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Settings);
+         if (s.vault.networks.size() > 1) s.vault.networks.resize(1);
+         // A pending update so the About card shows the notify-only flow.
+         s.update.available = true;
+         s.update.latestTag = "v9.9.9";
+         s.update.releaseUrl = "https://github.com/on-a-t-break/tacklebox/releases";
+         s.update.notes = "QA fixture release: illustrative notes for the About card.";
+         s.update.checkedAt = nowSec();
+         g_pageScroll = ::ui::S(99999.0f);  // clamps to the page bottom
+     }},
 };
 constexpr int kStepCount = static_cast<int>(sizeof(kSteps) / sizeof(kSteps[0]));
 constexpr int kSettleFrames = 6;

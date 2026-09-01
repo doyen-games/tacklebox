@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
-project(TackleBox VERSION 0.1.0 LANGUAGES C CXX)
+project(TackleBox VERSION 0.2.0 LANGUAGES C CXX)
+
+# One source of truth for the version string (sidebar, About, updater, CPack).
+configure_file(cmake/tb_version.h.in ${CMAKE_BINARY_DIR}/generated/tb_version.h @ONLY)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,6 +23,9 @@ set(DK_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(DK_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
 set(DK_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(DK_WITH_CURL ON CACHE BOOL "" FORCE)
+# Keep vendored curl's install rules out of our packages (CPack installs
+# everything registered; only the app component belongs in the installer).
+set(CURL_DISABLE_INSTALL ON CACHE BOOL "" FORCE)
 
 # Mobile TLS for the curl dwarfkit fetches: Android has no system TLS library
 # curl can see, so pull mbedTLS first and point curl at it; iOS uses the OS
@@ -130,9 +136,11 @@ add_library(tacklebox_core STATIC
   src/app/account_util.cpp
   src/app/autopilot_util.cpp
   src/app/bridge.cpp
+  src/app/update.cpp
   src/app/link.cpp
   src/app/controller.cpp)
-target_include_directories(tacklebox_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(tacklebox_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
+                                                 ${CMAKE_BINARY_DIR}/generated)
 target_link_libraries(tacklebox_core PUBLIC dwarfkit dwarfkit_curl dk_trezor_crypto)
 
 if(WIN32)
@@ -251,8 +259,59 @@ if(TB_BUILD_TESTS)
     tests/test_kdf.cpp
     tests/test_prices.cpp
     tests/test_risk.cpp
+    tests/test_update.cpp
     tests/test_vault.cpp)
   target_link_libraries(tacklebox_tests PRIVATE tacklebox_core dk_doctest)
   tb_warnings(tacklebox_tests)
   add_test(NAME tacklebox_tests COMMAND tacklebox_tests)
+endif()
+
+# ---------------------------------------------------------------------------
+# Install + packaging (CPack). Desktop only; the NSIS generator produces the
+# Windows install wizard (EULA page from EULA.txt), ZIP the portable build.
+# Branding hooks below are TODO until logo assets land.
+# ---------------------------------------------------------------------------
+if(NOT TB_MOBILE AND NOT ANDROID)
+  # Everything ships under the "app" component so the vendored projects'
+  # own install rules (curl headers, etc.) stay out of the packages.
+  install(TARGETS tacklebox RUNTIME DESTINATION . BUNDLE DESTINATION . COMPONENT app)
+  install(FILES README.md EULA.txt LICENSE DESTINATION . COMPONENT app)
+  install(DIRECTORY docs/ DESTINATION docs COMPONENT app)
+
+  set(CPACK_PACKAGE_NAME "TackleBox")
+  set(CPACK_PACKAGE_VENDOR "TackleBox contributors")
+  set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
+      "TackleBox - the toolkit for navigating Antelope blockchains")
+  set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/on-a-t-break/tacklebox")
+  set(CPACK_PACKAGE_INSTALL_DIRECTORY "TackleBox")
+  set(CPACK_PACKAGE_EXECUTABLES "tacklebox" "TackleBox")
+  set(CPACK_CREATE_DESKTOP_LINKS "tacklebox")
+  # The EULA page of the install wizard.
+  set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/EULA.txt")
+  set(CPACK_PACKAGE_FILE_NAME "tacklebox-${PROJECT_VERSION}-${CMAKE_SYSTEM_NAME}")
+  set(CPACK_COMPONENTS_ALL app)
+
+  if(WIN32)
+    set(CPACK_GENERATOR "NSIS;ZIP")
+    set(CPACK_NSIS_DISPLAY_NAME "TackleBox")
+    set(CPACK_NSIS_PACKAGE_NAME "TackleBox")
+    set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/on-a-t-break/tacklebox")
+    set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
+    set(CPACK_NSIS_MODIFY_PATH OFF)
+    # Per-user install: no elevation, matches the per-user vault in %APPDATA%.
+    set(CPACK_NSIS_DEFINES "RequestExecutionLevel user")
+    set(CPACK_NSIS_INSTALL_ROOT "$LOCALAPPDATA\\\\Programs")
+    set(CPACK_NSIS_EXECUTABLES_DIRECTORY ".")
+    # TODO(branding): point these at the real art once the logo pack lands.
+    #   set(CPACK_NSIS_MUI_ICON    ${CMAKE_CURRENT_SOURCE_DIR}/assets/brand/tacklebox.ico)
+    #   set(CPACK_NSIS_MUI_UNIICON ${CMAKE_CURRENT_SOURCE_DIR}/assets/brand/tacklebox.ico)
+    #   set(CPACK_NSIS_MUI_WELCOMEFINISHPAGE_BITMAP .../wizard-side.bmp)  # 164x314 BMP
+    #   set(CPACK_NSIS_MUI_HEADERIMAGE_BITMAP      .../wizard-header.bmp) # 150x57 BMP
+  elseif(APPLE)
+    set(CPACK_GENERATOR "DragNDrop")
+  else()
+    set(CPACK_GENERATOR "TGZ")
+  endif()
+  include(CPack)
 endif()

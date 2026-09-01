@@ -1,0 +1,105 @@
+TACKLEBOX END USER LICENSE AGREEMENT
+
+Last updated: 2026-08-31
+
+PLEASE READ THIS AGREEMENT CAREFULLY BEFORE INSTALLING OR USING TACKLEBOX.
+BY INSTALLING, COPYING, OR OTHERWISE USING THE SOFTWARE, YOU AGREE TO BE
+BOUND BY THE TERMS BELOW. IF YOU DO NOT AGREE, DO NOT INSTALL OR USE THE
+SOFTWARE.
+
+1. THE SOFTWARE
+
+TackleBox ("the Software") is a self-custody wallet and block-explorer
+application for Antelope-protocol blockchains. The Software runs entirely
+on your device. It has no server component operated by its authors, collects
+no telemetry, and transmits data only to the blockchain API endpoints and
+optional services (such as a price oracle) that you configure inside the
+application.
+
+2. LICENSE
+
+The Software is open-source software distributed under the MIT License (see
+the accompanying LICENSE file). Subject to that license, you are granted a
+worldwide, royalty-free, non-exclusive right to install, use, copy, modify,
+and redistribute the Software. This Agreement supplements, and does not
+replace, the MIT License; where they conflict, the MIT License governs your
+rights to the source code.
+
+3. SELF-CUSTODY; YOUR SOLE RESPONSIBILITY FOR KEYS AND FUNDS
+
+The Software generates and stores cryptographic private keys in an encrypted
+vault file on your device, protected by a password you choose.
+
+  a. YOU are solely responsible for safeguarding your vault file, your vault
+     password, and every private key held inside it.
+  b. There is NO recovery mechanism. Nobody - including the authors of the
+     Software - can restore a lost password, a deleted vault file, or keys
+     that were never backed up.
+  c. Any person who obtains your vault file and password, or your private
+     keys, can irreversibly transfer your assets.
+  d. Blockchain transactions are irreversible. Signing and broadcasting a
+     transaction is entirely your action and your responsibility, including
+     transactions signed automatically by rules and schedules that you
+     yourself configured.
+
+4. NO FINANCIAL ADVICE
+
+The Software displays blockchain data and, if you enable a price oracle,
+third-party price information. Nothing displayed by the Software is
+investment, financial, legal, or tax advice. Prices are informational,
+may be inaccurate or delayed, and are never used by the Software to make
+signing decisions.
+
+5. THIRD-PARTY SERVICES AND NETWORKS
+
+The Software communicates with blockchain nodes, history services, NFT
+media hosts, and optional price APIs that you select. These services are
+operated by third parties. The authors of the Software do not control them
+and are not responsible for their availability, accuracy, honesty, or data
+practices. A malicious or faulty endpoint can display incorrect information;
+the Software's protections (chain-id verification, contract hash pinning)
+reduce but do not eliminate this risk.
+
+6. UPDATES
+
+The Software can check a public release feed (GitHub Releases) for newer
+versions when you allow it to. It notifies you only; it never downloads or
+installs code by itself. You are responsible for verifying any update you
+choose to download and install.
+
+7. COMPLIANCE
+
+You are responsible for ensuring that your use of the Software and of any
+blockchain network complies with the laws and regulations that apply to you,
+including tax, sanctions, and export-control rules.
+
+8. NO WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NONINFRINGEMENT. THE ENTIRE
+RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH YOU.
+
+9. LIMITATION OF LIABILITY
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL THE AUTHORS,
+COPYRIGHT HOLDERS, OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM, DAMAGES, OR
+OTHER LIABILITY - INCLUDING WITHOUT LIMITATION LOSS OF CRYPTOGRAPHIC KEYS,
+LOSS OF DIGITAL ASSETS, LOSS OF PROFITS, OR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES - ARISING FROM,
+OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR ITS USE, WHETHER IN AN ACTION
+OF CONTRACT, TORT, OR OTHERWISE.
+
+10. TERMINATION
+
+This Agreement is effective until terminated. It terminates automatically
+if you fail to comply with its terms. Upon termination you must cease using
+the Software, though the MIT License terms for the source code survive as
+stated in the LICENSE file.
+
+11. GENERAL
+
+If any provision of this Agreement is held unenforceable, the remaining
+provisions remain in full force. This Agreement, together with the MIT
+License, is the entire agreement between you and the authors concerning
+the Software.

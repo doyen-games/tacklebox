@@ -5,10 +5,13 @@
 
 #include <algorithm>
 
+#include <SDL3/SDL.h>
+
 #include "chain/netreg.hpp"
 #include "core/autostart.hpp"
 #include "core/paths.hpp"
 #include "core/util.hpp"
+#include "tb_version.h"
 #include "ui/app_ui.hpp"
 #include "ui/layout.hpp"
 #include "ui/ui_helpers.h"
@@ -857,18 +860,61 @@ void drawPortability(AppState& state, Controller& controller) {
     endCard();
 }
 
-void drawAbout(AppState& state) {
-    (void)state;
+void drawAbout(AppState& state, Controller& controller) {
     if (!beginCard("about")) {
         endCard();
         return;
     }
     sectionTitle("About");
-    kvRow("Version", "TackleBox 0.1.0");
+    kvRow("Version", "TackleBox " TB_VERSION);
     kvRow("Engine", "dwarfkit (native Wharfkit port) + Dear ImGui");
     kvRow("Data directory", dataDir().string(), true, true);
-    subtext("TackleBox talks only to the chain endpoints configured above. No telemetry, "
-            "no price feeds, no third-party services.");
+    subtext("TackleBox talks only to the endpoints you configure and, when enabled, "
+            "GitHub's release feed for update notices. No telemetry.");
+    ::ui::VSpace(0.4f);
+
+    // Updates: notify-only. The wallet never downloads or installs code.
+    const auto& update = state.update;
+    if (update.checking) {
+        spinner(11.0f);
+        ImGui::SameLine(0, 8);
+        subtext("Checking GitHub releases...");
+    } else {
+        if (neonButton("CHECK FOR UPDATES", BtnKind::Subtle, {::ui::S(160.0f), 30}))
+            controller.checkForUpdates(true);
+        if (update.available) {
+            ImGui::SameLine(0, 10);
+            badgeFilled(("NEW: " + update.latestTag).c_str(), col::Success);
+            ImGui::SameLine(0, 8);
+            if (neonButton("VIEW RELEASE", BtnKind::Primary, {::ui::S(130.0f), 30}))
+                SDL_OpenURL(update.releaseUrl.c_str());
+            if (!update.notes.empty()) {
+                ImGui::PushFont(fonts().ui, kTextSm);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+                ImGui::TextWrapped("%s", update.notes.c_str());
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+            }
+            subtext("Download from the release page and verify it yourself - the "
+                    "wallet never installs updates on its own.");
+        } else if (update.checkedAt && update.error.empty()) {
+            ImGui::SameLine(0, 10);
+            ImGui::AlignTextToFramePadding();
+            ImGui::PushFont(fonts().ui, kTextSm);
+            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
+            ImGui::Text("up to date  -  checked %s ago", formatAgo(update.checkedAt).c_str());
+            ImGui::PopStyleColor();
+            ImGui::PopFont();
+        } else if (!update.error.empty()) {
+            ImGui::SameLine(0, 10);
+            ImGui::AlignTextToFramePadding();
+            ImGui::PushFont(fonts().ui, kTextSm);
+            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Warn));
+            ImGui::TextUnformatted(update.error.c_str());
+            ImGui::PopStyleColor();
+            ImGui::PopFont();
+        }
+    }
     endCard();
 }
 
@@ -911,6 +957,10 @@ void drawStartupBackground(AppState& state, Controller& controller) {
     changed |= toggle("Auto-refresh token prices", &prefs.bgPriceRefresh,
                       "Refetches oracle prices once a minute while the dashboard "
                       "is open (the first fill still happens)");
+    vspace(4);
+    changed |= toggle("Check for updates after unlock", &prefs.bgUpdateCheck,
+                      "One query to GitHub's release feed per session. Notify-only: "
+                      "the wallet never downloads or installs code by itself");
     if (changed) controller.updateSecurity(prefs);
     endCard();
 }
@@ -930,7 +980,7 @@ void drawSettings(AppState& state, Controller& controller) {
     vspace(12);
     drawAppearance(state, controller);
     vspace(12);
-    drawAbout(state);
+    drawAbout(state, controller);
 }
 
 }  // namespace tb::ui

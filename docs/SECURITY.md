@@ -123,6 +123,18 @@ look again. The suspended-rule banner shows the pinned vs observed hashes.
   double-execute. Offline autopilot runs are deferred with a short backoff
   and recorded as such.
 
+## Updates
+
+The update checker queries `api.github.com` for this repository's latest
+release - one request after unlock (toggleable off) or on demand. It is
+**notify-only**: the wallet compares version strings and opens the release
+page in your browser; it never downloads binaries, never executes anything,
+and no update can be pushed into a running wallet. Install media is built by
+CI from the tagged source with SHA-256 checksums attached to the release -
+verify before installing. Auto-update was deliberately rejected: a wallet
+that fetches and runs code from the network converts one compromised
+release channel into every user's key compromise.
+
 ## Autopilot standby (opt-in, off by default)
 
 With `Autopilot standby` enabled in Security settings, locking the wallet
