@@ -22,6 +22,7 @@
 #include "app/update.hpp"
 #include "tb_version.h"
 #include "core/clipboard.hpp"
+#include "core/deeplink.hpp"
 #include "core/log.hpp"
 #include "core/util.hpp"
 
@@ -47,6 +48,13 @@ void Controller::noteActivity() { state_.lastActivityMs = nowMs(); }
 
 void Controller::tick() {
     state_.workerPending = runner_.pending();
+
+    // A dapp request that arrived while locked waits for the vault.
+    if (!pendingDeepLink_.empty() && state_.unlocked) {
+        const std::string uri = std::move(pendingDeepLink_);
+        pendingDeepLink_.clear();
+        routeEsr(uri);
+    }
 
     // Autopilot + pinned data run only while unlocked; both are cheap when idle.
     static int64_t lastSlowTick = 0;
@@ -2745,6 +2753,47 @@ void Controller::probeCustomChain(const std::string& url,
 
 // --- dapp links (experimental) --------------------------------------------------
 
+void Controller::setRaiseWindow(std::function<void()> raise) { raiseWindow_ = std::move(raise); }
+
+void Controller::raiseWindow() {
+    if (raiseWindow_) raiseWindow_();
+}
+
+void Controller::handleDeepLink(const std::string& uri) {
+    const auto parsed = deeplink::parse(uri);
+    raiseWindow();
+    switch (parsed.kind) {
+        case deeplink::Kind::Focus:
+            return;
+        case deeplink::Kind::None:
+            toast(Toast::Warn, "Unrecognized link on the command line");
+            return;
+        case deeplink::Kind::Request:
+            if (!state_.unlocked) {
+                pendingDeepLink_ = parsed.esr;
+                toast(Toast::Info, "A dapp request is waiting - unlock to review it");
+                return;
+            }
+            routeEsr(parsed.esr);
+            return;
+    }
+}
+
+void Controller::routeEsr(const std::string& esrUri) {
+    auto request = dk::SigningRequest::from(esrUri);
+    if (!request) {
+        toast(Toast::Error, "Could not parse the dapp request: " + request.error().message);
+        return;
+    }
+    if (request->isIdentity()) {
+        toast(Toast::Info, "Login request received");
+        linkLogin(esrUri);
+    } else {
+        toast(Toast::Info, "Signing request received");
+        signEsr(esrUri);
+    }
+}
+
 void Controller::linkLogin(const std::string& esrUri) { link_->beginLogin(esrUri); }
 
 void Controller::removeLinkSessionById(const std::string& id) {
@@ -2787,6 +2836,9 @@ void Controller::storeLinkSession(const LinkSession& session) {
 }
 
 void Controller::signEsrFromLink(const std::string& sessionId, const std::string& uri) {
+    // A dapp pushed this over the sealed channel; surface the wallet the way
+    // a native wallet should - raised window, review modal front and center.
+    raiseWindow();
     LinkSession session;
     {
         std::lock_guard<std::mutex> lock(vaultMutex_);

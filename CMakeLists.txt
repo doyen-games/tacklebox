@@ -117,6 +117,7 @@ add_custom_target(tb_embedded_assets DEPENDS ${TB_EMBED_HEADERS})
 # ---------------------------------------------------------------------------
 add_library(tacklebox_core STATIC
   src/core/clipboard.cpp
+  src/core/deeplink.cpp
   src/core/log.cpp
   src/core/paths.cpp
   src/core/rng.cpp
@@ -255,6 +256,7 @@ if(TB_BUILD_TESTS)
     tests/main.cpp
     tests/test_autopilot.cpp
     tests/test_cipher.cpp
+    tests/test_deeplink.cpp
     tests/test_guard.cpp
     tests/test_kdf.cpp
     tests/test_link.cpp
@@ -305,6 +307,14 @@ if(NOT TB_MOBILE AND NOT ANDROID)
     set(CPACK_NSIS_DEFINES "RequestExecutionLevel user")
     set(CPACK_NSIS_INSTALL_ROOT "$LOCALAPPDATA\\\\Programs")
     set(CPACK_NSIS_EXECUTABLES_DIRECTORY ".")
+    # The wallet registers tacklebox:/esr: url handlers (HKCU) at runtime;
+    # uninstall removes our scheme, and esr: only when it still points here.
+    set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+      DeleteRegKey HKCU 'Software\\\\Classes\\\\tacklebox'
+      ReadRegStr $0 HKCU 'Software\\\\Classes\\\\esr\\\\shell\\\\open\\\\command' ''
+      StrCmp $0 '\\\"$INSTDIR\\\\tacklebox.exe\\\" \\\"%1\\\"' 0 +2
+      DeleteRegKey HKCU 'Software\\\\Classes\\\\esr'
+    ")
     # TODO(branding): point these at the real art once the logo pack lands.
     #   set(CPACK_NSIS_MUI_ICON    ${CMAKE_CURRENT_SOURCE_DIR}/assets/brand/tacklebox.ico)
     #   set(CPACK_NSIS_MUI_UNIICON ${CMAKE_CURRENT_SOURCE_DIR}/assets/brand/tacklebox.ico)

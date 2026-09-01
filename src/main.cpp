@@ -3,6 +3,7 @@
 // touch, lifecycle) via TB_MOBILE.
 #include <cstdio>
 #include <cstring>
+#include <optional>
 #include <string>
 
 #include <SDL3/SDL.h>
@@ -24,6 +25,7 @@
 #include "app/controller.hpp"
 #include "app/state.hpp"
 #include "core/clipboard.hpp"
+#include "core/deeplink.hpp"
 #include "core/log.hpp"
 #include "core/paths.hpp"
 #include "core/task_runner.hpp"
@@ -86,6 +88,23 @@ int main(int argc, char** argv) {
         if (!std::strcmp(argv[i], "--data-dir") && i + 1 < argc)
             tb::overrideDataDir(argv[++i]);
     }
+
+    // Deep links: a browser (or the wharfkit plugin) launched us with a
+    // tacklebox:/esr: uri. If another instance already owns this data dir,
+    // hand the uri over and bow out before any window exists.
+    std::optional<std::string> launchUri = tb::deeplink::uriFromArgs(argc, argv);
+    tb::deeplink::InstanceServer instanceServer;
+#ifndef TB_MOBILE
+    if (!instanceServer.claim()) {
+        const std::string forward = launchUri.value_or("tacklebox://open");
+        if (tb::deeplink::forwardToPrimaryInstance(forward)) {
+            std::printf("forwarded %s to the running TackleBox\n", forward.c_str());
+        } else {
+            std::fprintf(stderr, "another TackleBox is running but unreachable; exiting\n");
+        }
+        return 0;
+    }
+#endif
 
     // Cosmetics load early: the GPU preference must be set before the GL
     // context exists (drivers read the exports at context init).
@@ -205,6 +224,21 @@ int main(int argc, char** argv) {
     tb::Log::info("TackleBox up (SDL shell) - vault %s",
                   state.vaultExists ? "found" : "not created yet");
 
+#ifndef TB_MOBILE
+    // Dapp deep links: register the url schemes, raise the window when a
+    // request lands, accept uris forwarded by second launches, and route the
+    // uri this launch may have carried.
+    controller.setRaiseWindow([window] {
+        SDL_RaiseWindow(window);
+        SDL_FlashWindow(window, SDL_FLASH_UNTIL_FOCUSED);
+    });
+    tb::deeplink::registerSchemes();
+    instanceServer.start([&runner, &controller](std::string uri) {
+        runner.postMain([&controller, uri = std::move(uri)] { controller.handleDeepLink(uri); });
+    });
+    if (launchUri) controller.handleDeepLink(*launchUri);
+#endif
+
     bool running = true;
     bool textInputActive = false;
     while (running) {
@@ -295,6 +329,7 @@ int main(int argc, char** argv) {
         SDL_GL_SwapWindow(window);
     }
 
+    instanceServer.stop();
     controller.shutdown();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL3_Shutdown();

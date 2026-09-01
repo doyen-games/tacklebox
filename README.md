@@ -78,10 +78,14 @@ bottom tab bar + sheet modals on phones - try them anywhere with
 - **NFT gallery** - Atomic Assets owned by the active account, rendered from
   the network's configured Atomic API node (Alcor's WAX node by default), with
   transfer and burn.
-- **ESR + dapp links** - paste `esr://` signing requests from dapps, or accept
-  a dapp's login request to open a live anchor-link session (experimental):
-  the dapp then pushes requests straight into the wallet over a sealed
-  channel, each one still passing the guard.
+- **ESR + dapp links** - dapps open TackleBox directly: the wallet registers
+  the `tacklebox:` url scheme (per user, and claims `esr:` when no other
+  wallet has it), a second launch forwards its request to the running
+  instance, and the window raises itself when a linked dapp pushes a request.
+  Login requests open a live anchor-link session (experimental): the dapp
+  then pushes signing requests straight into the wallet over a sealed
+  channel, each one still passing the guard. Pasting `esr://` requests by
+  hand keeps working, and requests that arrive while locked wait for unlock.
 - **Endpoint pools** - per chain, per node type (RPC / Atomic Assets /
   Hyperion history / Light API), each endpoint carries a nickname, a priority
   and an enable toggle. Selection policy per pool: *priority* (always the best

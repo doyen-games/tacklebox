@@ -194,6 +194,12 @@ public:
                           std::function<void(std::string, std::string)> done);
 
     // --- dapp links (experimental) ------------------------------------------
+    // A tacklebox:/esr: uri from the command line or a forwarded second
+    // launch (main thread). Focus links raise the window; requests route to
+    // the link-login or ESR signing flow, queued until the vault is unlocked.
+    void handleDeepLink(const std::string& uri);
+    // Main-thread hook that raises + flashes the OS window; set by the shell.
+    void setRaiseWindow(std::function<void()> raise);
     void linkLogin(const std::string& esrUri);       // pasted identity request
     void removeLinkSessionById(const std::string& id);
     // LinkService support (worker threads):
@@ -269,10 +275,16 @@ private:
                        const std::string& flowName, bool* busyFlag,
                        std::function<void(bool, std::string, bool)> onDone = {});
 
+    // Deep-link routing (main thread).
+    void routeEsr(const std::string& esrUri);
+    void raiseWindow();
+
     AppState& state_;
     TaskRunner& runner_;
     PromptBroker broker_;
     std::unique_ptr<class LinkService> link_;
+    std::function<void()> raiseWindow_;
+    std::string pendingDeepLink_;  // esr uri parked until the vault unlocks
 
     std::mutex vaultMutex_;
     Vault vault_;
