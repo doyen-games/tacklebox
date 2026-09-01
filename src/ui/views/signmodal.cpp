@@ -177,6 +177,23 @@ void drawSignModal(AppState& state, Controller& controller) {
         ImGui::PopStyleColor();
         ImGui::PopFont();
     }
+    // Dapp-link provenance: who pushed this, with a one-click way out.
+    if (!prompt->linkSessionId.empty()) {
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 40);
+        badgeFilled("VIA DAPP LINK", col::Violet);
+        ImGui::SameLine(0, 8);
+        ImGui::AlignTextToFramePadding();
+        ImGui::PushFont(fonts().mono, kMonoSm);
+        ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+        ImGui::TextUnformatted(prompt->linkAppName.c_str());
+        ImGui::PopStyleColor();
+        ImGui::PopFont();
+        ImGui::SameLine(0, 10);
+        if (neonButton("UNLINK DAPP", BtnKind::Subtle, {120, 26})) {
+            controller.removeLinkSessionById(prompt->linkSessionId);
+            controller.resolveSignPrompt(false);
+        }
+    }
     vspace(6);
 
     // Verdict banner.

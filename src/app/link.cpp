@@ -36,6 +36,13 @@ std::optional<bool> esrBroadcastFlag(const dk::TransactArgs& args) {
     return std::nullopt;
 }
 
+bool linkRateExceeded(std::deque<int64_t>& window, int64_t now, size_t maxRequests,
+                      int64_t windowSec) {
+    while (!window.empty() && now - window.front() > windowSec) window.pop_front();
+    window.push_back(now);
+    return window.size() > maxRequests;
+}
+
 std::string scrubCallbackUrl(std::string url) {
     size_t open;
     while ((open = url.find("{{")) != std::string::npos) {

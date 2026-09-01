@@ -10,6 +10,7 @@
 // signing, the dapp's callback is answered.
 #pragma once
 
+#include <deque>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -33,6 +34,12 @@ class Controller;
 // only consults its own options, so the wallet must forward this flag or it
 // double-broadcasts every Wharfkit transaction. Exposed for tests.
 std::optional<bool> esrBroadcastFlag(const dwarfkit::TransactArgs& args);
+
+// Prompt-fatigue guard: record one request at `now` and report whether the
+// session exceeded maxRequests within windowSec. The window is pruned in
+// place. Exposed for tests.
+bool linkRateExceeded(std::deque<int64_t>& window, int64_t now, size_t maxRequests,
+                      int64_t windowSec);
 
 // Strip {{placeholders}} (sig templates and friends) out of a raw ESR
 // callback URL - a rejection has nothing to substitute. Exposed for tests.

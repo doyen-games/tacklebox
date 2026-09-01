@@ -4,6 +4,7 @@
 
 #include "core/util.hpp"
 #include "ui/app_ui.hpp"
+#include "ui/layout.hpp"
 #include "ui/widgets.hpp"
 
 namespace tb::ui {
@@ -68,10 +69,22 @@ void drawRevealModal(AppState& state, Controller& controller) {
             vspace(4);
             monoText(reveal.wif, col::Danger, kMono);
             vspace(6);
+            vspace(4);
+            float qrW = 170.0f;
+            ImGui::SetCursorPosX((ImGui::GetContentRegionAvail().x - qrW) * 0.5f);
+            drawQr(reveal.wif, qrW);
+            vspace(6);
             if (neonButton("COPY (auto-clears)", BtnKind::Ghost, {180, 36}))
                 controller.copyToClipboard(reveal.wif, /*sensitive=*/true);
             ImGui::SameLine(0, 8);
-            if (neonButton("DONE", BtnKind::Primary, {100, 36})) {
+            if (neonButton("I'VE BACKED IT UP", BtnKind::Primary, {170, 36})) {
+                controller.markKeyBackedUp(reveal.pub);
+                secureWipe(reveal.wif.data(), reveal.wif.size());
+                reveal = RevealState{};
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::SameLine(0, 8);
+            if (neonButton("DONE", BtnKind::Ghost, {90, 36})) {
                 secureWipe(reveal.wif.data(), reveal.wif.size());
                 reveal = RevealState{};
                 ImGui::CloseCurrentPopup();
@@ -91,6 +104,46 @@ void drawVaultView(AppState& state, Controller& controller) {
         state.page = Page::Setup;
     vspace(10);
 
+    // --- backup status ------------------------------------------------------
+    // Lost keys - not malware - are how people actually lose funds. Nag until
+    // every key is confirmed backed up and the vault has a recent export.
+    {
+        int unbacked = 0;
+        for (const auto& key : state.vault.keys)
+            if (!key.backedUp) ++unbacked;
+        int64_t sinceDays = state.vault.lastBackupAt
+                                ? (nowSec() - state.vault.lastBackupAt) / 86400
+                                : -1;
+        bool exportStale = sinceDays < 0 || sinceDays > 30;
+        if (!state.vault.keys.empty() && (unbacked > 0 || exportStale)) {
+            if (beginCard("backupwarn")) {
+                ImGui::PushFont(fonts().uiSemi, kText);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Warn));
+                ImGui::TextUnformatted("Backups incomplete - there is no recovery "
+                                       "without them");
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+                if (unbacked > 0)
+                    subtext((std::to_string(unbacked) +
+                             (unbacked == 1 ? " key has" : " keys have") +
+                             " never been confirmed backed up. Use the eye icon on a "
+                             "key, re-enter your password, write the key down, then "
+                             "press I'VE BACKED IT UP.")
+                                .c_str());
+                if (exportStale)
+                    subtext(sinceDays < 0
+                                ? "The vault file has never been exported. "
+                                  "Settings > Portability writes an encrypted .tbx "
+                                  "copy you can store offline."
+                                : ("Last vault export was " + std::to_string(sinceDays) +
+                                   " days ago.")
+                                      .c_str());
+            }
+            endCard();
+            vspace(10);
+        }
+    }
+
     // --- keys ---------------------------------------------------------------
     if (beginCard("keys")) {
         sectionTitle("Keys");
@@ -101,21 +154,31 @@ void drawVaultView(AppState& state, Controller& controller) {
                       ImGui::GetCursorScreenPos().y + ImGui::GetTextLineHeight() * 0.6f},
                      15.0f, col::Cyan, 1.6f);
             ImGui::Dummy({24, 0});
+            const bool phone = layout().phone();
             ImGui::SameLine();
-            monoText(middleEllipsis(key.pub, 24, 8), col::Ice, kMono);
+            monoText(middleEllipsis(key.pub, phone ? 12 : 24, phone ? 6 : 8), col::Ice,
+                     kMono);
             ImGui::SameLine();
             if (iconButton("##cp", Icon::Copy, "Copy public key", col::Slate, 13.0f))
                 ImGui::SetClipboardText(key.pub.c_str());
-            ImGui::SameLine();
             int linked = 0;
             for (const auto& account : state.vault.accounts)
                 if (account.pubKey == key.pub) ++linked;
-            ImGui::PushFont(fonts().ui, kTextSm);
-            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
-            ImGui::Text("%s%s%d account%s", key.label.c_str(), key.label.empty() ? "" : "  -  ",
-                        linked, linked == 1 ? "" : "s");
-            ImGui::PopStyleColor();
-            ImGui::PopFont();
+            // Phones split the row: identity + actions, then label + badge.
+            if (!phone) {
+                ImGui::SameLine();
+                ImGui::PushFont(fonts().ui, kTextSm);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
+                ImGui::Text("%s%s%d account%s", key.label.c_str(),
+                            key.label.empty() ? "" : "  -  ", linked,
+                            linked == 1 ? "" : "s");
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+                if (!key.backedUp) {
+                    ImGui::SameLine(0, 8);
+                    badge("NOT BACKED UP", col::Warn);
+                }
+            }
             ImGui::SameLine();
             float endX = ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x;
             ImGui::SetCursorPosX(endX - 66);
@@ -137,6 +200,22 @@ void drawVaultView(AppState& state, Controller& controller) {
                     ImGui::CloseCurrentPopup();
                 }
                 ImGui::EndPopup();
+            }
+            if (phone) {
+                ImGui::Dummy({24, 0});
+                ImGui::SameLine();
+                ImGui::PushFont(fonts().ui, kTextSm);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
+                ImGui::Text("%s%s%d account%s", key.label.c_str(),
+                            key.label.empty() ? "" : "  -  ", linked,
+                            linked == 1 ? "" : "s");
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+                if (!key.backedUp) {
+                    ImGui::SameLine(0, 8);
+                    badge("NOT BACKED UP", col::Warn);
+                }
+                vspace(4);
             }
             ImGui::PopID();
         }

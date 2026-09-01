@@ -1,5 +1,8 @@
 // The signing audit log: every approval, rejection and auto-sign the vault
 // has ever produced, newest first.
+#include <SDL3/SDL.h>
+
+#include "core/paths.hpp"
 #include "core/util.hpp"
 #include "ui/app_ui.hpp"
 #include "ui/layout.hpp"
@@ -19,7 +22,33 @@ void drawHistory(AppState& state, Controller& controller) {
     for (int i = 0; i < 3; ++i) {
         if (neonButton(filters[i], filter == i ? BtnKind::Primary : BtnKind::Subtle, {110, 30}))
             filter = i;
-        if (i < 2) ImGui::SameLine(0, 6);
+        ImGui::SameLine(0, 6);
+    }
+    // Export the full log (every entry, regardless of filter) as CSV.
+    if (neonButton("EXPORT CSV", BtnKind::Ghost, {120, 30}) && !state.vault.audit.empty()) {
+        struct SavePayload {
+            Controller* controller;
+            std::string csv;
+        };
+        auto* payload = new SavePayload{&controller, auditCsv(state.vault.audit)};
+        static const SDL_DialogFileFilter kFilters[] = {{"CSV", "csv"}};
+        SDL_ShowSaveFileDialog(
+            [](void* userdata, const char* const* filelist, int) {
+                auto* data = static_cast<SavePayload*>(userdata);
+                std::string path = filelist && filelist[0] ? filelist[0] : std::string();
+                Controller* c = data->controller;
+                std::string csv = std::move(data->csv);
+                delete data;
+                if (path.empty()) return;  // canceled
+                // The dialog callback may arrive off-main; marshal.
+                c->runner().postMain([c, path, csv = std::move(csv)] {
+                    if (atomicWrite(path, csv, /*keepBackup=*/false))
+                        c->toast(Toast::Success, "Signing log exported to " + path);
+                    else
+                        c->toast(Toast::Error, "Could not write " + path);
+                });
+            },
+            payload, nullptr, kFilters, 1, "tacklebox-signing-log.csv");
     }
     vspace(10);
 

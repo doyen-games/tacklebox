@@ -100,6 +100,13 @@ TEST_CASE("create, populate, lock, unlock round trip") {
 
         vault.setLastAccount("chainA|alice|active");
 
+        vault.upsertContact({"exchangehot1", "OKX deposit", "chainA"});
+        vault.upsertContact({"friendaccnt1", "roommate", ""});
+        vault.upsertContact({"friendaccnt1", "roommate (renamed)", ""});  // upsert
+        REQUIRE(vault.markKeyBackedUp(pub));
+        CHECK_FALSE(vault.markKeyBackedUp(pub));  // already backed up
+        vault.stampBackup();
+
         REQUIRE(vault.save());
         vault.lock();
         CHECK_FALSE(vault.unlocked());
@@ -149,7 +156,29 @@ TEST_CASE("create, populate, lock, unlock round trip") {
         CHECK(vault.linkSessions()[0].channelId == "chan-uuid");
         CHECK_FALSE(vault.linkSessions()[0].requestKeyWif.empty());
         CHECK(vault.lastAccount() == "chainA|alice|active");
+        REQUIRE(vault.contacts().size() == 2);
+        CHECK(vault.contacts()[1].label == "roommate (renamed)");
+        CHECK(vault.keys()[0].backedUp);
+        CHECK(vault.lastBackupAt() > 0);
+        REQUIRE(vault.removeContact("exchangehot1", "chainA"));
+        CHECK_FALSE(vault.removeContact("exchangehot1", "chainA"));
     }
+}
+
+TEST_CASE("audit log exports as CSV") {
+    std::vector<AuditEntry> entries = {
+        {1725148800, "chainA", "alice@active", "eosio.token::transfer to \"bob\"",
+         "4f9c2a1b", "trusted", true},
+        {1725148900, "chainA", "alice@active", "memo with, comma", "", "unlisted", false},
+    };
+    std::string csv = auditCsv(entries);
+    CHECK(csv.find("time_utc,unix,chain,signer,summary,tx_id,verdict,approved") == 0);
+    CHECK(csv.find("2024-09-01T00:00:00Z,1725148800") != std::string::npos);
+    // Embedded quotes double, comma-bearing fields quote.
+    CHECK(csv.find("\"eosio.token::transfer to \"\"bob\"\"\"") != std::string::npos);
+    CHECK(csv.find("\"memo with, comma\"") != std::string::npos);
+    CHECK(csv.find(",no\n") != std::string::npos);
+    CHECK(csv.find(",yes\n") != std::string::npos);
 }
 
 TEST_CASE("network json: old vault shapes migrate to endpoint pools") {

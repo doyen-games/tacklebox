@@ -53,6 +53,8 @@ struct VaultSnapshot {
     std::vector<Schedule> schedules;
     std::vector<LinkSession> linkSessions;  // requestKeyWif blanked
     std::vector<DashTile> dashboardTiles;   // board layout, in order
+    std::vector<Contact> contacts;          // address book
+    int64_t lastBackupAt = 0;               // last vault export
     uint64_t version = 0;
 };
 
@@ -82,6 +84,11 @@ struct SignPrompt {
     guard::VerdictLevel overall = guard::VerdictLevel::Unlisted;
     bool hashesVerified = false;  // fresh get_raw_abi succeeded for every contract
     int64_t expiresAtMs = 0;
+
+    // Set when the request arrived through a dapp link session, so the modal
+    // can show provenance and offer one-click unlink.
+    std::string linkSessionId;
+    std::string linkAppName;
 
     // Written by the UI before resolving.
     bool approved = false;

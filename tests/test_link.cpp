@@ -43,3 +43,13 @@ TEST_CASE("callback url template scrubbing") {
           "https://dapp.example/cb?sig={{sig");
     CHECK(scrubCallbackUrl("") == "");
 }
+
+TEST_CASE("link prompt-fatigue rate window") {
+    std::deque<int64_t> window;
+    // Five requests inside the window pass; the sixth trips the limit.
+    for (int i = 0; i < 5; ++i) CHECK_FALSE(linkRateExceeded(window, 1000 + i, 5, 60));
+    CHECK(linkRateExceeded(window, 1006, 5, 60));
+    // Old entries age out and capacity returns.
+    CHECK_FALSE(linkRateExceeded(window, 1100, 5, 60));
+    CHECK(window.size() <= 6);
+}

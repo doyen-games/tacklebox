@@ -123,6 +123,25 @@ look again. The suspended-rule banner shows the pinned vs observed hashes.
   double-execute. Offline autopilot runs are deferred with a short backoff
   and recorded as such.
 
+## Dapp link hardening
+
+- A linked dapp is rate limited: more than 5 pushed requests inside a minute
+  are auto-rejected (with a callback answer) instead of stacking an endless
+  wall of signing modals - the classic prompt-fatigue attack where a user
+  approves just to make it stop.
+- The signing modal shows the provenance of link-pushed requests (VIA DAPP
+  LINK + the app host) with a one-click UNLINK DAPP button that rejects the
+  request and revokes the session's push channel in the same gesture.
+
+## Backups
+
+The wallet cannot recover lost keys - so it treats backup nagging as a
+security feature. Keys carry a backed-up flag set only by an explicit human
+confirmation inside the password-gated reveal flow; vault exports stamp a
+timestamp; the Vault page and a per-session toast surface anything
+unprotected. None of this weakens the vault: the reveal flow still requires
+the password, and the exported .tbx is the same encrypted envelope.
+
 ## Updates
 
 The update checker queries `api.github.com` for this repository's latest

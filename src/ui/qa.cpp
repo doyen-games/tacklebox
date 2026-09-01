@@ -258,6 +258,9 @@ std::shared_ptr<SignPrompt> makeSignPrompt(const AppState& state) {
     prompt->overall = guard::VerdictLevel::Unlisted;
     prompt->hashesVerified = true;
     prompt->expiresAtMs = nowMs() + 95 * 1000;
+    // Show the dapp-link provenance row + UNLINK escape hatch.
+    prompt->linkSessionId = "qa-link-1";
+    prompt->linkAppName = "dapp.example";
 
     SignPrompt::ActionView transfer;
     transfer.contract = "eosio.token";

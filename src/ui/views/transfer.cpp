@@ -4,6 +4,7 @@
 #include "guard/rules.hpp"
 #include "ui/app_ui.hpp"
 #include "ui/layout.hpp"
+#include "ui/ui_helpers.h"
 #include "ui/widgets.hpp"
 
 namespace tb::ui {
@@ -81,6 +82,83 @@ void drawTransfer(AppState& state, Controller& controller) {
         static std::string toError;
         toOpts.error = toError.empty() ? nullptr : toError.c_str();
         textField("To", to, sizeof to, toOpts);
+
+        // Address book: recognize saved recipients, warn on first-timers,
+        // and catch the classic exchange-deposit-without-memo mistake.
+        {
+            const AccountRef* self = state.currentAccount();
+            std::string chainId = self ? self->chainId : "";
+            std::string toStr = toLower(trim(to));
+            const Contact* known = nullptr;
+            for (const auto& contact : state.vault.contacts)
+                if (contact.actor == toStr &&
+                    (contact.chainId.empty() || contact.chainId == chainId))
+                    known = &contact;
+
+            ImGui::SetNextItemWidth(140.0f);
+            if (ImGui::BeginCombo("##contacts", "contacts...")) {
+                for (const auto& contact : state.vault.contacts) {
+                    if (!contact.chainId.empty() && contact.chainId != chainId) continue;
+                    ImGui::PushID(contact.actor.c_str());
+                    std::string row =
+                        contact.actor +
+                        (contact.label.empty() ? "" : "  -  " + contact.label);
+                    if (ImGui::Selectable(row.c_str(), false))
+                        std::snprintf(to, sizeof to, "%s", contact.actor.c_str());
+                    ::ui::HandOnHover();
+                    ImGui::SameLine();
+                    if (iconButton("##rmct", Icon::Trash, "Remove contact", col::Slate,
+                                   11.0f))
+                        controller.removeContact(contact.actor, contact.chainId);
+                    ImGui::PopID();
+                }
+                if (state.vault.contacts.empty()) {
+                    ImGui::PushFont(fonts().ui, kTextSm);
+                    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
+                    ImGui::TextUnformatted("No saved recipients yet.");
+                    ImGui::PopStyleColor();
+                    ImGui::PopFont();
+                }
+                ImGui::EndCombo();
+            }
+            ::ui::HandOnHover();
+            if (!toStr.empty() && !known) {
+                ImGui::SameLine(0, 8);
+                if (neonButton("SAVE CONTACT", BtnKind::Subtle, {120, 26}))
+                    controller.addContact({toStr, "", chainId});
+            }
+
+            static const char* kExchangeDeposits[] = {
+                "binancecleos", "binancewaxbp", "huobideposit", "okbtothemoon",
+                "krakenkraken", "gateiowallet", "mxcexdeposit", "bybitdeposit",
+                "kucoindoteos", "bitfinexdep1", "coinbasebase", "upbitdeposit"};
+            bool exchange = false;
+            for (const char* name : kExchangeDeposits) exchange |= toStr == name;
+
+            if (exchange && !memo[0]) {
+                ImGui::PushFont(fonts().ui, kTextSm);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Danger));
+                ImGui::TextWrapped("This looks like an exchange deposit account. Sending "
+                                   "WITHOUT the memo the exchange assigned you usually "
+                                   "means lost funds.");
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+            } else if (known) {
+                ImGui::PushFont(fonts().ui, kTextSm);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Success));
+                ImGui::Text("contact: %s", known->label.empty() ? known->actor.c_str()
+                                                                : known->label.c_str());
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+            } else if (toStr.size() >= 3) {
+                ImGui::PushFont(fonts().ui, kTextSm);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Warn));
+                ImGui::TextWrapped("First time sending to this account - double-check "
+                                   "every character. Transfers cannot be reversed.");
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+            }
+        }
 
         // Amount + symbol on one row (amount gets its own row on phones).
         bool narrow = layout().phone();

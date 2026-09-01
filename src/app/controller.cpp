@@ -33,6 +33,9 @@ namespace dk = dwarfkit;
 // Set while a schedule's transact runs on this worker thread: the guard then
 // refuses to prompt and only the auto-sign fast path may sign.
 static thread_local bool t_scheduledSign = false;
+// Set while a link-session push is being signed so the prompt can show its
+// provenance and offer one-click unlink.
+static thread_local const LinkSession* t_linkSession = nullptr;
 
 Controller::Controller(AppState& state, TaskRunner& runner)
     : state_(state), runner_(runner), link_(std::make_unique<LinkService>(*this)) {}
@@ -128,6 +131,8 @@ void Controller::refreshSnapshot() {
     snap.pinnedQueries = vault_.pinnedQueries();
     snap.schedules = vault_.schedules();
     snap.dashboardTiles = vault_.dashboardTiles();
+    snap.contacts = vault_.contacts();
+    snap.lastBackupAt = vault_.lastBackupAt();
     snap.linkSessions = vault_.linkSessions();
     for (auto& link : snap.linkSessions) {
         secureWipe(link.requestKeyWif.data(), link.requestKeyWif.size());
@@ -228,6 +233,28 @@ void Controller::unlockVault(const std::string& password) {
             if (!checkedOnce && state_.vault.security.bgUpdateCheck) {
                 checkedOnce = true;
                 checkForUpdates(false);
+            }
+            // Backup nag, once per session: unbacked keys are the most common
+            // way people actually lose funds.
+            static bool naggedOnce = false;
+            if (!naggedOnce && !state_.vault.keys.empty()) {
+                naggedOnce = true;
+                int unbacked = 0;
+                for (const auto& key : state_.vault.keys)
+                    if (!key.backedUp) ++unbacked;
+                int64_t since = state_.vault.lastBackupAt
+                                    ? (nowSec() - state_.vault.lastBackupAt) / 86400
+                                    : -1;
+                if (unbacked > 0)
+                    toast(Toast::Warn, std::to_string(unbacked) +
+                                           (unbacked == 1 ? " key has" : " keys have") +
+                                           " never been backed up - Vault page");
+                else if (since < 0)
+                    toast(Toast::Warn,
+                          "This vault has never been exported - Settings > Portability");
+                else if (since > 30)
+                    toast(Toast::Info, "Last vault export was " + std::to_string(since) +
+                                           " days ago - consider a fresh backup");
             }
         });
     });
@@ -1075,6 +1102,13 @@ void Controller::loadAssets(const std::string& owner, bool force) {
 // --- vault portability -------------------------------------------------------
 
 void Controller::exportVault(const std::string& destPath) {
+    // Record the backup time inside the vault before copying it out, so the
+    // exported file itself carries the stamp and the nag stands down.
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (vault_.unlocked()) vault_.stampBackup();
+    }
+    refreshSnapshot();
     runner_.run([this, destPath] {
         auto result = Vault::exportTo(destPath);
         runner_.postMain([this, result, destPath] {
@@ -1345,6 +1379,9 @@ void Controller::createAccount(const NewAccountSpec& spec) {
                       }
                       state_.page = Page::Dashboard;
                       toast(Toast::Success, name + " added to this wallet");
+                      toast(Toast::Warn,
+                            "Back up the new keys from the Vault page - there is no "
+                            "recovery without them");
                   });
 }
 
@@ -1606,6 +1643,10 @@ dk::Result<dk::WalletPluginSignResponse> Controller::guardedSign(
 
     // 6. Human review. Build the prompt payload and block on the modal.
     auto prompt = std::make_shared<SignPrompt>();
+    if (t_linkSession) {
+        prompt->linkSessionId = t_linkSession->id;
+        prompt->linkAppName = t_linkSession->appName;
+    }
     prompt->id = broker_.nextId();
     prompt->chainId = chainId;
     prompt->chainName = context.chain.name();
@@ -2409,6 +2450,35 @@ void Controller::removePinnedQuery(const std::string& id) {
     refreshSnapshot();
 }
 
+void Controller::markKeyBackedUp(const std::string& pub) {
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked() || !vault_.markKeyBackedUp(pub)) return;
+    }
+    refreshSnapshot();
+    toast(Toast::Success, "Key marked as backed up");
+}
+
+void Controller::addContact(const Contact& contact) {
+    if (contact.actor.empty()) return;
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        vault_.upsertContact(contact);
+    }
+    refreshSnapshot();
+    toast(Toast::Success, contact.actor + " saved to contacts");
+}
+
+void Controller::removeContact(const std::string& actor, const std::string& chainId) {
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        vault_.removeContact(actor, chainId);
+    }
+    refreshSnapshot();
+}
+
 // --- dashboard board ---------------------------------------------------------
 
 void Controller::saveDashboardTiles(std::vector<DashTile> tiles) {
@@ -2859,6 +2929,29 @@ void Controller::signEsrFromLink(const std::string& sessionId, const std::string
         toast(Toast::Error, "Link request for " + session.actor + " but the account is gone");
         return;
     }
+    // Prompt-fatigue guard: a linked dapp that floods requests gets rate
+    // limited (each drop answers the callback) instead of queueing an
+    // endless wall of signing modals.
+    {
+        static std::map<std::string, std::deque<int64_t>> requestTimes;
+        std::deque<int64_t>& window = requestTimes[session.id];
+        if (linkRateExceeded(window, nowSec(), 5, 60)) {
+            toast(Toast::Warn, session.appName +
+                                   " is flooding requests - this one was auto-rejected. "
+                                   "Unlink it in Settings if this keeps up");
+            runner_.run([this, session, uri] {
+                if (auto request = dk::SigningRequest::from(uri)) {
+                    std::string cbUrl = std::visit(
+                        [](const auto& d) { return d.callback; }, request->data);
+                    if (!cbUrl.empty())
+                        if (auto svc = service(session.chainId))
+                            postEsrRejection(*svc->fetch(), cbUrl,
+                                             "Rate limited by TackleBox");
+                }
+            });
+            return;
+        }
+    }
     state_.busyEsr = true;
     runner_.run([this, account, session, uri] {
         auto sessionKit = makeSession(account);
@@ -2875,7 +2968,9 @@ void Controller::signEsrFromLink(const std::string& sessionId, const std::string
         // the dapp side; wallet-side push would duplicate the transaction).
         dk::TransactOptions transactOptions;
         if (auto flag = esrBroadcastFlag(args)) transactOptions.broadcast = *flag;
+        t_linkSession = &session;
         auto result = sessionKit->transact(args, transactOptions);
+        t_linkSession = nullptr;
 
         // Declined: answer the callback with a rejection so the dapp fails
         // fast instead of waiting out the request expiry.

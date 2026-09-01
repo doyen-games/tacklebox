@@ -1,6 +1,7 @@
 #include "vault/vault.hpp"
 
 #include <algorithm>
+#include <ctime>
 #include <fstream>
 #include <set>
 #include <sstream>
@@ -167,6 +168,36 @@ NetworkDef networkFromJson(const json& n) {
     return net;
 }
 
+namespace {
+// RFC-4180: quote fields containing commas, quotes or newlines; double
+// embedded quotes.
+std::string csvField(const std::string& value) {
+    if (value.find_first_of(",\"\n") == std::string::npos) return value;
+    std::string out = "\"";
+    for (char c : value) {
+        if (c == '"') out += '"';
+        out += c;
+    }
+    out += '"';
+    return out;
+}
+}  // namespace
+
+std::string auditCsv(const std::vector<AuditEntry>& entries) {
+    std::string out = "time_utc,unix,chain,signer,summary,tx_id,verdict,approved\n";
+    for (const auto& e : entries) {
+        char stamp[32] = "";
+        time_t t = static_cast<time_t>(e.time);
+        if (std::tm* utc = std::gmtime(&t))
+            std::strftime(stamp, sizeof stamp, "%Y-%m-%dT%H:%M:%SZ", utc);
+        out += std::string(stamp) + "," + std::to_string(e.time) + "," +
+               csvField(e.chainId) + "," + csvField(e.signer) + "," +
+               csvField(e.summary) + "," + csvField(e.txId) + "," +
+               csvField(e.verdict) + "," + (e.approved ? "yes" : "no") + "\n";
+    }
+    return out;
+}
+
 bool Vault::fileExists() {
     std::error_code ec;
     return std::filesystem::exists(vaultFile(), ec);
@@ -184,7 +215,15 @@ std::string Vault::buildAad() const {
 json Vault::serializePayload() const {
     json keys = json::array();
     for (const auto& k : keys_)
-        keys.push_back({{"pub", k.pub}, {"wif", k.wif}, {"label", k.label}, {"created", k.created}});
+        keys.push_back({{"pub", k.pub},
+                        {"wif", k.wif},
+                        {"label", k.label},
+                        {"created", k.created},
+                        {"backedUp", k.backedUp}});
+
+    json contacts = json::array();
+    for (const auto& c : contacts_)
+        contacts.push_back({{"actor", c.actor}, {"label", c.label}, {"chain", c.chainId}});
 
     json accounts = json::array();
     for (const auto& a : accounts_)
@@ -269,6 +308,8 @@ json Vault::serializePayload() const {
                 {"pinned", pins},
                 {"schedules", schedules},
                 {"dashboard", dashboard},
+                {"contacts", contacts},
+                {"lastBackupAt", lastBackupAt_},
                 {"links", links},
                 {"lastAccount", lastAccount_},
                 {"lastChain", lastChain_},
@@ -298,7 +339,11 @@ Result<void> Vault::parsePayload(const json& p) {
 
     for (const auto& k : p.value("keys", json::array()))
         keys_.push_back({k.value("pub", ""), k.value("wif", ""), k.value("label", ""),
-                         k.value("created", int64_t(0))});
+                         k.value("created", int64_t(0)), k.value("backedUp", false)});
+    for (const auto& c : p.value("contacts", json::array()))
+        contacts_.push_back(
+            {c.value("actor", ""), c.value("label", ""), c.value("chain", "")});
+    lastBackupAt_ = p.value("lastBackupAt", int64_t(0));
 
     for (const auto& a : p.value("accounts", json::array()))
         accounts_.push_back({a.value("chain", ""), a.value("actor", ""),
@@ -722,6 +767,40 @@ void Vault::upsertPinnedQuery(const PinnedQuery& query) {
     for (const auto& tile : dashboard_) present |= tile.kind == kind;
     if (!present) dashboard_.push_back({kind, 1});
     (void)save();
+}
+
+void Vault::stampBackup() {
+    lastBackupAt_ = nowSec();
+    (void)save();
+}
+
+bool Vault::markKeyBackedUp(const std::string& pub) {
+    for (auto& key : keys_)
+        if (key.pub == pub && !key.backedUp) {
+            key.backedUp = true;
+            return bool(save());
+        }
+    return false;
+}
+
+void Vault::upsertContact(const Contact& contact) {
+    for (auto& existing : contacts_)
+        if (existing.actor == contact.actor && existing.chainId == contact.chainId) {
+            existing = contact;
+            (void)save();
+            return;
+        }
+    contacts_.push_back(contact);
+    (void)save();
+}
+
+bool Vault::removeContact(const std::string& actor, const std::string& chainId) {
+    size_t before = contacts_.size();
+    std::erase_if(contacts_, [&](const Contact& c) {
+        return c.actor == actor && c.chainId == chainId;
+    });
+    if (contacts_.size() == before) return false;
+    return bool(save());
 }
 
 bool Vault::removePinnedQuery(const std::string& id) {

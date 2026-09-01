@@ -37,3 +37,25 @@ jobs:
         run: cmake --build build
       - name: Test
         run: ./build/tacklebox_tests
+
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build clang libcurl4-openssl-dev
+      - name: Configure (fuzzers)
+        run: >
+          cmake -S . -B build-fuzz -G Ninja
+          -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo -DTB_BUILD_FUZZERS=ON
+      - name: Build fuzzers
+        run: cmake --build build-fuzz --target fuzz_esr fuzz_network_json fuzz_sealed
+      - name: Smoke-fuzz the attacker-facing parsers
+        run: |
+          for f in fuzz_esr fuzz_network_json fuzz_sealed; do
+            echo "=== $f ==="
+            ./build-fuzz/$f -max_total_time=25 -rss_limit_mb=2048 -print_final_stats=1
+          done

@@ -49,6 +49,8 @@ public:
     void importKey(const std::string& wif, const std::string& label);
     void generateKey(const std::string& label);
     void removeKey(const std::string& pub);
+    // Reveal-flow confirmation that the key is written down somewhere safe.
+    void markKeyBackedUp(const std::string& pub);
     // Reveal a private key after password re-entry. Callback on main; the
     // string is the WIF (empty + message on failure).
     void revealKey(const std::string& pub, const std::string& password,
@@ -187,6 +189,10 @@ public:
     // --- tokens -------------------------------------------------------------
     void addToken(const std::string& chainId, const TokenDef& token);
     void removeToken(const std::string& chainId, const TokenDef& token);
+
+    // --- contacts (address book) --------------------------------------------
+    void addContact(const Contact& contact);
+    void removeContact(const std::string& actor, const std::string& chainId);
 
     // --- custom networks ----------------------------------------------------
     // Probe get_info on a URL; callback (chainIdHex, error) on main.

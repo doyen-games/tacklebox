@@ -10,6 +10,17 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 11)
 
 option(TB_BUILD_TESTS "Build tacklebox_tests" ${PROJECT_IS_TOP_LEVEL})
+option(TB_BUILD_FUZZERS "Build libFuzzer harnesses (Clang only; skips the UI stack)" OFF)
+
+if(TB_BUILD_FUZZERS)
+  if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(FATAL_ERROR "TB_BUILD_FUZZERS requires Clang (libFuzzer)")
+  endif()
+  # Instrument everything the fuzzers can reach; the harness adds the driver.
+  add_compile_options(-fsanitize=fuzzer-no-link,address -g -O1)
+  add_link_options(-fsanitize=address)
+  set(TB_BUILD_TESTS OFF)
+endif()
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
@@ -51,6 +62,7 @@ endif()
 
 add_subdirectory(vendor/dwarfkit)
 
+if(NOT TB_BUILD_FUZZERS)
 # ---------------------------------------------------------------------------
 # SDL3 - one windowing/input/lifecycle layer for desktop AND mobile.
 # TB_MOBILE marks iOS/Android configurations (GLES context, touch, fullscreen).
@@ -110,6 +122,7 @@ tb_embed_font(font_rajdhani_bold     assets/fonts/Rajdhani-Bold.ttf)
 tb_embed_font(font_sharetech_mono    assets/fonts/ShareTechMono-Regular.ttf)
 
 add_custom_target(tb_embedded_assets DEPENDS ${TB_EMBED_HEADERS})
+endif()  # NOT TB_BUILD_FUZZERS
 
 # ---------------------------------------------------------------------------
 # tacklebox_core - everything below the UI: vault, guard, chain services,
@@ -164,6 +177,7 @@ function(tb_warnings target)
 endfunction()
 tb_warnings(tacklebox_core)
 
+if(NOT TB_BUILD_FUZZERS)
 # ---------------------------------------------------------------------------
 # tacklebox - the application.
 # ---------------------------------------------------------------------------
@@ -246,6 +260,24 @@ else()
   target_link_libraries(tacklebox PRIVATE OpenGL::GL)
 endif()
 
+endif()  # NOT TB_BUILD_FUZZERS (application)
+
+# ---------------------------------------------------------------------------
+# Fuzz harnesses: attacker-facing parsers (ESR uris, vault network json,
+# sealed link messages). cmake -DTB_BUILD_FUZZERS=ON with clang, then run
+# each binary with libFuzzer flags.
+# ---------------------------------------------------------------------------
+if(TB_BUILD_FUZZERS)
+  function(tb_fuzzer name)
+    add_executable(${name} fuzz/${name}.cpp)
+    target_link_libraries(${name} PRIVATE tacklebox_core)
+    target_link_options(${name} PRIVATE -fsanitize=fuzzer,address)
+  endfunction()
+  tb_fuzzer(fuzz_esr)
+  tb_fuzzer(fuzz_network_json)
+  tb_fuzzer(fuzz_sealed)
+endif()
+
 # ---------------------------------------------------------------------------
 # Tests (doctest comes vendored with dwarfkit).
 # ---------------------------------------------------------------------------
@@ -275,7 +307,7 @@ endif()
 # Windows install wizard (EULA page from EULA.txt), ZIP the portable build.
 # Branding hooks below are TODO until logo assets land.
 # ---------------------------------------------------------------------------
-if(NOT TB_MOBILE AND NOT ANDROID)
+if(NOT TB_MOBILE AND NOT ANDROID AND NOT TB_BUILD_FUZZERS)
   # Everything ships under the "app" component so the vendored projects'
   # own install rules (curl headers, etc.) stay out of the packages.
   install(TARGETS tacklebox RUNTIME DESTINATION . BUNDLE DESTINATION . COMPONENT app)

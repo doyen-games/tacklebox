@@ -37,6 +37,17 @@ struct KeyEntry {
     std::string wif;    // private key string; wiped when the vault locks
     std::string label;
     int64_t created = 0;
+    // The user confirmed writing this key down (reveal flow). There is no
+    // recovery mechanism, so the wallet nags until every key is backed up.
+    bool backedUp = false;
+};
+
+// A saved recipient. Transfers to accounts NOT in the book get a
+// first-time-recipient warning.
+struct Contact {
+    std::string actor;
+    std::string label;
+    std::string chainId;  // "" = any chain
 };
 
 struct AccountRef {
@@ -251,6 +262,10 @@ struct AuditEntry {
     bool approved = false;
 };
 
+// The signing log as CSV (RFC-4180 quoting, ISO timestamps). For the
+// History page export; pure and testable.
+std::string auditCsv(const std::vector<AuditEntry>& entries);
+
 class Vault {
 public:
     // --- lifecycle ---------------------------------------------------------
@@ -303,6 +318,16 @@ public:
     // --- security prefs ----------------------------------------------------
     SecurityPrefs& security() { return security_; }
     const SecurityPrefs& security() const { return security_; }
+
+    // --- backups ------------------------------------------------------------
+    int64_t lastBackupAt() const { return lastBackupAt_; }
+    void stampBackup();                        // set now + save (vault export)
+    bool markKeyBackedUp(const std::string& pub);  // reveal-flow confirmation
+
+    // --- contacts (address book) --------------------------------------------
+    const std::vector<Contact>& contacts() const { return contacts_; }
+    void upsertContact(const Contact& contact);  // keyed by actor+chainId
+    bool removeContact(const std::string& actor, const std::string& chainId);
 
     // --- pinned queries ----------------------------------------------------
     const std::vector<PinnedQuery>& pinnedQueries() const { return pinned_; }
@@ -367,6 +392,8 @@ private:
     std::vector<PinnedQuery> pinned_;
     std::vector<Schedule> schedules_;
     std::vector<DashTile> dashboard_ = defaultDashboard();
+    std::vector<Contact> contacts_;
+    int64_t lastBackupAt_ = 0;
     std::vector<LinkSession> links_;
     std::string lastAccount_;
     std::string lastChain_;

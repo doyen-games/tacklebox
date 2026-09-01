@@ -119,6 +119,17 @@ bottom tab bar + sheet modals on phones - try them anywhere with
 - **Portable vault** - export/import the sealed `.tbx` vault file between
   machines (drag & drop a `.tbx` onto the window to import). The wallet
   remembers your last-used account per vault.
+- **Backup guardianship** - there is no recovery mechanism, so the wallet
+  refuses to let you forget: every key tracks whether you confirmed writing
+  it down (reveal it, copy or scan the QR, press I'VE BACKED IT UP), the
+  Vault page banners until all keys are covered and the vault has a recent
+  export, and account creation reminds you about the freshly minted keys.
+- **Address book + transfer tripwires** - save recipients as contacts; the
+  Transfer page recognizes them, warns on first-time recipients, and calls
+  out known exchange deposit accounts when the memo is empty (the classic
+  lost-funds mistake).
+- **CSV export** - the tamper-resistant signing log exports as CSV from the
+  History page (native save dialog) for taxes and bookkeeping.
 - **Performance controls** - a multicore toggle sizes the background worker
   pool to your CPU (cores - 1, capped) so endpoint probes, balance fetches,
   prices and schedules run in parallel; off keeps a quiet two-thread pool.
