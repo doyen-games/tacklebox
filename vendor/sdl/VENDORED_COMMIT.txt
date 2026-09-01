@@ -1,3 +1,7 @@
 Vendored snapshot of SDL (https://github.com/libsdl-org/SDL).
 Upstream commit: 96292a5b464258a2b926e0a3d72f8b98c2a81aa6 (tag release-3.2.20)
 No local modifications.
+
+Nested .gitignore files are removed from vendored snapshots: with the
+snapshots tracked as plain files, upstream ignore rules silently exclude
+real source files (this cost us vendor/sdl/cmake/sdltargets.cmake in CI).
