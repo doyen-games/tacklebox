@@ -1126,8 +1126,16 @@ void Controller::transactAsync(const AccountRef account, dk::TransactArgs args,
             });
             return;
         }
-        auto result = session->transact(args);
-        runner_.postMain([this, busyFlag, flowName, onDone,
+        // The request's own broadcast flag wins: Wharfkit dapps broadcast
+        // themselves after collecting signatures (broadcast:false), while
+        // eosio.to-style requests expect the wallet to push. Without this the
+        // wallet and the dapp both broadcast and the second push fails as a
+        // duplicate. Action-built transactions have no request: default true.
+        dk::TransactOptions transactOptions;
+        if (auto flag = esrBroadcastFlag(args)) transactOptions.broadcast = *flag;
+        const bool walletBroadcasts = transactOptions.broadcast.value_or(true);
+        auto result = session->transact(args, transactOptions);
+        runner_.postMain([this, busyFlag, flowName, onDone, walletBroadcasts,
                           result = std::move(result)] {
             if (busyFlag) *busyFlag = false;
             state_.pipelineStatus.clear();
@@ -1145,7 +1153,10 @@ void Controller::transactAsync(const AccountRef account, dk::TransactArgs args,
             if (result->response && result->response->contains("transaction_id"))
                 txId = result->response->value("transaction_id", "");
             toast(Toast::Success,
-                  flowName + " confirmed" + (txId.empty() ? "" : "  " + middleEllipsis(txId, 10, 6)));
+                  walletBroadcasts
+                      ? flowName + " confirmed" +
+                            (txId.empty() ? "" : "  " + middleEllipsis(txId, 10, 6))
+                      : flowName + " signed - the dapp broadcasts it");
             refreshSnapshot();  // audit entry / rule counters changed
             refreshAccount(true);
             if (onDone) onDone(true, txId, false);
@@ -2771,7 +2782,11 @@ void Controller::signEsrFromLink(const std::string& sessionId, const std::string
         }
         dk::TransactArgs args;
         args.request = uri;
-        auto result = sessionKit->transact(args);
+        // Honor the request's broadcast flag (Wharfkit sessions broadcast on
+        // the dapp side; wallet-side push would duplicate the transaction).
+        dk::TransactOptions transactOptions;
+        if (auto flag = esrBroadcastFlag(args)) transactOptions.broadcast = *flag;
+        auto result = sessionKit->transact(args, transactOptions);
 
         // Declined: answer the callback with a rejection so the dapp fails
         // fast instead of waiting out the request expiry.

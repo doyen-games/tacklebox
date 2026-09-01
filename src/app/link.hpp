@@ -17,6 +17,7 @@
 #include <thread>
 
 #include <dwarfkit/core/cancel.hpp>
+#include <dwarfkit/session/transact.hpp>
 #include <dwarfkit/transport/fetch_provider.hpp>
 
 #include "vault/vault.hpp"
@@ -24,6 +25,14 @@
 namespace tb {
 
 class Controller;
+
+// The broadcast flag of the signing request inside TransactArgs, when there
+// is one. Wharfkit-created requests carry broadcast:false (the dapp
+// broadcasts after collecting signatures); eosio.to-style requests carry
+// broadcast:true and expect the wallet to push. dwarfkit's session pipeline
+// only consults its own options, so the wallet must forward this flag or it
+// double-broadcasts every Wharfkit transaction. Exposed for tests.
+std::optional<bool> esrBroadcastFlag(const dwarfkit::TransactArgs& args);
 
 // Strip {{placeholders}} (sig templates and friends) out of a raw ESR
 // callback URL - a rejection has nothing to substitute. Exposed for tests.

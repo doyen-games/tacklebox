@@ -24,6 +24,18 @@ std::string hostOf(const std::string& url) {
 
 }  // namespace
 
+std::optional<bool> esrBroadcastFlag(const dk::TransactArgs& args) {
+    if (!args.request) return std::nullopt;
+    if (const auto* uri = std::get_if<std::string>(&*args.request)) {
+        auto parsed = dk::SigningRequest::from(trim(*uri));
+        if (!parsed) return std::nullopt;
+        return parsed->shouldBroadcast();
+    }
+    if (const auto* request = std::get_if<dk::SigningRequest>(&*args.request))
+        return request->shouldBroadcast();
+    return std::nullopt;
+}
+
 std::string scrubCallbackUrl(std::string url) {
     size_t open;
     while ((open = url.find("{{")) != std::string::npos) {
