@@ -262,9 +262,11 @@ private:
     void recordAudit(const std::string& chainId, const std::string& signer,
                      const std::string& summary, const std::string& verdict, bool approved,
                      const std::string& txId);
+    // onDone(ok, txIdOrError, canceled) on main; canceled distinguishes a
+    // human decline from other failures (rejection callbacks key off it).
     void transactAsync(const AccountRef account, dwarfkit::TransactArgs args,
                        const std::string& flowName, bool* busyFlag,
-                       std::function<void(bool, std::string)> onDone = {});
+                       std::function<void(bool, std::string, bool)> onDone = {});
 
     AppState& state_;
     TaskRunner& runner_;

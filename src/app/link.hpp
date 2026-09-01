@@ -17,12 +17,23 @@
 #include <thread>
 
 #include <dwarfkit/core/cancel.hpp>
+#include <dwarfkit/transport/fetch_provider.hpp>
 
 #include "vault/vault.hpp"
 
 namespace tb {
 
 class Controller;
+
+// Strip {{placeholders}} (sig templates and friends) out of a raw ESR
+// callback URL - a rejection has nothing to substitute. Exposed for tests.
+std::string scrubCallbackUrl(std::string url);
+
+// Best-effort POST of {"rejected": reason} to a request's callback so the
+// dapp's transact promise fails fast instead of waiting out the request
+// expiry. https-only (http://localhost excepted for local dapp dev).
+void postEsrRejection(dwarfkit::FetchProvider& fetch, const std::string& callbackUrl,
+                      const std::string& reason);
 
 class LinkService {
 public:

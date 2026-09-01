@@ -14,6 +14,8 @@
 
 #include "app/autopilot_util.hpp"
 #include "app/bridge.hpp"
+#include <dwarfkit/signing_request.hpp>
+
 #include "app/link.hpp"
 #include "chain/netreg.hpp"
 #include "chain/prices.hpp"
@@ -1106,10 +1108,10 @@ std::unique_ptr<dk::Session> Controller::makeSession(const AccountRef& account) 
 
 void Controller::transactAsync(const AccountRef account, dk::TransactArgs args,
                                const std::string& flowName, bool* busyFlag,
-                               std::function<void(bool, std::string)> onDone) {
+                               std::function<void(bool, std::string, bool)> onDone) {
     if (account.watch || account.pubKey.empty()) {
         toast(Toast::Warn, "This is a watch-only account; add its key to sign");
-        if (onDone) onDone(false, "watch-only account");
+        if (onDone) onDone(false, "watch-only account", false);
         return;
     }
     if (busyFlag) *busyFlag = true;
@@ -1120,7 +1122,7 @@ void Controller::transactAsync(const AccountRef account, dk::TransactArgs args,
             runner_.postMain([this, busyFlag, onDone] {
                 if (busyFlag) *busyFlag = false;
                 toast(Toast::Error, "Could not build a session for this account");
-                if (onDone) onDone(false, "no session");
+                if (onDone) onDone(false, "no session", false);
             });
             return;
         }
@@ -1134,7 +1136,9 @@ void Controller::transactAsync(const AccountRef account, dk::TransactArgs args,
                     toast(Toast::Info, flowName + " rejected");
                 else
                     toast(Toast::Error, flowName + " failed: " + result.error().message);
-                if (onDone) onDone(false, result.error().message);
+                if (onDone)
+                    onDone(false, result.error().message,
+                           result.error().kind == dk::ErrorKind::Canceled);
                 return;
             }
             std::string txId;
@@ -1144,7 +1148,7 @@ void Controller::transactAsync(const AccountRef account, dk::TransactArgs args,
                   flowName + " confirmed" + (txId.empty() ? "" : "  " + middleEllipsis(txId, 10, 6)));
             refreshSnapshot();  // audit entry / rule counters changed
             refreshAccount(true);
-            if (onDone) onDone(true, txId);
+            if (onDone) onDone(true, txId, false);
         });
     });
 }
@@ -1267,7 +1271,7 @@ void Controller::createAccount(const NewAccountSpec& spec) {
     const std::string chainId = creator.chainId;
     const std::string name = spec.name;
     transactAsync(creator, std::move(args), "Create " + name, &state_.busyCreateAccount,
-                  [this, chainId, name, activeVaultKey](bool ok, std::string) {
+                  [this, chainId, name, activeVaultKey](bool ok, std::string, bool) {
                       if (!ok) {
                           toast(Toast::Info,
                                 "Generated keys stay in the vault; retry when ready");
@@ -1350,9 +1354,26 @@ void Controller::runContractAction(const std::string& contract, const std::strin
 void Controller::signEsr(const std::string& uri) {
     const AccountRef* account = state_.currentAccount();
     if (!account) return;
+    const std::string chainId = account->chainId;
+    const std::string trimmed = trim(uri);
     dk::TransactArgs args;
-    args.request = trim(uri);
-    transactAsync(*account, std::move(args), "Signing request", &state_.busyEsr);
+    args.request = trimmed;
+    transactAsync(*account, std::move(args), "Signing request", &state_.busyEsr,
+                  [this, chainId, trimmed](bool ok, std::string, bool canceled) {
+                      if (ok || !canceled) return;
+                      // Declined: answer the request's callback so the dapp
+                      // fails fast instead of waiting out the expiry.
+                      runner_.run([this, chainId, trimmed] {
+                          auto request = dk::SigningRequest::from(trimmed);
+                          if (!request) return;
+                          std::string cbUrl = std::visit(
+                              [](const auto& d) { return d.callback; }, request->data);
+                          if (cbUrl.empty()) return;
+                          if (auto svc = service(chainId))
+                              postEsrRejection(*svc->fetch(), cbUrl,
+                                               "Request was declined in TackleBox");
+                      });
+                  });
 }
 
 void Controller::resolveSignPrompt(bool approved) {
@@ -2751,6 +2772,20 @@ void Controller::signEsrFromLink(const std::string& sessionId, const std::string
         dk::TransactArgs args;
         args.request = uri;
         auto result = sessionKit->transact(args);
+
+        // Declined: answer the callback with a rejection so the dapp fails
+        // fast instead of waiting out the request expiry.
+        if (!result && result.error().kind == dk::ErrorKind::Canceled) {
+            if (auto request = dk::SigningRequest::from(uri)) {
+                std::string cbUrl = std::visit(
+                    [](const auto& d) { return d.callback; }, request->data);
+                if (!cbUrl.empty()) {
+                    if (auto svc = service(account.chainId))
+                        postEsrRejection(*svc->fetch(), cbUrl,
+                                         "Request was declined in TackleBox");
+                }
+            }
+        }
 
         // Answer the dapp whichever way it went; a missing callback is fine.
         if (result && result->resolved) {

@@ -24,6 +24,36 @@ std::string hostOf(const std::string& url) {
 
 }  // namespace
 
+std::string scrubCallbackUrl(std::string url) {
+    size_t open;
+    while ((open = url.find("{{")) != std::string::npos) {
+        size_t close = url.find("}}", open);
+        if (close == std::string::npos) break;
+        url.erase(open, close - open + 2);
+    }
+    return url;
+}
+
+void postEsrRejection(dk::FetchProvider& fetch, const std::string& callbackUrl,
+                      const std::string& reason) {
+    std::string url = scrubCallbackUrl(callbackUrl);
+    if (url.empty()) return;
+    if (!startsWith(url, "https://") && !startsWith(url, "http://localhost") &&
+        !startsWith(url, "http://127.0.0.1"))
+        return;
+    dk::FetchRequest post;
+    post.url = url;
+    post.method = "POST";
+    post.body = json{{"rejected", reason}}.dump();
+    post.headers = {{"Content-Type", "application/json"}};
+    auto response = fetch.fetch(post);
+    if (!response)
+        Log::warn("link: rejection callback POST failed: %s",
+                  response.error().message.c_str());
+    else
+        Log::info("link: told the dapp the request was declined");
+}
+
 LinkService::~LinkService() { stopAll(); }
 
 void LinkService::stopAll() {
@@ -129,7 +159,14 @@ void LinkService::beginLogin(const std::string& esrUri) {
                     ". It will be able to push signing requests into this wallet; every "
                     "one still passes the guard and signing review.",
                 {});
-            if (!accepted) return dk::err(dk::ErrorKind::Canceled, "declined");
+            if (!accepted) {
+                // Tell the dapp now; otherwise its login modal waits out the
+                // request expiry.
+                if (auto svc = controller_.currentService())
+                    postEsrRejection(*svc->fetch(), (**callback).url,
+                                     "Login was declined in TackleBox");
+                return dk::err(dk::ErrorKind::Canceled, "declined");
+            }
 
             auto signature =
                 controller_.signIdentityDigest(account, resolved->signingDigest());

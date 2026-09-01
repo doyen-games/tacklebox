@@ -257,6 +257,7 @@ if(TB_BUILD_TESTS)
     tests/test_cipher.cpp
     tests/test_guard.cpp
     tests/test_kdf.cpp
+    tests/test_link.cpp
     tests/test_prices.cpp
     tests/test_risk.cpp
     tests/test_update.cpp
