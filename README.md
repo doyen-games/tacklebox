@@ -115,6 +115,13 @@ bottom tab bar + sheet modals on phones - try them anywhere with
 - **Portable vault** - export/import the sealed `.tbx` vault file between
   machines (drag & drop a `.tbx` onto the window to import). The wallet
   remembers your last-used account per vault.
+- **Performance controls** - a multicore toggle sizes the background worker
+  pool to your CPU (cores - 1, capped) so endpoint probes, balance fetches,
+  prices and schedules run in parallel; off keeps a quiet two-thread pool.
+  Rendering is hardware-accelerated (OpenGL); on hybrid-graphics machines a
+  toggle asks the driver for the discrete GPU (applies at next launch), and
+  Settings > About shows the live renderer with a warning if a software
+  rasterizer answered.
 - **Update notices** - one optional query to this repository's GitHub
   release feed (after unlock, or on demand from Settings > About) compares
   versions and offers the release page. Notify-only by design: the wallet

@@ -31,6 +31,7 @@
 #include "ui/layout.hpp"
 #include "ui/qa.hpp"
 #include "ui/theme.hpp"
+#include "tb_version.h"
 
 namespace {
 
@@ -62,6 +63,17 @@ void handleDrop(const char* dropped) {
 
 }  // namespace
 
+#if defined(_WIN32) && !defined(TB_MOBILE)
+// Hybrid-graphics (NVIDIA Optimus / AMD PowerXpress) drivers read these
+// exported globals when the GL context is created and route the app to the
+// discrete GPU when nonzero. Set from the persisted preference in main(),
+// before the window exists.
+extern "C" {
+__declspec(dllexport) DWORD NvOptimusEnablement = 1;
+__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif
+
 int main(int argc, char** argv) {
     // Development form-factor overrides, so every chrome is testable anywhere.
     for (int i = 1; i < argc; ++i) {
@@ -75,7 +87,15 @@ int main(int argc, char** argv) {
             tb::overrideDataDir(argv[++i]);
     }
 
-    SDL_SetAppMetadata("TackleBox", "0.2.0", "io.tacklebox.wallet");
+    // Cosmetics load early: the GPU preference must be set before the GL
+    // context exists (drivers read the exports at context init).
+    tb::ui::loadCosmetics();
+#if defined(_WIN32) && !defined(TB_MOBILE)
+    NvOptimusEnablement = tb::ui::cosmetics().preferHighPerfGpu ? 1 : 0;
+    AmdPowerXpressRequestHighPerformance = tb::ui::cosmetics().preferHighPerfGpu ? 1 : 0;
+#endif
+
+    SDL_SetAppMetadata("TackleBox", TB_VERSION, "io.tacklebox.wallet");
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         std::fprintf(stderr, "fatal: SDL_Init failed: %s\n", SDL_GetError());
         return 1;
@@ -138,12 +158,19 @@ int main(int argc, char** argv) {
     SDL_GL_MakeCurrent(window, gl);
     SDL_GL_SetSwapInterval(1);
 
+    // What is actually rendering: shown in Settings > About, and the basis
+    // for the software-rasterizer warning there.
+    const char* glRenderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+    const char* glVendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+    std::string rendererInfo = std::string(glRenderer ? glRenderer : "unknown") + "  (" +
+                               (glVendor ? glVendor : "unknown") + ")";
+    tb::Log::info("renderer: %s", rendererInfo.c_str());
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
     float scale = SDL_GetWindowDisplayScale(window);
     if (scale <= 0.0f) scale = 1.0f;
-    tb::ui::loadCosmetics();
     tb::ui::initTheme(scale);
 
     ImGui_ImplSDL3_InitForOpenGL(window, gl);
@@ -166,6 +193,10 @@ int main(int argc, char** argv) {
 #endif
 
     tb::AppState state;
+    state.gpuRenderer = rendererInfo;
+    for (const char* soft : {"llvmpipe", "softpipe", "SwiftShader", "Microsoft Basic Render",
+                             "GDI Generic", "Software Rasterizer"})
+        if (rendererInfo.find(soft) != std::string::npos) state.gpuSoftware = true;
     tb::TaskRunner runner;
     tb::Controller controller(state, runner);
     controller.init();

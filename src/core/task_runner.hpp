@@ -23,11 +23,22 @@ namespace tb {
 
 class TaskRunner {
 public:
-    explicit TaskRunner(unsigned workers = 0);
+    explicit TaskRunner(unsigned workers = 0);  // 0 = conservativeWorkers()
     ~TaskRunner();
 
     TaskRunner(const TaskRunner&) = delete;
     TaskRunner& operator=(const TaskRunner&) = delete;
+
+    // Pool sizing for the multicore toggle: every core (minus one for the UI
+    // thread) versus the historical small pool.
+    static unsigned autoWorkers();          // clamp(hardware_concurrency - 1, 2, 16)
+    static unsigned conservativeWorkers();  // 2
+
+    // Resize the pool at runtime (clamped to [1, 32]). Growing spawns
+    // immediately; shrinking retires workers as they finish their current
+    // job - never blocks the calling thread on in-flight work.
+    void setWorkers(unsigned target);
+    unsigned workers() const;  // current target
 
     // Queue work on the pool.
     void run(std::function<void()> work);
@@ -45,9 +56,24 @@ public:
     int pending() const { return pending_.load(); }
 
 private:
-    void workerLoop();
+    // One pool thread. Retiring is cooperative: the loop exits after its
+    // current job once `quit` is set; the thread is joined lazily.
+    struct Worker {
+        std::thread thread;
+        std::shared_ptr<std::atomic<bool>> quit;
+        std::shared_ptr<std::atomic<bool>> done;
+    };
 
-    std::vector<std::thread> threads_;
+    void workerLoop(std::shared_ptr<std::atomic<bool>> quit,
+                    std::shared_ptr<std::atomic<bool>> done);
+    void spawnLocked(unsigned count);
+    void reapLocked();  // join retired workers that have finished
+
+    mutable std::mutex poolMutex_;
+    std::vector<Worker> workers_;
+    std::vector<Worker> retired_;
+    unsigned target_ = 0;
+
     std::deque<std::function<void()>> work_;
     std::deque<std::function<void()>> main_;
     std::mutex workMutex_;

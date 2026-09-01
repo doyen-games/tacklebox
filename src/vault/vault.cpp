@@ -284,7 +284,8 @@ json Vault::serializePayload() const {
                   {"bgAccountRefresh", security_.bgAccountRefresh},
                   {"bgPinnedRefresh", security_.bgPinnedRefresh},
                   {"bgPriceRefresh", security_.bgPriceRefresh},
-                  {"bgUpdateCheck", security_.bgUpdateCheck}}}};
+                  {"bgUpdateCheck", security_.bgUpdateCheck},
+                  {"multicoreWorkers", security_.multicoreWorkers}}}};
 }
 
 Result<void> Vault::parsePayload(const json& p) {
@@ -412,6 +413,7 @@ Result<void> Vault::parsePayload(const json& p) {
         security_.bgPinnedRefresh = s.value("bgPinnedRefresh", true);
         security_.bgPriceRefresh = s.value("bgPriceRefresh", true);
         security_.bgUpdateCheck = s.value("bgUpdateCheck", true);
+        security_.multicoreWorkers = s.value("multicoreWorkers", true);
     }
     return {};
 }

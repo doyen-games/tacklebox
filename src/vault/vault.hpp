@@ -162,6 +162,9 @@ struct SecurityPrefs {
     bool bgPriceRefresh = true;    // price oracle refetch on its TTL
     // One GitHub Releases query after unlock (notify-only, never installs).
     bool bgUpdateCheck = true;
+    // Multicore background work: true sizes the worker pool to the CPU
+    // (cores - 1, capped), false keeps the small two-thread pool.
+    bool multicoreWorkers = true;
 };
 
 // One tile on the customizable dashboard board. `kind` identifies the

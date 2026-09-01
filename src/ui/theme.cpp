@@ -43,12 +43,15 @@ void loadCosmetics() {
     if (j.is_discarded() || !j.is_object()) return;
     cosmetics().glow = j.value("glow", 1.0f);
     cosmetics().reduceMotion = j.value("reduceMotion", false);
+    cosmetics().preferHighPerfGpu = j.value("preferHighPerfGpu", true);
     if (cosmetics().glow < 0.0f) cosmetics().glow = 0.0f;
     if (cosmetics().glow > 1.0f) cosmetics().glow = 1.0f;
 }
 
 void saveCosmetics() {
-    dwarfkit::json j{{"glow", cosmetics().glow}, {"reduceMotion", cosmetics().reduceMotion}};
+    dwarfkit::json j{{"glow", cosmetics().glow},
+                     {"reduceMotion", cosmetics().reduceMotion},
+                     {"preferHighPerfGpu", cosmetics().preferHighPerfGpu}};
     atomicWrite(settingsFile(), j.dump(2), /*keepBackup=*/false);
 }
 

@@ -251,6 +251,10 @@ struct AppState {
     std::map<std::string, std::vector<EndpointHealth>> health;  // per chainId
     bool busyHealth = false;
 
+    // The GPU actually rendering this session (captured at GL init).
+    std::string gpuRenderer;
+    bool gpuSoftware = false;  // a software rasterizer answered - warn in About
+
     // Latest-release check result (notify-only; nothing auto-installs).
     struct UpdateState {
         bool checking = false;

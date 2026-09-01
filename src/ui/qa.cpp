@@ -350,7 +350,7 @@ const Step kSteps[] = {
          // One network keeps the networks card short so the scroll lands on
          // the security policy + startup/background cards.
          if (s.vault.networks.size() > 1) s.vault.networks.resize(1);
-         g_pageScroll = ::ui::S(1360.0f);
+         g_pageScroll = ::ui::S(1890.0f);
      }},
     {"19-settings-about",
      [](AppState& s, Controller& c) {

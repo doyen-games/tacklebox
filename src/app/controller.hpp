@@ -256,6 +256,7 @@ public:
 
 private:
     std::shared_ptr<ChainService> service(const std::string& chainId);
+    void applyPerformancePrefs();     // size the worker pool from prefs
     void refreshSnapshot();           // main thread: copy vault -> state
     void refreshSnapshotFromWorker(); // post the copy to main
     std::unique_ptr<dwarfkit::Session> makeSession(const AccountRef& account);

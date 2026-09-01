@@ -868,6 +868,16 @@ void drawAbout(AppState& state, Controller& controller) {
     sectionTitle("About");
     kvRow("Version", "TackleBox " TB_VERSION);
     kvRow("Engine", "dwarfkit (native Wharfkit port) + Dear ImGui");
+    if (!state.gpuRenderer.empty()) kvRow("Renderer", state.gpuRenderer, true);
+    if (state.gpuSoftware) {
+        ImGui::PushFont(fonts().ui, kTextSm);
+        ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Warn));
+        ImGui::TextWrapped("Software rasterizer detected - rendering is not "
+                           "hardware-accelerated. Check GPU drivers, or the "
+                           "high-performance GPU preference below.");
+        ImGui::PopStyleColor();
+        ImGui::PopFont();
+    }
     kvRow("Data directory", dataDir().string(), true, true);
     subtext("TackleBox talks only to the endpoints you configure and, when enabled, "
             "GitHub's release feed for update notices. No telemetry.");
@@ -961,6 +971,27 @@ void drawStartupBackground(AppState& state, Controller& controller) {
     changed |= toggle("Check for updates after unlock", &prefs.bgUpdateCheck,
                       "One query to GitHub's release feed per session. Notify-only: "
                       "the wallet never downloads or installs code by itself");
+    vspace(6);
+
+    // Performance: pool sizing is live; the GPU preference binds at launch.
+    std::string workerHelp =
+        "Sizes the background worker pool to your CPU (" +
+        std::to_string(TaskRunner::autoWorkers()) +
+        " threads here) so probes, balance fetches and schedules run in "
+        "parallel. Off = a quiet 2-thread pool. Currently running " +
+        std::to_string(controller.runner().workers()) + " workers";
+    changed |= toggle("Use all CPU cores for background work", &prefs.multicoreWorkers,
+                      workerHelp.c_str());
+    vspace(4);
+    bool gpuPref = cosmetics().preferHighPerfGpu;
+    if (toggle("Prefer the high-performance GPU", &gpuPref,
+               "Hybrid-graphics machines (laptop iGPU + discrete card): asks the "
+               "driver to render TackleBox on the discrete GPU. Applies at the "
+               "next launch")) {
+        cosmetics().preferHighPerfGpu = gpuPref;
+        saveCosmetics();
+        controller.toast(Toast::Info, "GPU preference saved - applies at next launch");
+    }
     if (changed) controller.updateSecurity(prefs);
     endCard();
 }

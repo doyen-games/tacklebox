@@ -260,6 +260,7 @@ if(TB_BUILD_TESTS)
     tests/test_link.cpp
     tests/test_prices.cpp
     tests/test_risk.cpp
+    tests/test_runner.cpp
     tests/test_update.cpp
     tests/test_vault.cpp)
   target_link_libraries(tacklebox_tests PRIVATE tacklebox_core dk_doctest)

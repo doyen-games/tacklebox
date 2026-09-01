@@ -213,6 +213,7 @@ void Controller::unlockVault(const std::string& password) {
             // A vault with no keys yet lands in the first-run guide.
             state_.page = state_.vault.keys.empty() ? Page::Setup : Page::Dashboard;
             noteActivity();
+            applyPerformancePrefs();
             refreshAccount(false);
             // One silent release check per process, if the pref allows it.
             static bool checkedOnce = false;
@@ -665,21 +666,50 @@ void Controller::probeEndpoints(const std::string& chainId) {
     if (!svc || state_.busyHealth) return;
     state_.busyHealth = true;
     NetworkDef net = svc->net();
-    runner_.run([this, svc, chainId, net] {
+
+    // One pool task per node: with the multicore pool a full PROBE ALL runs
+    // in roughly one round-trip instead of the sum of them.
+    struct Job {
+        NodeType type;
+        std::string url, nickname;
+    };
+    std::vector<Job> jobs;
+    for (NodeType type : {NodeType::Rpc, NodeType::Atomic, NodeType::Hyperion,
+                          NodeType::Light})
+        for (const auto& node : net.list(type).nodes)
+            jobs.push_back({type, node.url, node.nickname});
+    if (jobs.empty()) {
+        state_.busyHealth = false;
+        return;
+    }
+
+    struct Shared {
+        std::mutex mutex;
         std::vector<EndpointHealth> results;
-        for (NodeType type : {NodeType::Rpc, NodeType::Atomic, NodeType::Hyperion,
-                              NodeType::Light}) {
-            for (const auto& node : net.list(type).nodes) {
-                EndpointHealth health = svc->probe(type, node.url);
-                health.nickname = node.nickname;
-                results.push_back(std::move(health));
+        size_t remaining = 0;
+    };
+    auto shared = std::make_shared<Shared>();
+    shared->results.resize(jobs.size());
+    shared->remaining = jobs.size();
+
+    for (size_t i = 0; i < jobs.size(); ++i) {
+        Job job = jobs[i];
+        runner_.run([this, svc, chainId, job, shared, i] {
+            EndpointHealth health = svc->probe(job.type, job.url);
+            health.nickname = job.nickname;
+            bool last = false;
+            {
+                std::lock_guard<std::mutex> lock(shared->mutex);
+                shared->results[i] = std::move(health);
+                last = --shared->remaining == 0;
             }
-        }
-        runner_.postMain([this, chainId, results] {
-            state_.health[chainId] = results;
-            state_.busyHealth = false;
+            if (last)
+                runner_.postMain([this, chainId, shared] {
+                    state_.health[chainId] = shared->results;
+                    state_.busyHealth = false;
+                });
         });
-    });
+    }
 }
 
 void Controller::refreshPrices(bool force) {
@@ -1734,6 +1764,13 @@ void Controller::updateSecurity(const SecurityPrefs& prefs) {
         (void)vault_.save();
     }
     refreshSnapshot();
+    applyPerformancePrefs();
+}
+
+void Controller::applyPerformancePrefs() {
+    runner_.setWorkers(state_.vault.security.multicoreWorkers
+                           ? TaskRunner::autoWorkers()
+                           : TaskRunner::conservativeWorkers());
 }
 
 // --- updates -----------------------------------------------------------------

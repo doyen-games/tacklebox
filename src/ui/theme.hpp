@@ -65,6 +65,10 @@ constexpr float kHero = 42.0f;
 struct Cosmetics {
     float glow = 1.0f;        // 0..1 glow intensity
     bool reduceMotion = false;
+    // Hybrid-graphics machines: ask the driver for the discrete GPU. Read
+    // before the GL context exists, so it lives here and not in the vault;
+    // changes apply at the next launch.
+    bool preferHighPerfGpu = true;
 };
 Cosmetics& cosmetics();
 void loadCosmetics();

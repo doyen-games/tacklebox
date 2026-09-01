@@ -4,19 +4,78 @@
 
 namespace tb {
 
-TaskRunner::TaskRunner(unsigned workers) {
-    unsigned n = workers ? workers : std::thread::hardware_concurrency();
+unsigned TaskRunner::autoWorkers() {
+    unsigned cores = std::thread::hardware_concurrency();
+    if (cores == 0) cores = 4;
+    unsigned n = cores > 1 ? cores - 1 : 1;  // leave a core for the UI thread
     if (n < 2) n = 2;
-    if (n > 4) n = 4;  // chain RPC + KDF work; more threads buy nothing
-    threads_.reserve(n);
-    for (unsigned i = 0; i < n; ++i) threads_.emplace_back([this] { workerLoop(); });
+    if (n > 16) n = 16;
+    return n;
+}
+
+unsigned TaskRunner::conservativeWorkers() { return 2; }
+
+TaskRunner::TaskRunner(unsigned workers) {
+    std::lock_guard<std::mutex> lock(poolMutex_);
+    target_ = workers ? workers : conservativeWorkers();
+    spawnLocked(target_);
 }
 
 TaskRunner::~TaskRunner() {
     stop_.store(true);
     workCv_.notify_all();
-    for (auto& t : threads_)
-        if (t.joinable()) t.join();
+    std::lock_guard<std::mutex> lock(poolMutex_);
+    for (auto& worker : workers_)
+        if (worker.thread.joinable()) worker.thread.join();
+    for (auto& worker : retired_)
+        if (worker.thread.joinable()) worker.thread.join();
+}
+
+void TaskRunner::spawnLocked(unsigned count) {
+    for (unsigned i = 0; i < count; ++i) {
+        Worker worker;
+        worker.quit = std::make_shared<std::atomic<bool>>(false);
+        worker.done = std::make_shared<std::atomic<bool>>(false);
+        worker.thread =
+            std::thread([this, quit = worker.quit, done = worker.done] {
+                workerLoop(quit, done);
+            });
+        workers_.push_back(std::move(worker));
+    }
+}
+
+void TaskRunner::reapLocked() {
+    std::erase_if(retired_, [](Worker& worker) {
+        if (!worker.done->load()) return false;
+        if (worker.thread.joinable()) worker.thread.join();
+        return true;
+    });
+}
+
+void TaskRunner::setWorkers(unsigned target) {
+    if (target < 1) target = 1;
+    if (target > 32) target = 32;
+    std::lock_guard<std::mutex> lock(poolMutex_);
+    reapLocked();
+    if (target == target_) return;
+    Log::info("worker pool: %u -> %u threads", target_, target);
+    if (target > target_) {
+        spawnLocked(target - target_);
+    } else {
+        for (unsigned i = target; i < target_; ++i) {
+            Worker& worker = workers_.back();
+            worker.quit->store(true);
+            retired_.push_back(std::move(worker));
+            workers_.pop_back();
+        }
+        workCv_.notify_all();  // wake idle workers so retirees can exit
+    }
+    target_ = target;
+}
+
+unsigned TaskRunner::workers() const {
+    std::lock_guard<std::mutex> lock(poolMutex_);
+    return target_;
 }
 
 void TaskRunner::run(std::function<void()> work) {
@@ -50,19 +109,25 @@ size_t TaskRunner::drainMain() {
     return batch.size();
 }
 
-void TaskRunner::workerLoop() {
+void TaskRunner::workerLoop(std::shared_ptr<std::atomic<bool>> quit,
+                            std::shared_ptr<std::atomic<bool>> done) {
     for (;;) {
         std::function<void()> job;
         {
             std::unique_lock<std::mutex> lock(workMutex_);
-            workCv_.wait(lock, [this] { return stop_.load() || !work_.empty(); });
-            if (stop_.load() && work_.empty()) return;
+            workCv_.wait(lock, [this, &quit] {
+                return stop_.load() || quit->load() || !work_.empty();
+            });
+            // Retire between jobs; drain the queue first on full shutdown.
+            if (quit->load() && !stop_.load()) break;
+            if (stop_.load() && work_.empty()) break;
             job = std::move(work_.front());
             work_.pop_front();
         }
         job();
         pending_.fetch_sub(1);
     }
+    done->store(true);
 }
 
 bool PromptBroker::wait(Pending request, std::function<void()> onPosted) {
