@@ -18,6 +18,9 @@ public:
 
     bool canRead(size_t bytes = 1) const { return pos_ + bytes <= array_.size(); }
 
+    // Bytes left in the buffer; used to bound speculative reservations.
+    size_t remaining() const { return array_.size() - pos_; }
+
     // strictExtensions decode mode: absent binary-extension fields synthesize
     // their type's default value instead of staying absent.
     bool strictExtensions = false;

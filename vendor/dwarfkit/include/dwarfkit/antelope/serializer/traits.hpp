@@ -596,7 +596,11 @@ struct abi_traits<std::vector<T>> {
     static Result<std::vector<T>> fromABI(ABIDecoder& d) {
         DK_TRY(len, d.readVaruint32());
         std::vector<T> rv;
-        rv.reserve(len);
+        // Never trust the count for the reservation: every element costs at
+        // least one byte, so a hostile length prefix (tiny payload claiming
+        // billions of elements) cannot force a giant allocation - the loop
+        // below fails cleanly on truncated data instead. Found by fuzzing.
+        rv.reserve(len < d.remaining() ? len : d.remaining());
         for (uint32_t i = 0; i < len; i++) {
             DK_TRY(item, abi_traits<T>::fromABI(d));
             rv.push_back(std::move(item));

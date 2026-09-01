@@ -10,3 +10,10 @@ buffer is provably large enough for any real time_point.
 embed >64KB string literals; pedantic-only noise.
 -Wno-changes-meaning (GCC block): GCC 13 hard-errors on APIResponse::json
 shadowing the json type alias; later GCCs accept the code.
+
+SECURITY PATCH (upstream this to dwarfkit): serializer/decoder.hpp gains
+remaining(), and serializer/traits.hpp bounds the std::vector fromABI
+reservation by the bytes actually left in the buffer. Without the bound a
+33-byte payload claiming billions of elements forces a multi-GB allocation
+before the decode loop can fail (found by fuzz_esr; DoS reachable through
+any pushed or pasted signing request).

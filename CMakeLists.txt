@@ -173,6 +173,12 @@ function(tb_warnings target)
     target_compile_options(${target} PRIVATE /W4 /permissive- /utf-8 /Zc:preprocessor)
   else()
     target_compile_options(${target} PRIVATE -Wall -Wextra -Wno-missing-field-initializers)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+      # GCC 13 hard-errors (permerror) on dwarfkit's APIResponse::json member
+      # shadowing its json type alias wherever our TUs include the header;
+      # GCC 14+ accepts the code. Harmless no-op on newer GCCs.
+      target_compile_options(${target} PRIVATE -Wno-changes-meaning)
+    endif()
   endif()
 endfunction()
 tb_warnings(tacklebox_core)

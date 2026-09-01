@@ -288,6 +288,13 @@ void LinkService::listenLoop(LinkSession session, dk::CancelToken token) {
             continue;
         }
         std::string content = trim(*opened);
+        // Defense in depth alongside the bounded ABI decoder: no legitimate
+        // signing request is anywhere near this large.
+        if (content.size() > 64 * 1024) {
+            Log::warn("link: dropped an oversized pushed payload (%zu bytes)",
+                      content.size());
+            continue;
+        }
         if (content.rfind("esr:", 0) != 0 && content.rfind("eosio:", 0) != 0) {
             Log::warn("link: unsealed content is not a signing request");
             continue;
