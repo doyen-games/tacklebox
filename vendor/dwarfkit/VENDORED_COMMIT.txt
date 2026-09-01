@@ -5,3 +5,8 @@ Also suppresses GCC-only -Warray-bounds/-Wstringop-overflow/-Wstringop-overread 
 -Wno-format-truncation added to the same GCC block: GCC 13 (ubuntu CI)
 flags a snprintf in antelope/chain/time.cpp that GCC 16 accepts; the
 buffer is provably large enough for any real time_point.
+
+-Wno-overlength-strings (both compilers): generated contract ABI headers
+embed >64KB string literals; pedantic-only noise.
+-Wno-changes-meaning (GCC block): GCC 13 hard-errors on APIResponse::json
+shadowing the json type alias; later GCCs accept the code.
