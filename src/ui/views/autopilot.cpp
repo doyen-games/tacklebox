@@ -308,9 +308,18 @@ void drawAutopilot(AppState& state, Controller& controller) {
                    "page.");
     }
 
-    for (const auto& schedule : state.vault.schedules) {
+    int schedFrom = -1, schedTo = -1;
+    for (size_t si = 0; si < state.vault.schedules.size(); ++si) {
+        const Schedule& schedule = state.vault.schedules[si];
         ImGui::PushID(schedule.id.c_str());
         if (beginCard("sched")) {
+            int dropped =
+                dragGrip("##schedules", static_cast<int>(si), schedule.label.c_str());
+            if (dropped >= 0) {
+                schedFrom = dropped;
+                schedTo = static_cast<int>(si);
+            }
+            ImGui::SameLine(0, 8);
             ImGui::PushFont(fonts().uiSemi, kTextLg);
             ImGui::TextUnformatted(schedule.label.c_str());
             ImGui::PopFont();
@@ -441,9 +450,17 @@ void drawAutopilot(AppState& state, Controller& controller) {
             }
         }
         endCard();
+        // The whole card is a drop zone for schedule reordering.
+        if (int dropped = acceptDropOnLastItem("##schedules"); dropped >= 0) {
+            schedFrom = dropped;
+            schedTo = static_cast<int>(si);
+        }
         ImGui::PopID();
         vspace(8);
     }
+    if (schedFrom >= 0 && schedTo >= 0 && schedFrom != schedTo)
+        controller.moveSchedule(static_cast<size_t>(schedFrom),
+                                static_cast<size_t>(schedTo));
 
     drawEditor(state, controller);
 }

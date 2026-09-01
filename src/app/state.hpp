@@ -52,6 +52,7 @@ struct VaultSnapshot {
     std::vector<PinnedQuery> pinnedQueries;
     std::vector<Schedule> schedules;
     std::vector<LinkSession> linkSessions;  // requestKeyWif blanked
+    std::vector<DashTile> dashboardTiles;   // board layout, in order
     uint64_t version = 0;
 };
 

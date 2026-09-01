@@ -115,6 +115,7 @@ void Controller::refreshSnapshot() {
     snap.audit = vault_.audit();
     snap.pinnedQueries = vault_.pinnedQueries();
     snap.schedules = vault_.schedules();
+    snap.dashboardTiles = vault_.dashboardTiles();
     snap.linkSessions = vault_.linkSessions();
     for (auto& link : snap.linkSessions) {
         secureWipe(link.requestKeyWif.data(), link.requestKeyWif.size());
@@ -2270,6 +2271,70 @@ void Controller::removePinnedQuery(const std::string& id) {
         vault_.removePinnedQuery(id);
     }
     state_.pinnedData.erase(id);
+    refreshSnapshot();
+}
+
+// --- dashboard board ---------------------------------------------------------
+
+void Controller::saveDashboardTiles(std::vector<DashTile> tiles) {
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        vault_.setDashboardTiles(std::move(tiles));
+    }
+    refreshSnapshot();
+}
+
+void Controller::addDashboardTile(const std::string& kind, int span) {
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        auto tiles = vault_.dashboardTiles();
+        for (const auto& tile : tiles)
+            if (tile.kind == kind) {
+                toast(Toast::Info, "Already on the dashboard");
+                return;
+            }
+        tiles.push_back({kind, span});
+        vault_.setDashboardTiles(std::move(tiles));
+    }
+    refreshSnapshot();
+    toast(Toast::Success, "Pinned to the dashboard");
+}
+
+void Controller::removeDashboardTile(const std::string& kind) {
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        auto tiles = vault_.dashboardTiles();
+        std::erase_if(tiles, [&](const DashTile& t) { return t.kind == kind; });
+        vault_.setDashboardTiles(std::move(tiles));
+    }
+    refreshSnapshot();
+}
+
+void Controller::moveSchedule(size_t from, size_t to) {
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked() || !vault_.reorderSchedules(from, to)) return;
+    }
+    refreshSnapshot();
+}
+
+void Controller::moveAccount(size_t from, size_t to) {
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked() || !vault_.reorderAccounts(from, to)) return;
+    }
+    // Keep the same account selected after the splice.
+    int selected = state_.selectedAccount;
+    if (selected == static_cast<int>(from)) {
+        state_.selectedAccount = static_cast<int>(to);
+    } else if (selected > static_cast<int>(from) && selected <= static_cast<int>(to)) {
+        state_.selectedAccount = selected - 1;
+    } else if (selected < static_cast<int>(from) && selected >= static_cast<int>(to)) {
+        state_.selectedAccount = selected + 1;
+    }
     refreshSnapshot();
 }
 

@@ -181,6 +181,7 @@ void drawVaultView(AppState& state, Controller& controller) {
     // --- accounts -----------------------------------------------------------
     if (beginCard("accounts")) {
         sectionTitle("Accounts");
+        int acctFrom = -1, acctTo = -1;
         for (size_t i = 0; i < state.vault.accounts.size(); ++i) {
             const AccountRef& account = state.vault.accounts[i];
             ImGui::PushID(static_cast<int>(i));
@@ -194,6 +195,13 @@ void drawVaultView(AppState& state, Controller& controller) {
                 glowLine(ImGui::GetWindowDrawList(), {pos.x - 8, pos.y + 2},
                          {pos.x - 8, pos.y + 20}, col::Cyan, 0.6f, 3.0f);
             }
+            if (int dropped = dragGrip("##accounts", static_cast<int>(i),
+                                       account.display().c_str());
+                dropped >= 0) {
+                acctFrom = dropped;
+                acctTo = static_cast<int>(i);
+            }
+            ImGui::SameLine(0, 6);
             ImGui::PushFont(fonts().mono, kMono);
             ImGui::TextUnformatted(account.display().c_str());
             ImGui::PopFont();
@@ -215,6 +223,9 @@ void drawVaultView(AppState& state, Controller& controller) {
                 controller.removeAccount(account);
             ImGui::PopID();
         }
+        if (acctFrom >= 0 && acctTo >= 0 && acctFrom != acctTo)
+            controller.moveAccount(static_cast<size_t>(acctFrom),
+                                   static_cast<size_t>(acctTo));
         if (state.vault.accounts.empty()) subtext("No accounts linked yet.");
         vspace(8);
 

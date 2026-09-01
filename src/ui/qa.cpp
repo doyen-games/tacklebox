@@ -83,6 +83,13 @@ void injectFixtures(AppState& state) {
     state.prices.usd = {{priceKey("eosio.token", "EOS"), 0.5123},
                         {priceKey("core.vaulta", "A"), 0.5123}};
     state.prices.fetchedAt = now;
+    // A busy board: classic tiles + every pinnable extra + the fixture pins
+    // (their tiles are appended below once the pins exist).
+    v.dashboardTiles = defaultDashboard();
+    v.dashboardTiles.push_back({"ram", 1});
+    v.dashboardTiles.push_back({"chaininfo", 1});
+    v.dashboardTiles.push_back({"prices", 1});
+    v.dashboardTiles.push_back({"schedules", 1});
 
     v.keys = {{"PUB_K1_6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV", "", "main key",
                now - 86400 * 30},
@@ -163,6 +170,7 @@ void injectFixtures(AppState& state) {
     pin.table = "prices";
     pin.fieldPath = "median";
     v.pinnedQueries = {pin};
+    v.dashboardTiles.push_back({"pin:qa-pin-1", 1});
     PinnedData& pinData = state.pinnedData["qa-pin-1"];
     pinData.rows = dwarfkit::json::array({{{"median", "1.2345 USD"}, {"age", 12}}});
     pinData.fetchedAt = now;
@@ -306,6 +314,11 @@ const Step kSteps[] = {
     {"01-unlock", [](AppState& state, Controller& c) { showLocked(state, c); }},
     {"02-setup", [](AppState& s, Controller& c) { showShellPage(s, c, Page::Setup); }},
     {"03-dashboard", [](AppState& s, Controller& c) { showShellPage(s, c, Page::Dashboard); }},
+    {"03b-dashboard-tiles",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Dashboard);
+         g_pageScroll = ::ui::S(820.0f);  // the pinned/extra tiles below the hero
+     }},
     {"04-explore", [](AppState& s, Controller& c) { showShellPage(s, c, Page::Explore); }},
     {"05-transfer", [](AppState& s, Controller& c) { showShellPage(s, c, Page::Transfer); }},
     {"06-assets", [](AppState& s, Controller& c) { showShellPage(s, c, Page::Assets); }},

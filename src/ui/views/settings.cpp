@@ -144,17 +144,33 @@ void drawEndpointPool(AppState& state, Controller& controller, const NetworkDef&
         ::ui::HandOnHover();
         tooltip(enabled ? "Enabled" : "Disabled");
 
-        // Reorder: rewrite every node's priority as the new visual order.
+        // Reorder: drag the grip onto another row, or nudge with the
+        // chevrons; both rewrite every node's priority as the visual order.
         ImGui::TableNextColumn();
-        auto reorder = [&](int delta) {
-            std::vector<size_t> moved = order;
-            size_t target = row + static_cast<size_t>(delta);
-            std::swap(moved[row], moved[target]);
+        auto commitOrder = [&](const std::vector<size_t>& moved) {
             NetworkDef updated = net;
             for (size_t p = 0; p < moved.size(); ++p)
                 updated.list(type).nodes[moved[p]].priority = static_cast<int>(p);
             controller.addNetwork(updated);
         };
+        auto reorder = [&](int delta) {
+            std::vector<size_t> moved = order;
+            size_t target = row + static_cast<size_t>(delta);
+            std::swap(moved[row], moved[target]);
+            commitOrder(moved);
+        };
+        std::string poolList =
+            "##pool" + net.chainId + std::to_string(static_cast<int>(type));
+        int droppedRow = dragGrip(poolList.c_str(), static_cast<int>(row), node.url.c_str());
+        if (droppedRow >= 0 && droppedRow != static_cast<int>(row) &&
+            droppedRow < static_cast<int>(order.size())) {
+            std::vector<size_t> moved = order;
+            size_t item = moved[static_cast<size_t>(droppedRow)];
+            moved.erase(moved.begin() + droppedRow);
+            moved.insert(moved.begin() + static_cast<ptrdiff_t>(row), item);
+            commitOrder(moved);
+        }
+        ImGui::SameLine(0, 2);
         ImGui::BeginDisabled(row == 0);
         if (iconButton("##up", Icon::ChevronUp, "Raise priority", col::Slate, 12.0f))
             reorder(-1);
@@ -447,11 +463,27 @@ void drawNetworks(AppState& state, Controller& controller) {
         }
 
         // Tracked tokens beyond the core symbol (registry fallback when no
-        // light API is set).
-        for (const auto& token : net.tokens) {
+        // light API is set). Drag to reorder; the order drives balance and
+        // picker listings.
+        for (size_t ti = 0; ti < net.tokens.size(); ++ti) {
+            const TokenDef& token = net.tokens[ti];
             ImGui::PushID((token.contract + token.code).c_str());
             ImGui::Dummy({::ui::S(8.0f), 0});
             ImGui::SameLine();
+            std::string tokenList = "##tok" + net.chainId;
+            int droppedTok =
+                dragGrip(tokenList.c_str(), static_cast<int>(ti), token.code.c_str());
+            if (droppedTok >= 0 && droppedTok != static_cast<int>(ti) &&
+                droppedTok < static_cast<int>(net.tokens.size())) {
+                NetworkDef updated = net;
+                TokenDef moved = updated.tokens[static_cast<size_t>(droppedTok)];
+                updated.tokens.erase(updated.tokens.begin() + droppedTok);
+                updated.tokens.insert(updated.tokens.begin() + static_cast<ptrdiff_t>(ti),
+                                      moved);
+                controller.addNetwork(updated);
+            }
+            ImGui::SameLine(0, 6);
+            ImGui::AlignTextToFramePadding();
             monoText(token.code + "  (" + token.contract + ")", col::Steel, kMonoSm);
             ImGui::SameLine();
             if (iconButton("##rmtok", Icon::Trash, "Stop tracking", col::Slate, 12.0f))

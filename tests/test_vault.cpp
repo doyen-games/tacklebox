@@ -221,6 +221,65 @@ TEST_CASE("network json: old vault shapes migrate to endpoint pools") {
     CHECK(dark.rpc.primaryUrl().empty());
 }
 
+TEST_CASE("dashboard board: defaults, pin hooks, reorder, persistence") {
+    resetVaultFile();
+    {
+        Vault vault;
+        REQUIRE(vault.create(pw("board-password")));
+        // Fresh vaults start with the classic layout.
+        REQUIRE(vault.dashboardTiles().size() == defaultDashboard().size());
+        CHECK(vault.dashboardTiles()[0].kind == "balance");
+        CHECK(vault.dashboardTiles()[0].span == 2);
+
+        // Pinning a query adds its tile; removing it drops the tile.
+        PinnedQuery pin;
+        pin.id = "p1";
+        pin.contract = "oracle.acct";
+        pin.table = "prices";
+        vault.upsertPinnedQuery(pin);
+        REQUIRE(vault.dashboardTiles().back().kind == "pin:p1");
+        vault.upsertPinnedQuery(pin);  // idempotent: no duplicate tile
+        int pinTiles = 0;
+        for (const auto& tile : vault.dashboardTiles())
+            if (tile.kind == "pin:p1") ++pinTiles;
+        CHECK(pinTiles == 1);
+
+        // Custom order + extra tiles persist.
+        auto tiles = vault.dashboardTiles();
+        tiles.push_back({"ram", 1});
+        std::swap(tiles.front(), tiles.back());
+        vault.setDashboardTiles(tiles);
+
+        // Reorder helpers for the other draggable lists.
+        vault.addAccount({"c", "alice", "active", "", true});
+        vault.addAccount({"c", "bob", "active", "", true});
+        REQUIRE(vault.reorderAccounts(1, 0));
+        CHECK(vault.accounts()[0].actor == "bob");
+        CHECK_FALSE(vault.reorderAccounts(5, 0));
+
+        Schedule s1, s2;
+        s1.id = "s1";
+        s2.id = "s2";
+        vault.upsertSchedule(s1);
+        vault.upsertSchedule(s2);
+        REQUIRE(vault.reorderSchedules(1, 0));
+        CHECK(vault.schedules()[0].id == "s2");
+
+        REQUIRE(vault.save());
+    }
+    {
+        Vault vault;
+        REQUIRE(vault.unlock(pw("board-password")));
+        REQUIRE_FALSE(vault.dashboardTiles().empty());
+        CHECK(vault.dashboardTiles().front().kind == "ram");  // swapped order kept
+        CHECK(vault.schedules()[0].id == "s2");
+        CHECK(vault.accounts()[0].actor == "bob");
+        // Removing the pin drops its tile.
+        REQUIRE(vault.removePinnedQuery("p1"));
+        for (const auto& tile : vault.dashboardTiles()) CHECK(tile.kind != "pin:p1");
+    }
+}
+
 TEST_CASE("wrong password fails, tampered file fails") {
     resetVaultFile();
     {

@@ -88,6 +88,16 @@ float pairWidth();
 // SameLine on wide layouts, new row on phones.
 void maybeSameLine(float spacing = 12.0f);
 
+// --- drag & drop (reorder with memory) ---------------------------------------
+// A grip handle (three bars) that is both drag source and drop target for
+// list `listId`. `preview` labels the drag ghost. Returns the dragged row's
+// source index when another row is dropped on this handle, else -1. Callers
+// splice (from -> this row's index) and persist.
+int dragGrip(const char* listId, int index, const char* preview);
+// Widen the drop zone: attach a target for `listId` to the last submitted
+// item (a whole card, a row). Returns the dragged source index on drop.
+int acceptDropOnLastItem(const char* listId);
+
 // --- overlays ---------------------------------------------------------------
 void drawToasts(AppState& state);
 

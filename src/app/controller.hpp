@@ -170,6 +170,14 @@ public:
     void removePinnedQuery(const std::string& id);
     void refreshPinnedQueries();  // honors each query's refreshSec; called in tick
 
+    // --- dashboard board (drag & drop with memory) --------------------------
+    void saveDashboardTiles(std::vector<DashTile> tiles);  // whole-board commit
+    void addDashboardTile(const std::string& kind, int span);  // no-op if present
+    void removeDashboardTile(const std::string& kind);
+    // Persisted drag-reorder for the other draggable lists.
+    void moveSchedule(size_t from, size_t to);
+    void moveAccount(size_t from, size_t to);  // keeps the selection pinned
+
     // --- schedules (autopilot) ----------------------------------------------
     void saveSchedule(Schedule schedule);
     void removeSchedule(const std::string& id);

@@ -606,6 +606,48 @@ void tooltip(const char* text) {
     ImGui::PopFont();
 }
 
+
+// --- drag & drop -------------------------------------------------------------
+
+int acceptDropOnLastItem(const char* listId) {
+    int from = -1;
+    if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(listId))
+            from = *static_cast<const int*>(payload->Data);
+        ImGui::EndDragDropTarget();
+    }
+    return from;
+}
+
+int dragGrip(const char* listId, int index, const char* preview) {
+    float h = ImGui::GetFrameHeight() * 0.8f;
+    float w = 18.0f * dpiScale();
+    ImGui::InvisibleButton("##grip", {w, h});
+    ImVec2 min = ImGui::GetItemRectMin();
+    ImVec2 max = ImGui::GetItemRectMax();
+    ImDrawList* dl = ImGui::GetWindowDrawList();
+    ImU32 color = ImGui::IsItemHovered() || ImGui::IsItemActive()
+                      ? col::Cyan
+                      : col::alpha(col::Slate, 0.8f);
+    float cx = (min.x + max.x) * 0.5f, cy = (min.y + max.y) * 0.5f;
+    float half = w * 0.28f;
+    for (int i = -1; i <= 1; ++i)
+        dl->AddLine({cx - half, cy + static_cast<float>(i) * 4.0f * dpiScale()},
+                    {cx + half, cy + static_cast<float>(i) * 4.0f * dpiScale()}, color,
+                    1.4f);
+    ::ui::HandOnHover();
+    tooltip("Drag to reorder");
+
+    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
+        ImGui::SetDragDropPayload(listId, &index, sizeof index);
+        ImGui::PushFont(fonts().uiSemi, kTextSm);
+        ImGui::TextUnformatted(preview && preview[0] ? preview : "Move here...");
+        ImGui::PopFont();
+        ImGui::EndDragDropSource();
+    }
+    return acceptDropOnLastItem(listId);
+}
+
 // --- toasts ------------------------------------------------------------------
 
 void drawToasts(AppState& state) {

@@ -21,6 +21,12 @@ void drawRamTab(AppState& state, Controller& controller) {
     // Market strip.
     if (beginCard("rammarket")) {
         sectionTitle("RAM market");
+        ImGui::SameLine();
+        float pinX = ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x;
+        ImGui::SetCursorPosX(pinX - 26);
+        if (iconButton("##pinram", Icon::Pin, "Pin the RAM market to the dashboard",
+                       col::Slate, 13.0f))
+            controller.addDashboardTile("ram", 1);
         if (rv.ramLoading && rv.ram.fetchedAt == 0) {
             spinner(12.0f);
         } else if (!rv.ramError.empty()) {

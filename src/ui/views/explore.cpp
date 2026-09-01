@@ -117,6 +117,12 @@ void drawOverview(AppState& state, Controller& controller) {
     vspace(12);
     if (beginCard("recentblocks")) {
         sectionTitle("Recent blocks");
+        ImGui::SameLine();
+        float pinX = ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x;
+        ImGui::SetCursorPosX(pinX - 26);
+        if (iconButton("##pinchain", Icon::Pin, "Pin chain status to the dashboard",
+                       col::Slate, 13.0f))
+            controller.addDashboardTile("chaininfo", 1);
         if (ex.recentBlocks.empty() && ex.loadingOverview) spinner(12.0f);
         float rowW = ImGui::GetContentRegionAvail().x;
         for (const auto& block : ex.recentBlocks) {

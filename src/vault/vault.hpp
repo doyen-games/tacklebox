@@ -162,6 +162,18 @@ struct SecurityPrefs {
     bool bgPriceRefresh = true;    // price oracle refetch on its TTL
 };
 
+// One tile on the customizable dashboard board. `kind` identifies the
+// content ("balance", "resources", "guard", "activity", "ram", "chaininfo",
+// "prices", "schedules", or "pin:<pinned query id>"); order in the vector is
+// the layout order and span is 1 (half row) or 2 (full row).
+struct DashTile {
+    std::string kind;
+    int span = 1;
+};
+
+// The out-of-the-box board: what the fixed dashboard used to show.
+std::vector<DashTile> defaultDashboard();
+
 // A saved table query rendered on the dashboard.
 struct PinnedQuery {
     std::string id;
@@ -289,8 +301,15 @@ public:
 
     // --- pinned queries ----------------------------------------------------
     const std::vector<PinnedQuery>& pinnedQueries() const { return pinned_; }
-    void upsertPinnedQuery(const PinnedQuery& query);
-    bool removePinnedQuery(const std::string& id);
+    void upsertPinnedQuery(const PinnedQuery& query);  // also adds its tile
+    bool removePinnedQuery(const std::string& id);     // also drops its tile
+
+    // --- dashboard board ----------------------------------------------------
+    const std::vector<DashTile>& dashboardTiles() const { return dashboard_; }
+    void setDashboardTiles(std::vector<DashTile> tiles);  // whole-board commit
+    // Reorder helpers for drag & drop lists; each saves on success.
+    bool reorderSchedules(size_t from, size_t to);
+    bool reorderAccounts(size_t from, size_t to);
 
     // --- schedules -----------------------------------------------------------
     const std::vector<Schedule>& schedules() const { return schedules_; }
@@ -342,6 +361,7 @@ private:
     std::vector<AuditEntry> audit_;
     std::vector<PinnedQuery> pinned_;
     std::vector<Schedule> schedules_;
+    std::vector<DashTile> dashboard_ = defaultDashboard();
     std::vector<LinkSession> links_;
     std::string lastAccount_;
     std::string lastChain_;

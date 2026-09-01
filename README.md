@@ -98,8 +98,18 @@ bottom tab bar + sheet modals on phones - try them anywhere with
   medians read on-chain through your own RPC pool), or off. The dashboard
   shows the core position's value, per-token prices and a portfolio total.
   Strictly display-only: no signing, whitelist or risk decision reads a price.
+- **Customizable dashboard board** - the dashboard is a grid of tiles you
+  drag into whatever order you like (grip handle or drop anywhere on a
+  card); layout persists in the vault. Unpin what you don't need, re-add
+  from the ADD TILE palette (balance, resources, guard, activity, RAM
+  market, chain status, prices, autopilot next-runs), or pin sections from
+  their home pages - the RAM market and chain status carry pin buttons, and
+  every pinned contract query becomes a tile. Drag-to-reorder with memory
+  runs through the rest of the app too: endpoint pools, tracked tokens,
+  autopilot schedules and vault accounts all rearrange by grip and keep
+  their order.
 - **Pinned queries** - pin any contract table query (or a single field of it)
-  to the dashboard as a live card.
+  to the dashboard as a live tile.
 - **Fuel-style cosigning** - optional resource-provider plugin so low-CPU
   accounts still transact; quoted fees surface as declinable prompts.
 - **Portable vault** - export/import the sealed `.tbx` vault file between

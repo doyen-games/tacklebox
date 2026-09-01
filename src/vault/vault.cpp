@@ -257,6 +257,10 @@ json Vault::serializePayload() const {
                          {"verdict", e.verdict},
                          {"approved", e.approved}});
 
+    json dashboard = json::array();
+    for (const auto& tile : dashboard_)
+        dashboard.push_back({{"kind", tile.kind}, {"span", tile.span}});
+
     return json{{"keys", keys},
                 {"accounts", accounts},
                 {"networks", networks},
@@ -264,6 +268,7 @@ json Vault::serializePayload() const {
                 {"audit", audit},
                 {"pinned", pins},
                 {"schedules", schedules},
+                {"dashboard", dashboard},
                 {"links", links},
                 {"lastAccount", lastAccount_},
                 {"lastChain", lastChain_},
@@ -318,6 +323,21 @@ Result<void> Vault::parsePayload(const json& p) {
         pin.fieldPath = pj.value("fieldPath", "");
         pin.refreshSec = pj.value("refreshSec", 60);
         if (!pin.id.empty() && !pin.contract.empty()) pinned_.push_back(std::move(pin));
+    }
+
+    if (p.contains("dashboard") && p["dashboard"].is_array()) {
+        dashboard_.clear();
+        for (const auto& t : p["dashboard"]) {
+            DashTile tile;
+            tile.kind = t.value("kind", "");
+            tile.span = t.value("span", 1);
+            if (tile.span < 1 || tile.span > 2) tile.span = 1;
+            if (!tile.kind.empty()) dashboard_.push_back(std::move(tile));
+        }
+    } else {
+        // Pre-board vaults: the classic layout plus a tile per existing pin.
+        dashboard_ = defaultDashboard();
+        for (const auto& pin : pinned_) dashboard_.push_back({"pin:" + pin.id, 1});
     }
 
     for (const auto& sj : p.value("schedules", json::array())) {
@@ -685,13 +705,18 @@ void Vault::appendAudit(AuditEntry entry) {
 // --- pinned queries ----------------------------------------------------------
 
 void Vault::upsertPinnedQuery(const PinnedQuery& query) {
+    bool existed = false;
     for (auto& existing : pinned_)
         if (existing.id == query.id) {
             existing = query;
-            (void)save();
-            return;
+            existed = true;
         }
-    pinned_.push_back(query);
+    if (!existed) pinned_.push_back(query);
+    // Every pin lives on the board as its own tile.
+    std::string kind = "pin:" + query.id;
+    bool present = false;
+    for (const auto& tile : dashboard_) present |= tile.kind == kind;
+    if (!present) dashboard_.push_back({kind, 1});
     (void)save();
 }
 
@@ -700,6 +725,34 @@ bool Vault::removePinnedQuery(const std::string& id) {
                              [&](const PinnedQuery& q) { return q.id == id; });
     if (it == pinned_.end()) return false;
     pinned_.erase(it, pinned_.end());
+    std::erase_if(dashboard_, [&](const DashTile& t) { return t.kind == "pin:" + id; });
+    return bool(save());
+}
+
+// --- dashboard board ---------------------------------------------------------
+
+std::vector<DashTile> defaultDashboard() {
+    return {{"balance", 2}, {"resources", 1}, {"guard", 1}, {"activity", 2}};
+}
+
+void Vault::setDashboardTiles(std::vector<DashTile> tiles) {
+    dashboard_ = std::move(tiles);
+    (void)save();
+}
+
+bool Vault::reorderSchedules(size_t from, size_t to) {
+    if (from >= schedules_.size() || to >= schedules_.size() || from == to) return false;
+    Schedule moved = std::move(schedules_[from]);
+    schedules_.erase(schedules_.begin() + static_cast<ptrdiff_t>(from));
+    schedules_.insert(schedules_.begin() + static_cast<ptrdiff_t>(to), std::move(moved));
+    return bool(save());
+}
+
+bool Vault::reorderAccounts(size_t from, size_t to) {
+    if (from >= accounts_.size() || to >= accounts_.size() || from == to) return false;
+    AccountRef moved = accounts_[from];
+    accounts_.erase(accounts_.begin() + static_cast<ptrdiff_t>(from));
+    accounts_.insert(accounts_.begin() + static_cast<ptrdiff_t>(to), moved);
     return bool(save());
 }
 
