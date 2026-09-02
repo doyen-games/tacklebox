@@ -14,12 +14,15 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 
+#include <imgui_internal.h>  // openCombo: force combo popups for the tour
+
 #include "app/controller.hpp"
 #include "app/state.hpp"
 #include "chain/netreg.hpp"
 #include "chain/prices.hpp"
 #include "core/log.hpp"
 #include "core/util.hpp"
+#include "ui/app_ui.hpp"
 #include "ui/layout.hpp"
 #include "ui/ui_helpers.h"
 
@@ -31,6 +34,8 @@ std::string g_dir;
 bool g_active = false;
 int g_stepIndex = -1;
 float g_pageScroll = -1.0f;  // set by steps in enter(); shell applies it
+std::string g_forceOpenTag;  // interaction surface the step wants open
+bool g_forceOpenUsed = false;  // one caller per frame
 int g_framesLeft = 0;
 bool g_captureDue = false;
 std::string g_pendingName;
@@ -367,6 +372,71 @@ const Step kSteps[] = {
          s.update.checkedAt = nowSec();
          g_pageScroll = ::ui::S(99999.0f);  // clamps to the page bottom
      }},
+    // Interaction steps: surfaces invisible until clicked, opened for the
+    // same padding/spacing/design pass as everything else.
+    {"20-chain-menu",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Dashboard);
+         g_forceOpenTag = "chain-menu";
+     }},
+    {"21-account-menu",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Dashboard);
+         // Pinned sections show in the switcher: group the fixture accounts.
+         if (!s.vault.accountGroups.empty() || s.vault.accounts.empty()) {
+         } else {
+             s.vault.accountGroups = {"Daily drivers", "Cold storage"};
+             s.vault.accounts[0].group = "Daily drivers";
+         }
+         g_forceOpenTag = "account-menu";
+     }},
+    {"22-rule-editor",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Whitelist);
+         guard::WhitelistRule draft;
+         draft.chainId = s.vault.networks.empty() ? "*" : s.vault.networks[0].chainId;
+         draft.signer = "seafarer.gm@active";
+         draft.contract = "eosio.token";
+         draft.action = "transfer";
+         guard::ParamConstraint to;
+         to.kind = guard::ConstraintKind::Exact;
+         to.values = {dwarfkit::json("coldwallet.x")};
+         guard::ParamConstraint quantity;
+         quantity.kind = guard::ConstraintKind::Range;
+         quantity.max = dwarfkit::json("100.0000 EOS");
+         draft.params = {{"to", to}, {"quantity", quantity}};
+         draft.note = "weekly stack to cold storage";
+         tb::ui::openRuleEditor(draft);
+     }},
+    {"23-add-tile",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Dashboard);
+         // Leave something addable so the palette shows real entries.
+         std::erase_if(s.vault.dashboardTiles,
+                       [](const DashTile& t) { return t.kind == "prices"; });
+         g_forceOpenTag = "add-tile";
+         g_pageScroll = ::ui::S(99999.0f);  // palette button sits at the bottom
+     }},
+    {"24-endpoint-mode-combo",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Settings);
+         g_forceOpenTag = "pool-mode";
+     }},
+    {"25-token-combo",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Transfer);
+         g_forceOpenTag = "token-combo";
+     }},
+    {"26-vault-groups",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Vault);
+         // Seed pinned sections so the groups manager renders its design pass.
+         if (s.vault.accountGroups.empty() && !s.vault.accounts.empty()) {
+             s.vault.accountGroups = {"Daily drivers", "Cold storage"};
+             s.vault.accounts[0].group = "Daily drivers";
+         }
+         g_pageScroll = ::ui::S(99999.0f);  // manager sits below the accounts
+     }},
 };
 constexpr int kStepCount = static_cast<int>(sizeof(kSteps) / sizeof(kSteps[0]));
 constexpr int kSettleFrames = 6;
@@ -384,7 +454,23 @@ bool active() { return g_active; }
 
 float pageScrollY() { return g_pageScroll; }
 
+bool forceOpen(const char* tag) {
+    if (!g_active || g_forceOpenUsed || g_forceOpenTag != tag) return false;
+    g_forceOpenUsed = true;
+    return true;
+}
+
+void openCombo(const char* label) {
+    // BeginCombo's popup id, per imgui internals; must run in the same ID
+    // stack position as the upcoming BeginCombo call.
+    ImGuiID id = ImGui::GetCurrentWindow()->GetID(label);
+    ImGuiID popupId = ImHashStr("##ComboPopup", 0, id);
+    if (!ImGui::IsPopupOpen(popupId, ImGuiPopupFlags_None))
+        ImGui::OpenPopupEx(popupId, ImGuiPopupFlags_None);
+}
+
 bool beforeFrame(AppState& state, Controller& controller) {
+    g_forceOpenUsed = false;
     if (!g_active) return true;
     if (g_framesLeft > 0) {
         --g_framesLeft;
@@ -395,6 +481,7 @@ bool beforeFrame(AppState& state, Controller& controller) {
     ++g_stepIndex;
     if (g_stepIndex >= kStepCount) return false;  // tour complete: quit
     g_pageScroll = -1.0f;  // steps opt back in from enter()
+    g_forceOpenTag.clear();
     const Step& step = kSteps[g_stepIndex];
     step.enter(state, controller);
     g_pendingName = factorTag() + "-" + step.name;

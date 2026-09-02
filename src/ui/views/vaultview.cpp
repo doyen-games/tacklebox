@@ -1,10 +1,13 @@
 // Vault page: keys and accounts. Import/generate/reveal/remove keys, link
 // accounts to networks, watch-only accounts.
+#include <array>
 #include <cstring>
+#include <map>
 
 #include "core/util.hpp"
 #include "ui/app_ui.hpp"
 #include "ui/layout.hpp"
+#include "ui/ui_helpers.h"
 #include "ui/widgets.hpp"
 
 namespace tb::ui {
@@ -291,9 +294,44 @@ void drawVaultView(AppState& state, Controller& controller) {
                 ImGui::SameLine(0, 4);
                 badge("WATCH", col::Warn);
             }
+            if (!account.group.empty()) {
+                ImGui::SameLine(0, 4);
+                badge(account.group.c_str(), col::Violet);
+            }
             ImGui::SameLine();
             float endX = ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x;
-            ImGui::SetCursorPosX(endX - 66);
+            ImGui::SetCursorPosX(endX - 100);
+            ImGui::SetNextItemWidth(28);
+            if (ImGui::BeginCombo("##grouppick", "", ImGuiComboFlags_NoPreview)) {
+                if (ImGui::Selectable("ungrouped", account.group.empty()))
+                    controller.setAccountGroup(account.key(), "");
+                for (const auto& group : state.vault.accountGroups) {
+                    ImGui::PushID(group.c_str());
+                    if (ImGui::Selectable(group.c_str(), account.group == group))
+                        controller.setAccountGroup(account.key(), group);
+                    ::ui::HandOnHover();
+                    ImGui::PopID();
+                }
+                ImGui::Separator();
+                static char newGroupBuf[24] = {};
+                ImGui::SetNextItemWidth(120);
+                bool commit = ImGui::InputTextWithHint("##newgroup", "new group...",
+                                                       newGroupBuf, sizeof newGroupBuf,
+                                                       ImGuiInputTextFlags_EnterReturnsTrue);
+                ImGui::SameLine(0, 4);
+                if ((iconButton("##mkgroup", Icon::Plus, "Create group and pin here",
+                                col::CyanDim, 12.0f) ||
+                     commit) &&
+                    newGroupBuf[0]) {
+                    controller.setAccountGroup(account.key(), trim(newGroupBuf));
+                    newGroupBuf[0] = 0;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndCombo();
+            }
+            ::ui::HandOnHover();
+            tooltip("Pin this wallet to a named section of the account selector");
+            ImGui::SameLine(0, 2);
             if (!selected && neonButton("USE", BtnKind::Subtle, {36, 26}))
                 controller.selectAccount(static_cast<int>(i));
             if (selected) ImGui::Dummy({36, 26});
@@ -306,6 +344,53 @@ void drawVaultView(AppState& state, Controller& controller) {
             controller.moveAccount(static_cast<size_t>(acctFrom),
                                    static_cast<size_t>(acctTo));
         if (state.vault.accounts.empty()) subtext("No accounts linked yet.");
+
+        // Pinned sections: rename inline, drag to reorder, delete to ungroup.
+        if (!state.vault.accountGroups.empty()) {
+            vspace(8);
+            sectionTitle("Pinned sections");
+            subtext("Named groups in the account selector. Pin wallets to them with "
+                    "the pin picker on each account row.");
+            int groupFrom = -1, groupTo = -1;
+            for (size_t gi = 0; gi < state.vault.accountGroups.size(); ++gi) {
+                const std::string& group = state.vault.accountGroups[gi];
+                ImGui::PushID(group.c_str());
+                if (int dropped =
+                        dragGrip("##acctgroups", static_cast<int>(gi), group.c_str());
+                    dropped >= 0) {
+                    groupFrom = dropped;
+                    groupTo = static_cast<int>(gi);
+                }
+                ImGui::SameLine(0, 6);
+                static std::map<std::string, std::array<char, 24>> renameBufs;
+                auto& buf = renameBufs[group];
+                if (!ImGui::IsAnyItemActive())
+                    std::snprintf(buf.data(), buf.size(), "%s", group.c_str());
+                ImGui::SetNextItemWidth(160);
+                ImGui::InputText("##rename", buf.data(), buf.size());
+                if (ImGui::IsItemDeactivatedAfterEdit() && trim(buf.data()) != group)
+                    controller.renameAccountGroup(group, trim(buf.data()));
+                ImGui::SameLine(0, 6);
+                int members = 0;
+                for (const auto& account : state.vault.accounts)
+                    if (account.group == group) ++members;
+                ImGui::AlignTextToFramePadding();
+                ImGui::PushFont(fonts().ui, kTextSm);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
+                ImGui::Text("%d wallet%s", members, members == 1 ? "" : "s");
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+                ImGui::SameLine(0, 8);
+                if (iconButton("##rmgroup", Icon::Trash,
+                               "Remove section (wallets become ungrouped)", col::Slate,
+                               12.0f))
+                    controller.removeAccountGroup(group);
+                ImGui::PopID();
+            }
+            if (groupFrom >= 0 && groupTo >= 0 && groupFrom != groupTo)
+                controller.moveAccountGroup(static_cast<size_t>(groupFrom),
+                                            static_cast<size_t>(groupTo));
+        }
         vspace(8);
 
         static char actorBuf[16] = {};

@@ -231,7 +231,8 @@ json Vault::serializePayload() const {
                             {"actor", a.actor},
                             {"permission", a.permission},
                             {"pub", a.pubKey},
-                            {"watch", a.watch}});
+                            {"watch", a.watch},
+                            {"group", a.group}});
 
     json networks = json::array();
     for (const auto& n : networks_) networks.push_back(networkToJson(n));
@@ -309,6 +310,7 @@ json Vault::serializePayload() const {
                 {"schedules", schedules},
                 {"dashboard", dashboard},
                 {"contacts", contacts},
+                {"accountGroups", accountGroups_},
                 {"lastBackupAt", lastBackupAt_},
                 {"links", links},
                 {"lastAccount", lastAccount_},
@@ -347,8 +349,16 @@ Result<void> Vault::parsePayload(const json& p) {
 
     for (const auto& a : p.value("accounts", json::array()))
         accounts_.push_back({a.value("chain", ""), a.value("actor", ""),
-                             a.value("permission", "active"), a.value("pub", ""),
-                             a.value("watch", false)});
+                             a.value("permission", ""), a.value("pub", ""),
+                             a.value("watch", false), a.value("group", "")});
+    for (const auto& g : p.value("accountGroups", json::array()))
+        if (g.is_string()) accountGroups_.push_back(g.get<std::string>());
+    // Consistency: any group referenced by an account exists in the list.
+    for (const auto& a : accounts_)
+        if (!a.group.empty() &&
+            std::find(accountGroups_.begin(), accountGroups_.end(), a.group) ==
+                accountGroups_.end())
+            accountGroups_.push_back(a.group);
 
     {
         std::set<std::string> seenChains;  // heal any historical duplicates
@@ -781,6 +791,51 @@ bool Vault::markKeyBackedUp(const std::string& pub) {
             return bool(save());
         }
     return false;
+}
+
+void Vault::setAccountGroup(const std::string& accountKey, const std::string& group) {
+    for (auto& account : accounts_)
+        if (account.key() == accountKey) {
+            account.group = group;
+            if (!group.empty() &&
+                std::find(accountGroups_.begin(), accountGroups_.end(), group) ==
+                    accountGroups_.end())
+                accountGroups_.push_back(group);
+            (void)save();
+            return;
+        }
+}
+
+bool Vault::renameAccountGroup(const std::string& from, const std::string& to) {
+    if (to.empty() || from == to) return false;
+    auto it = std::find(accountGroups_.begin(), accountGroups_.end(), from);
+    if (it == accountGroups_.end()) return false;
+    if (std::find(accountGroups_.begin(), accountGroups_.end(), to) !=
+        accountGroups_.end())
+        return false;  // no silent merges
+    *it = to;
+    for (auto& account : accounts_)
+        if (account.group == from) account.group = to;
+    return bool(save());
+}
+
+bool Vault::removeAccountGroup(const std::string& name) {
+    auto it = std::find(accountGroups_.begin(), accountGroups_.end(), name);
+    if (it == accountGroups_.end()) return false;
+    accountGroups_.erase(it);
+    for (auto& account : accounts_)
+        if (account.group == name) account.group.clear();
+    return bool(save());
+}
+
+bool Vault::reorderAccountGroups(size_t from, size_t to) {
+    if (from >= accountGroups_.size() || to >= accountGroups_.size() || from == to)
+        return false;
+    std::string moved = std::move(accountGroups_[from]);
+    accountGroups_.erase(accountGroups_.begin() + static_cast<ptrdiff_t>(from));
+    accountGroups_.insert(accountGroups_.begin() + static_cast<ptrdiff_t>(to),
+                          std::move(moved));
+    return bool(save());
 }
 
 void Vault::upsertContact(const Contact& contact) {

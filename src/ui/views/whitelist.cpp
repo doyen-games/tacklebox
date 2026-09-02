@@ -6,6 +6,7 @@
 #include "core/util.hpp"
 #include "ui/app_ui.hpp"
 #include "ui/layout.hpp"
+#include "ui/ui_helpers.h"
 #include "ui/widgets.hpp"
 
 namespace tb::ui {
@@ -34,6 +35,8 @@ struct EditorState {
     bool pin = true;
     bool autoSign = false;
     char note[160] = {};
+    bool saving = false;     // async save in flight; modal stays open
+    std::string error;       // last save failure, shown inline
 };
 
 EditorState editor;
@@ -169,34 +172,108 @@ guard::WhitelistRule editorToRule(const AppState& state) {
 }
 
 void drawEditor(AppState& state, Controller& controller) {
-    if (!editor.open) return;
-    ImGui::OpenPopup("Rule editor");
+    static bool popupLive = false;
+    if (editor.open && !popupLive) {
+        ImGui::OpenPopup("Rule editor");
+        popupLive = true;
+    }
+    if (!popupLive) return;
     if (beginAdaptiveModal("Rule editor", 640.0f)) {
+        if (!editor.open) {
+            // Closed by the async save (or CANCEL) - dismiss on this frame.
+            popupLive = false;
+            ImGui::CloseCurrentPopup();
+            endAdaptiveModal();
+            return;
+        }
         heading(editor.isNew ? "New whitelist rule" : "Edit whitelist rule", 24.0f);
         subtext("The rule fast-tracks exactly what it describes; everything else still "
                 "stops for review.");
         vspace(8);
+        // The form scrolls inside a bounded child so the save/cancel row can
+        // never fall off a short window.
+        float footerReserve = ImGui::GetFrameHeight() * 2.4f + 60.0f;
+        float bodyCap = ImGui::GetMainViewport()->WorkSize.y * 0.9f - footerReserve -
+                        ImGui::GetCursorPosY();
+        if (bodyCap < 160.0f) bodyCap = 160.0f;
+        ImGui::SetNextWindowSizeConstraints({0, 0}, {FLT_MAX, bodyCap});
+        ImGui::BeginChild("##rulebody", {0, 0},
+                          ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_NavFlattened);
 
-        // Identity row: chain + signer.
+        // Identity row: combo-first (nobody types 64 hex characters), with a
+        // custom option that reveals the raw field for patterns.
         float half = (ImGui::GetContentRegionAvail().x - 10) * 0.5f;
-        ImGui::BeginGroup();
-        {
-            FieldOpts opts;
-            opts.mono = true;
-            opts.width = half;
-            opts.hint = "chain id hex, or * for any";
-            textField("Chain", editor.chain, sizeof editor.chain, opts);
-        }
-        ImGui::EndGroup();
+        auto identityCombo = [&](const char* label, char* buf, size_t bufSize,
+                                 bool chain) {
+            std::string current = trim(buf);
+            std::string preview;
+            bool known = false;
+            if (current.empty() || current == "*" || current == "*@*") {
+                preview = chain ? "any chain (*)" : "any signer (*@*)";
+                known = true;
+            } else if (chain) {
+                for (const auto& net : state.vault.networks)
+                    if (net.chainId == current) {
+                        preview = net.name;
+                        known = true;
+                    }
+            } else {
+                for (const auto& account : state.vault.accounts)
+                    if (account.display() == current) {
+                        preview = current;
+                        known = true;
+                    }
+            }
+            if (!known) preview = current;  // custom pattern shows verbatim
+
+            ImGui::BeginGroup();
+            ImGui::PushFont(fonts().uiSemi, kTextSm);
+            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+            ImGui::TextUnformatted(label);
+            ImGui::PopStyleColor();
+            ImGui::PopFont();
+            ImGui::SetNextItemWidth(half);
+            if (ImGui::BeginCombo((std::string("##pick") + label).c_str(),
+                                  preview.c_str())) {
+                if (ImGui::Selectable(chain ? "any chain (*)" : "any signer (*@*)"))
+                    std::snprintf(buf, bufSize, "%s", chain ? "*" : "*@*");
+                if (chain) {
+                    for (const auto& net : state.vault.networks) {
+                        ImGui::PushID(net.chainId.c_str());
+                        if (ImGui::Selectable(net.name.c_str(), net.chainId == current))
+                            std::snprintf(buf, bufSize, "%s", net.chainId.c_str());
+                        ::ui::HandOnHover();
+                        ImGui::PopID();
+                    }
+                } else {
+                    for (const auto& account : state.vault.accounts) {
+                        ImGui::PushID(account.key().c_str());
+                        if (ImGui::Selectable(account.display().c_str(),
+                                              account.display() == current))
+                            std::snprintf(buf, bufSize, "%s",
+                                          account.display().c_str());
+                        ::ui::HandOnHover();
+                        ImGui::PopID();
+                    }
+                }
+                ImGui::EndCombo();
+            }
+            ::ui::HandOnHover();
+            // Custom patterns stay editable underneath.
+            ImGui::SetNextItemWidth(half);
+            ImGui::PushFont(fonts().mono, kMonoSm);
+            ImGui::InputTextWithHint((std::string("##raw") + label).c_str(),
+                                     chain ? "or raw chain id / *"
+                                           : "or actor@permission pattern",
+                                     buf, bufSize);
+            ImGui::PopFont();
+            ImGui::EndGroup();
+        };
+        identityCombo("Chain", editor.chain, sizeof editor.chain, true);
         ImGui::SameLine(0, 10);
-        ImGui::BeginGroup();
-        {
-            FieldOpts opts;
-            opts.mono = true;
-            opts.width = half;
-            opts.hint = "actor@permission, * on either side";
-            textField("Signer", editor.signer, sizeof editor.signer, opts);
-        }
+        identityCombo("Signer", editor.signer, sizeof editor.signer, false);
+        vspace(4);
+
         ImGui::EndGroup();
 
         ImGui::BeginGroup();
@@ -231,7 +308,7 @@ void drawEditor(AppState& state, Controller& controller) {
             ImGui::InputTextWithHint("##path", "field.path", row.path, sizeof row.path);
             ImGui::PopFont();
             ImGui::SameLine(0, 6);
-            ImGui::SetNextItemWidth(90);
+            ImGui::SetNextItemWidth(118);
             ImGui::Combo("##kind", &row.kind, kindNames, 4);
             ImGui::SameLine(0, 6);
             ImGui::PushFont(fonts().mono, kMonoSm);
@@ -290,20 +367,62 @@ void drawEditor(AppState& state, Controller& controller) {
         }
         vspace(10);
 
-        bool valid = trim(editor.contract).size() > 0;
-        if (state.busyRule) {
+        ImGui::EndChild();
+        vspace(6);
+
+        // Pinning needs a chain the wallet can actually query.
+        std::string chainTrim = trim(editor.chain);
+        bool wildcardChain = chainTrim.empty() || chainTrim == "*";
+        bool chainKnown = false;
+        for (const auto& net : state.vault.networks)
+            if (net.chainId == chainTrim) chainKnown = true;
+        bool pinBlocked = editor.pin && (wildcardChain || !chainKnown);
+        if (pinBlocked) {
+            ImGui::PushFont(fonts().ui, kTextSm);
+            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Warn));
+            ImGui::TextWrapped(wildcardChain
+                                   ? "Pinning fetches the contract's live hashes, so it "
+                                     "needs a specific chain - pick one above, or turn "
+                                     "the pin off for a wildcard-chain rule."
+                                   : "No configured network matches this chain id, so "
+                                     "the pin cannot be verified. Pick a network above.");
+            ImGui::PopStyleColor();
+            ImGui::PopFont();
+            vspace(4);
+        }
+        if (!editor.error.empty()) {
+            ImGui::PushFont(fonts().ui, kTextSm);
+            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Danger));
+            ImGui::TextWrapped("%s", editor.error.c_str());
+            ImGui::PopStyleColor();
+            ImGui::PopFont();
+            vspace(4);
+        }
+
+        bool valid = trim(editor.contract).size() > 0 && !pinBlocked;
+        if (editor.saving) {
             spinner(13.0f);
+            ImGui::SameLine(0, 8);
+            subtext(editor.pin ? "Fetching contract hashes and saving..." : "Saving...");
         } else {
             if (neonButton(editor.pin ? "SAVE & PIN" : "SAVE", BtnKind::Primary, {160, 42},
                            !valid)) {
-                controller.saveRule(editorToRule(state), editor.pin);
-                editor.open = false;
-                ImGui::CloseCurrentPopup();
+                editor.saving = true;
+                editor.error.clear();
+                // The modal stays open: on failure the draft survives and the
+                // error shows inline; only success closes it.
+                controller.saveRule(editorToRule(state), editor.pin,
+                                    [](bool ok, std::string error) {
+                                        editor.saving = false;
+                                        if (ok)
+                                            editor.open = false;
+                                        else
+                                            editor.error = std::move(error);
+                                    });
             }
             ImGui::SameLine(0, 8);
             if (neonButton("CANCEL", BtnKind::Ghost, {110, 42})) {
                 editor.open = false;
-                ImGui::CloseCurrentPopup();
             }
         }
         endAdaptiveModal();
@@ -330,7 +449,11 @@ void drawWhitelist(AppState& state, Controller& controller) {
         guard::WhitelistRule blank;
         blank.id.clear();
         const AccountRef* account = state.currentAccount();
-        blank.chainId = account ? account->chainId : "*";
+        // Prefer something concrete: pinning (the default) needs a real
+        // chain, and chain-first navigation almost always has one selected.
+        blank.chainId = account            ? account->chainId
+                        : !state.selectedChainId.empty() ? state.selectedChainId
+                                                         : "*";
         blank.signer = account ? account->display() : "*@*";
         loadEditorFromRule(blank, true);
         editor.ruleId.clear();

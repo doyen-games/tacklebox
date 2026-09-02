@@ -52,6 +52,14 @@
   `--tablet`), READ the affected pages' PNGs, fix padding/spacing/centering/
   overflow findings, regenerate, verify. New pages must be added to the tour
   in src/ui/qa.cpp (kSteps + fixtures) in the same change.
+* QA must exercise surfaces that are invisible until interacted with -
+  dropdowns, popup menus, modals, palettes. A step opens one with
+  `qa::forceOpen("tag")` at the trigger site (dropdown/menu OpenPopup) or
+  `qa::openCombo("##id")` right before a `BeginCombo`, then names the tag in
+  the step's enter(). Any new dropdown/combo/popup gets a QA step in the same
+  change. Force-opened popups need an explicit `SetNextWindowPos` (no hovered
+  trigger to anchor to), and steps that do not set a scroll offset start at
+  the top (the routed-page child otherwise keeps the prior step's scroll).
 
 ## 6. Iteration protocol
 

@@ -21,6 +21,14 @@ bool active();
 // Page scroll the active step wants (applied by the shell every frame while
 // the step settles); negative = leave the page at the top.
 float pageScrollY();
+// Interaction hooks: surfaces that are invisible until clicked (dropdowns,
+// menus, palettes) check these so the tour can screenshot them open.
+// forceOpen(tag) is true while the active step requests `tag` (one caller
+// per frame wins, so a tag shared by several widgets opens only the first).
+bool forceOpen(const char* tag);
+// Force the next combo with this label open (call right before BeginCombo,
+// same ID stack). QA-only; uses imgui internals.
+void openCombo(const char* label);
 
 // Before NewFrame: advance the tour (inject fixtures, flip pages).
 // Returns false when the tour is finished and the app should quit.

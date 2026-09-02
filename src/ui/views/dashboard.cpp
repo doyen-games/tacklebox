@@ -13,6 +13,7 @@
 #include "ui/app_ui.hpp"
 #include "ui/fx.hpp"
 #include "ui/layout.hpp"
+#include "ui/qa.hpp"
 #include "ui/ui_helpers.h"
 #include "ui/widgets.hpp"
 
@@ -605,7 +606,11 @@ void drawDashboard(AppState& state, Controller& controller) {
     }
 
     // --- palette ------------------------------------------------------------
-    if (neonButton("ADD TILE +", BtnKind::Ghost, {130, 34})) ImGui::OpenPopup("##addtile");
+    bool addClicked = neonButton("ADD TILE +", BtnKind::Ghost, {130, 34});
+    // Anchor the palette just below the button (its own screen rect), so it
+    // opens in the right place whether clicked or force-opened by the tour.
+    ImGui::SetNextWindowPos({ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y + 4});
+    if (addClicked || qa::forceOpen("add-tile")) ImGui::OpenPopup("##addtile");
     if (ImGui::BeginPopup("##addtile")) {
         bool anyMissing = false;
         for (const auto& info : kTileCatalog) {

@@ -4,6 +4,7 @@
 #include "guard/rules.hpp"
 #include "ui/app_ui.hpp"
 #include "ui/layout.hpp"
+#include "ui/qa.hpp"
 #include "ui/ui_helpers.h"
 #include "ui/widgets.hpp"
 
@@ -54,6 +55,7 @@ void drawTransfer(AppState& state, Controller& controller) {
                 ImGui::PopStyleColor();
                 ImGui::PopFont();
                 ImGui::SetNextItemWidth(280);
+                if (qa::forceOpen("token-combo")) qa::openCombo("##tokenpick");
                 if (ImGui::BeginCombo("##tokenpick", balance.c_str())) {
                     for (int i = 0; i < static_cast<int>(data.snap.balances.size()); ++i) {
                         const BalanceView& option =

@@ -54,6 +54,7 @@ struct VaultSnapshot {
     std::vector<LinkSession> linkSessions;  // requestKeyWif blanked
     std::vector<DashTile> dashboardTiles;   // board layout, in order
     std::vector<Contact> contacts;          // address book
+    std::vector<std::string> accountGroups; // pinned wallet sections, in order
     int64_t lastBackupAt = 0;               // last vault export
     uint64_t version = 0;
 };

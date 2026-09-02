@@ -56,8 +56,12 @@ struct AccountRef {
     std::string permission;  // usually "active"
     std::string pubKey;      // which vault key authorizes it; empty for watch
     bool watch = false;      // watch-only: visible, cannot sign
+    // Named section this wallet is pinned to in the account selector
+    // ("" = ungrouped). Group names + order live in accountGroups().
+    std::string group;
 
     std::string display() const { return actor + "@" + permission; }
+    std::string key() const { return chainId + "|" + actor + "|" + permission; }
 };
 
 // A non-core token the wallet tracks on a network.
@@ -324,6 +328,15 @@ public:
     void stampBackup();                        // set now + save (vault export)
     bool markKeyBackedUp(const std::string& pub);  // reveal-flow confirmation
 
+    // --- account groups (pinned wallet sections) -----------------------------
+    const std::vector<std::string>& accountGroups() const { return accountGroups_; }
+    // Assign (creating the group on first use) or clear ("") an account's
+    // group; keyed by chain|actor|permission.
+    void setAccountGroup(const std::string& accountKey, const std::string& group);
+    bool renameAccountGroup(const std::string& from, const std::string& to);
+    bool removeAccountGroup(const std::string& name);  // members become ungrouped
+    bool reorderAccountGroups(size_t from, size_t to);
+
     // --- contacts (address book) --------------------------------------------
     const std::vector<Contact>& contacts() const { return contacts_; }
     void upsertContact(const Contact& contact);  // keyed by actor+chainId
@@ -393,6 +406,7 @@ private:
     std::vector<Schedule> schedules_;
     std::vector<DashTile> dashboard_ = defaultDashboard();
     std::vector<Contact> contacts_;
+    std::vector<std::string> accountGroups_;  // ordered, nameable sections
     int64_t lastBackupAt_ = 0;
     std::vector<LinkSession> links_;
     std::string lastAccount_;

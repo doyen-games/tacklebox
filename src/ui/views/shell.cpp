@@ -350,7 +350,7 @@ void drawTopbar(AppState& state, Controller& controller, float leftInset, float 
         ImGui::PopFont();
         drawIcon(dl, Icon::ChevronDown, {rmax.x - 10, (rmin.y + rmax.y) * 0.5f}, 10.0f,
                  col::Steel, 1.6f);
-        if (clicked) ImGui::OpenPopup("##chains");
+        if (clicked || qa::forceOpen("chain-menu")) ImGui::OpenPopup("##chains");
 
         ImGui::SetNextWindowPos({rmin.x, rmax.y + 4});
         ImGui::SetNextWindowSizeConstraints({240, 0}, {360, 420});
@@ -418,7 +418,7 @@ void drawTopbar(AppState& state, Controller& controller, float leftInset, float 
         ImGui::PopFont();
         drawIcon(dl, Icon::ChevronDown, {rmax.x - 16, (rmin.y + rmax.y) * 0.5f}, 11.0f,
                  col::Steel, 1.6f);
-        if (clicked) ImGui::OpenPopup("##accounts");
+        if (clicked || qa::forceOpen("account-menu")) ImGui::OpenPopup("##accounts");
 
         ImGui::SetNextWindowPos({rmin.x, rmax.y + 4});
         ImGui::SetNextWindowSizeConstraints({300, 0}, {420, 420});
@@ -428,7 +428,7 @@ void drawTopbar(AppState& state, Controller& controller, float leftInset, float 
                 ImGui::TextUnformatted("No accounts on this chain - add one in Vault");
                 ImGui::PopStyleColor();
             }
-            for (int index : onChain) {
+            auto drawRow = [&](int index) {
                 const AccountRef& a = state.vault.accounts[static_cast<size_t>(index)];
                 ImGui::PushID(index);
                 bool selected = index == state.selectedAccount;
@@ -449,6 +449,40 @@ void drawTopbar(AppState& state, Controller& controller, float leftInset, float 
                     ImGui::PopFont();
                 }
                 ImGui::PopID();
+            };
+            auto drawHeader = [&](const char* text) {
+                ImGui::Dummy({0, 2});
+                ImGui::PushFont(fonts().uiSemi, kTextSm);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::CyanDim));
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 8);
+                ImGui::TextUnformatted(text);
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+            };
+            // Pinned sections first (in their saved order), then the rest.
+            bool anyGrouped = false;
+            for (const std::string& group : state.vault.accountGroups) {
+                bool headerDrawn = false;
+                for (int index : onChain) {
+                    const AccountRef& a = state.vault.accounts[static_cast<size_t>(index)];
+                    if (a.group != group) continue;
+                    if (!headerDrawn) {
+                        drawHeader(group.c_str());
+                        headerDrawn = true;
+                        anyGrouped = true;
+                    }
+                    drawRow(index);
+                }
+            }
+            bool otherHeader = false;
+            for (int index : onChain) {
+                const AccountRef& a = state.vault.accounts[static_cast<size_t>(index)];
+                if (!a.group.empty()) continue;
+                if (anyGrouped && !otherHeader) {
+                    drawHeader("OTHER");
+                    otherHeader = true;
+                }
+                drawRow(index);
             }
             ImGui::EndPopup();
         }
@@ -523,8 +557,11 @@ void drawShell(AppState& state, Controller& controller) {
     ImGui::BeginChild("##content",
                       {winSize.x - navW, winSize.y - contentTop - contentBottom},
                       ImGuiChildFlags_AlwaysUseWindowPadding);
-    // QA tour steps can pin the page at a scroll offset for deep sections.
-    if (qa::active() && qa::pageScrollY() >= 0.0f) ImGui::SetScrollY(qa::pageScrollY());
+    // QA tour steps pin the page at a scroll offset for deep sections; the
+    // shared content child otherwise keeps its scroll across steps, so every
+    // step without an explicit offset starts at the top.
+    if (qa::active())
+        ImGui::SetScrollY(qa::pageScrollY() >= 0.0f ? qa::pageScrollY() : 0.0f);
 
     // Constrain content width for readability on wide screens.
     float avail = ImGui::GetContentRegionAvail().x;

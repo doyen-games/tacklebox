@@ -14,6 +14,7 @@
 #include "tb_version.h"
 #include "ui/app_ui.hpp"
 #include "ui/layout.hpp"
+#include "ui/qa.hpp"
 #include "ui/ui_helpers.h"
 #include "ui/widgets.hpp"
 
@@ -40,6 +41,7 @@ void drawEndpointPool(AppState& state, Controller& controller, const NetworkDef&
     ImGui::SameLine(::ui::S(86.0f));
     int mode = list.mode;
     ImGui::SetNextItemWidth(::ui::S(150.0f));
+    if (qa::forceOpen("pool-mode")) qa::openCombo("##mode");
     const char* modes[] = {"priority", "round-robin", "auto"};
     if (ImGui::Combo("##mode", &mode, modes, 3)) {
         NetworkDef updated = net;

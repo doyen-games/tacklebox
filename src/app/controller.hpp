@@ -190,6 +190,12 @@ public:
     void addToken(const std::string& chainId, const TokenDef& token);
     void removeToken(const std::string& chainId, const TokenDef& token);
 
+    // --- account groups (pinned wallet sections) -----------------------------
+    void setAccountGroup(const std::string& accountKey, const std::string& group);
+    void renameAccountGroup(const std::string& from, const std::string& to);
+    void removeAccountGroup(const std::string& name);
+    void moveAccountGroup(size_t from, size_t to);
+
     // --- contacts (address book) --------------------------------------------
     void addContact(const Contact& contact);
     void removeContact(const std::string& actor, const std::string& chainId);
@@ -233,8 +239,10 @@ public:
                                              const std::string& chainId,
                                              const std::string& signer) const;
     // Persist a rule; when pin==true the current contract hashes are fetched
-    // on a worker and stamped into the rule before saving.
-    void saveRule(guard::WhitelistRule rule, bool pin);
+    // on a worker and stamped into the rule before saving. done(ok, error)
+    // fires on main so the editor can stay open (draft intact) on failure.
+    void saveRule(guard::WhitelistRule rule, bool pin,
+                  std::function<void(bool, std::string)> done = {});
     void removeRule(const std::string& id);
     void setRuleStatus(const std::string& id, guard::RuleStatus status);
     // Stale rule -> fetch fresh hashes, re-pin, reactivate.

@@ -103,6 +103,7 @@ TEST_CASE("create, populate, lock, unlock round trip") {
         vault.upsertContact({"exchangehot1", "OKX deposit", "chainA"});
         vault.upsertContact({"friendaccnt1", "roommate", ""});
         vault.upsertContact({"friendaccnt1", "roommate (renamed)", ""});  // upsert
+        vault.setAccountGroup("chainA|alice|active", "Daily drivers");
         REQUIRE(vault.markKeyBackedUp(pub));
         CHECK_FALSE(vault.markKeyBackedUp(pub));  // already backed up
         vault.stampBackup();
@@ -162,6 +163,19 @@ TEST_CASE("create, populate, lock, unlock round trip") {
         CHECK(vault.lastBackupAt() > 0);
         REQUIRE(vault.removeContact("exchangehot1", "chainA"));
         CHECK_FALSE(vault.removeContact("exchangehot1", "chainA"));
+        // Account groups round-trip and behave.
+        REQUIRE(vault.accountGroups().size() == 1);
+        CHECK(vault.accounts()[0].group == "Daily drivers");
+        REQUIRE(vault.renameAccountGroup("Daily drivers", "Mains"));
+        CHECK(vault.accounts()[0].group == "Mains");
+        CHECK_FALSE(vault.renameAccountGroup("Mains", ""));  // empty name
+        vault.setAccountGroup("chainA|alice|active", "Cold");
+        REQUIRE(vault.accountGroups().size() == 2);
+        REQUIRE(vault.reorderAccountGroups(1, 0));
+        CHECK(vault.accountGroups()[0] == "Cold");
+        REQUIRE(vault.removeAccountGroup("Cold"));
+        CHECK(vault.accounts()[0].group.empty());
+        CHECK_FALSE(vault.removeAccountGroup("Cold"));
     }
 }
 

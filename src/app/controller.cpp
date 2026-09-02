@@ -132,6 +132,7 @@ void Controller::refreshSnapshot() {
     snap.schedules = vault_.schedules();
     snap.dashboardTiles = vault_.dashboardTiles();
     snap.contacts = vault_.contacts();
+    snap.accountGroups = vault_.accountGroups();
     snap.lastBackupAt = vault_.lastBackupAt();
     snap.linkSessions = vault_.linkSessions();
     for (auto& link : snap.linkSessions) {
@@ -335,6 +336,12 @@ void Controller::importKey(const std::string& wif, const std::string& label) {
             }
             refreshSnapshot();
             toast(Toast::Success, "Key imported: " + middleEllipsis(*result));
+            // A pasted key usually controls existing accounts - find them
+            // without making the user hunt for the scan button.
+            if (!state_.vault.networks.empty()) {
+                toast(Toast::Info, "Scanning enabled chains for accounts this key controls...");
+                discoverAccounts();
+            }
         });
     });
 }
@@ -570,6 +577,10 @@ void Controller::importKeysBulk(const std::string& text) {
             if (duplicates) summary += ", " + std::to_string(duplicates) + " already present";
             if (failed) summary += ", " + std::to_string(failed) + " not valid keys";
             toast(failed && !imported ? Toast::Error : Toast::Success, summary);
+            if (imported > 0 && !state_.vault.networks.empty()) {
+                toast(Toast::Info, "Scanning enabled chains for accounts these keys control...");
+                discoverAccounts();
+            }
         });
     });
 }
@@ -1729,9 +1740,10 @@ guard::WhitelistRule Controller::draftRuleFromAction(const SignPrompt::ActionVie
     return rule;
 }
 
-void Controller::saveRule(guard::WhitelistRule rule, bool pin) {
+void Controller::saveRule(guard::WhitelistRule rule, bool pin,
+                          std::function<void(bool, std::string)> done) {
     state_.busyRule = true;
-    runner_.run([this, rule = std::move(rule), pin]() mutable {
+    runner_.run([this, rule = std::move(rule), pin, done = std::move(done)]() mutable {
         std::string error;
         if (pin) {
             auto svc = service(rule.chainId == "*" ? std::string() : rule.chainId);
@@ -1763,14 +1775,18 @@ void Controller::saveRule(guard::WhitelistRule rule, bool pin) {
             std::lock_guard<std::mutex> lock(vaultMutex_);
             vault_.upsertRule(rule);
         }
-        runner_.postMain([this, error] {
+        runner_.postMain([this, error, done = std::move(done)] {
             state_.busyRule = false;
             if (!error.empty()) {
-                toast(Toast::Error, error);
+                // With a callback the editor shows the error inline and keeps
+                // the draft; toast only for callers without one.
+                if (done) done(false, error);
+                else toast(Toast::Error, error);
                 return;
             }
             refreshSnapshot();
             toast(Toast::Success, "Whitelist rule saved");
+            if (done) done(true, "");
         });
     });
 }
@@ -2457,6 +2473,46 @@ void Controller::markKeyBackedUp(const std::string& pub) {
     }
     refreshSnapshot();
     toast(Toast::Success, "Key marked as backed up");
+}
+
+void Controller::setAccountGroup(const std::string& accountKey, const std::string& group) {
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        vault_.setAccountGroup(accountKey, group);
+    }
+    refreshSnapshot();
+}
+
+void Controller::renameAccountGroup(const std::string& from, const std::string& to) {
+    bool ok;
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        ok = vault_.renameAccountGroup(from, trim(to));
+    }
+    if (!ok) {
+        toast(Toast::Warn, "Could not rename (empty or duplicate name?)");
+        return;
+    }
+    refreshSnapshot();
+}
+
+void Controller::removeAccountGroup(const std::string& name) {
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        vault_.removeAccountGroup(name);
+    }
+    refreshSnapshot();
+}
+
+void Controller::moveAccountGroup(size_t from, size_t to) {
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked() || !vault_.reorderAccountGroups(from, to)) return;
+    }
+    refreshSnapshot();
 }
 
 void Controller::addContact(const Contact& contact) {
