@@ -56,10 +56,14 @@
   dropdowns, popup menus, modals, palettes. A step opens one with
   `qa::forceOpen("tag")` at the trigger site (dropdown/menu OpenPopup) or
   `qa::openCombo("##id")` right before a `BeginCombo`, then names the tag in
-  the step's enter(). Any new dropdown/combo/popup gets a QA step in the same
-  change. Force-opened popups need an explicit `SetNextWindowPos` (no hovered
-  trigger to anchor to), and steps that do not set a scroll offset start at
-  the top (the routed-page child otherwise keeps the prior step's scroll).
+  the step's enter(). `qa::wantsOpen("tag")` (non-consuming) flips any
+  prerequisite (the tab hosting the combo) in the same step. Any new
+  dropdown/combo/popup gets a QA step in the same change - the tour must
+  cover EVERY modal and dropdown in the app. Force-opened popups need an
+  explicit `SetNextWindowPos` (no hovered trigger to anchor to; wrap it in
+  `qa::active()`), steps that do not set a scroll offset start at the top,
+  and cross-page modals (the rule editor) are reset in showShellPage so
+  steps stay isolated.
 
 ## 6. Iteration protocol
 

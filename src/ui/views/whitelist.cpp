@@ -6,6 +6,7 @@
 #include "core/util.hpp"
 #include "ui/app_ui.hpp"
 #include "ui/layout.hpp"
+#include "ui/qa.hpp"
 #include "ui/ui_helpers.h"
 #include "ui/widgets.hpp"
 
@@ -172,20 +173,19 @@ guard::WhitelistRule editorToRule(const AppState& state) {
 }
 
 void drawEditor(AppState& state, Controller& controller) {
-    static bool popupLive = false;
-    if (editor.open && !popupLive) {
-        ImGui::OpenPopup("Rule editor");
-        popupLive = true;
-    }
-    if (!popupLive) return;
+    // editor.open is the ONLY truth. ImGui may close the popup on its own
+    // (a resize crossing a form-factor breakpoint reseeds the popup id);
+    // re-issuing OpenPopup every frame reopens it with the draft intact.
+    // ESC is handled explicitly inside the body as a cancel.
+    if (editor.open) ImGui::OpenPopup("Rule editor");
     if (beginAdaptiveModal("Rule editor", 640.0f)) {
         if (!editor.open) {
             // Closed by the async save (or CANCEL) - dismiss on this frame.
-            popupLive = false;
             ImGui::CloseCurrentPopup();
             endAdaptiveModal();
             return;
         }
+        if (ImGui::IsKeyPressed(ImGuiKey_Escape, false)) editor.open = false;
         heading(editor.isNew ? "New whitelist rule" : "Edit whitelist rule", 24.0f);
         subtext("The rule fast-tracks exactly what it describes; everything else still "
                 "stops for review.");
@@ -196,7 +196,6 @@ void drawEditor(AppState& state, Controller& controller) {
 
         // Identity row: combo-first (nobody types 64 hex characters), with a
         // custom option that reveals the raw field for patterns.
-        float half = (ImGui::GetContentRegionAvail().x - 10) * 0.5f;
         auto identityCombo = [&](const char* label, char* buf, size_t bufSize,
                                  bool chain) {
             std::string current = trim(buf);
@@ -220,13 +219,12 @@ void drawEditor(AppState& state, Controller& controller) {
             }
             if (!known) preview = current;  // custom pattern shows verbatim
 
-            ImGui::BeginGroup();
             ImGui::PushFont(fonts().uiSemi, kTextSm);
             ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
             ImGui::TextUnformatted(label);
             ImGui::PopStyleColor();
             ImGui::PopFont();
-            ImGui::SetNextItemWidth(half);
+            ImGui::SetNextItemWidth(-FLT_MIN);
             if (ImGui::BeginCombo((std::string("##pick") + label).c_str(),
                                   preview.c_str())) {
                 if (ImGui::Selectable(chain ? "any chain (*)" : "any signer (*@*)"))
@@ -254,81 +252,105 @@ void drawEditor(AppState& state, Controller& controller) {
             }
             ::ui::HandOnHover();
             // Custom patterns stay editable underneath.
-            ImGui::SetNextItemWidth(half);
+            ImGui::SetNextItemWidth(-FLT_MIN);
             ImGui::PushFont(fonts().mono, kMonoSm);
             ImGui::InputTextWithHint((std::string("##raw") + label).c_str(),
                                      chain ? "or raw chain id / *"
                                            : "or actor@permission pattern",
                                      buf, bufSize);
             ImGui::PopFont();
-            ImGui::EndGroup();
         };
-        identityCombo("Chain", editor.chain, sizeof editor.chain, true);
-        ImGui::SameLine(0, 10);
-        identityCombo("Signer", editor.signer, sizeof editor.signer, false);
+        if (beginFieldPair("##identity")) {
+            nextField();
+            identityCombo("Chain", editor.chain, sizeof editor.chain, true);
+            nextField();
+            identityCombo("Signer", editor.signer, sizeof editor.signer, false);
+            endFieldPair();
+        }
         vspace(4);
 
-        ImGui::BeginGroup();
-        {
-            FieldOpts opts;
-            opts.mono = true;
-            opts.width = half;
-            opts.hint = "exact contract account (never wildcard)";
-            textField("Contract", editor.contract, sizeof editor.contract, opts);
+        if (beginFieldPair("##target")) {
+            nextField();
+            {
+                FieldOpts opts;
+                opts.mono = true;
+                opts.hint = "exact contract account (never wildcard)";
+                textField("Contract", editor.contract, sizeof editor.contract, opts);
+            }
+            nextField();
+            {
+                FieldOpts opts;
+                opts.mono = true;
+                opts.hint = "action name, or * for all actions";
+                textField("Action", editor.action, sizeof editor.action, opts);
+            }
+            endFieldPair();
         }
-        ImGui::EndGroup();
-        ImGui::SameLine(0, 10);
-        ImGui::BeginGroup();
-        {
-            FieldOpts opts;
-            opts.mono = true;
-            opts.width = half;
-            opts.hint = "action name, or * for all actions";
-            textField("Action", editor.action, sizeof editor.action, opts);
-        }
-        ImGui::EndGroup();
         vspace(6);
 
         sectionTitle("Parameter constraints");
         static const char* kindNames[] = {"any", "exact", "one of", "range"};
         int removeAt = -1;
-        for (size_t i = 0; i < editor.rows.size(); ++i) {
-            ConstraintRow& row = editor.rows[i];
-            ImGui::PushID(static_cast<int>(i));
-            ImGui::SetNextItemWidth(150);
-            ImGui::PushFont(fonts().mono, kMonoSm);
-            ImGui::InputTextWithHint("##path", "field.path", row.path, sizeof row.path);
-            ImGui::PopFont();
-            ImGui::SameLine(0, 6);
-            ImGui::SetNextItemWidth(118);
-            ImGui::Combo("##kind", &row.kind, kindNames, 4);
-            ImGui::SameLine(0, 6);
-            ImGui::PushFont(fonts().mono, kMonoSm);
-            float rest = ImGui::GetContentRegionAvail().x - 40;
-            if (row.kind == 1) {
-                ImGui::SetNextItemWidth(rest);
-                ImGui::InputTextWithHint("##v", "expected value", row.value, sizeof row.value);
-            } else if (row.kind == 2) {
-                ImGui::SetNextItemWidth(rest);
-                ImGui::InputTextWithHint("##v", "a, b, c", row.value, sizeof row.value);
-            } else if (row.kind == 3) {
-                ImGui::SetNextItemWidth(rest * 0.5f - 3);
-                ImGui::InputTextWithHint("##min", "min (empty = open)", row.minBuf,
-                                         sizeof row.minBuf);
-                ImGui::SameLine(0, 6);
-                ImGui::SetNextItemWidth(rest * 0.5f - 3);
-                ImGui::InputTextWithHint("##max", "max: 10.0000 EOS", row.maxBuf,
-                                         sizeof row.maxBuf);
-            } else {
-                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
-                ImGui::TextUnformatted("matches anything");
-                ImGui::PopStyleColor();
+        // One table so every row's field, kind, value and remove button sit
+        // on shared columns and one centerline.
+        if (!editor.rows.empty() &&
+            ImGui::BeginTable("##constraints", 4,
+                              ImGuiTableFlags_SizingStretchProp |
+                                  ImGuiTableFlags_NoPadOuterX)) {
+            ImGui::TableSetupColumn("path", ImGuiTableColumnFlags_WidthStretch, 0.34f);
+            ImGui::TableSetupColumn("kind", ImGuiTableColumnFlags_WidthFixed,
+                                    ::ui::S(118.0f));
+            ImGui::TableSetupColumn("value", ImGuiTableColumnFlags_WidthStretch, 0.66f);
+            ImGui::TableSetupColumn("del", ImGuiTableColumnFlags_WidthFixed,
+                                    ::ui::S(28.0f));
+            for (size_t i = 0; i < editor.rows.size(); ++i) {
+                ConstraintRow& row = editor.rows[i];
+                ImGui::PushID(static_cast<int>(i));
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::SetNextItemWidth(-FLT_MIN);
+                ImGui::PushFont(fonts().mono, kMonoSm);
+                ImGui::InputTextWithHint("##path", "field.path", row.path, sizeof row.path);
+                ImGui::PopFont();
+                ImGui::TableNextColumn();
+                ImGui::SetNextItemWidth(-FLT_MIN);
+                ImGui::Combo("##kind", &row.kind, kindNames, 4);
+                ::ui::HandOnHover();
+                ImGui::TableNextColumn();
+                ImGui::PushFont(fonts().mono, kMonoSm);
+                if (row.kind == 1) {
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::InputTextWithHint("##v", "expected value", row.value,
+                                             sizeof row.value);
+                } else if (row.kind == 2) {
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::InputTextWithHint("##v", "a, b, c", row.value, sizeof row.value);
+                } else if (row.kind == 3) {
+                    float halfCell = (ImGui::GetContentRegionAvail().x - 6) * 0.5f;
+                    ImGui::SetNextItemWidth(halfCell);
+                    ImGui::InputTextWithHint("##min", "min (empty = open)", row.minBuf,
+                                             sizeof row.minBuf);
+                    ImGui::SameLine(0, 6);
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    ImGui::InputTextWithHint("##max", "max: 10.0000 EOS", row.maxBuf,
+                                             sizeof row.maxBuf);
+                } else {
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
+                    ImGui::TextUnformatted("matches anything");
+                    ImGui::PopStyleColor();
+                }
+                ImGui::PopFont();
+                ImGui::TableNextColumn();
+                // Center the trash on the field row.
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() +
+                                     (ImGui::GetFrameHeight() - 25.0f) * 0.5f);
+                if (iconButton("##del", Icon::Trash, "Remove constraint", col::Slate,
+                               13.0f))
+                    removeAt = static_cast<int>(i);
+                ImGui::PopID();
             }
-            ImGui::PopFont();
-            ImGui::SameLine();
-            if (iconButton("##del", Icon::Trash, "Remove constraint", col::Slate, 13.0f))
-                removeAt = static_cast<int>(i);
-            ImGui::PopID();
+            ImGui::EndTable();
         }
         if (removeAt >= 0) editor.rows.erase(editor.rows.begin() + removeAt);
         if (neonButton("+ CONSTRAINT", BtnKind::Subtle, {130, 30}))
@@ -402,14 +424,18 @@ void drawEditor(AppState& state, Controller& controller) {
                 editor.saving = true;
                 editor.error.clear();
                 // The modal stays open: on failure the draft survives and the
-                // error shows inline; only success closes it.
+                // error shows inline; only success closes it. A live signing
+                // prompt underneath re-evaluates so its badges reflect the
+                // new rule immediately.
                 controller.saveRule(editorToRule(state), editor.pin,
-                                    [](bool ok, std::string error) {
+                                    [&controller](bool ok, std::string error) {
                                         editor.saving = false;
-                                        if (ok)
+                                        if (ok) {
                                             editor.open = false;
-                                        else
+                                            controller.reevaluateSignPrompt();
+                                        } else {
                                             editor.error = std::move(error);
+                                        }
                                     });
             }
             ImGui::SameLine(0, 8);
@@ -425,17 +451,25 @@ void drawEditor(AppState& state, Controller& controller) {
 
 void openRuleEditor(const guard::WhitelistRule& draft) { pendingDraft = draft; }
 
-void drawWhitelist(AppState& state, Controller& controller) {
+// QA tour hygiene: steps must not inherit a previous step's open editor.
+void closeRuleEditor() {
+    editor = EditorState{};
+    pendingDraft.reset();
+}
+
+// Drawn once per frame at app level (after the signing modal), so the rule
+// editor works over ANY page - including stacked on top of a signing prompt
+// ("whitelist this, then approve"). App-level also keeps the popup id out of
+// the page hierarchy, so a resize that swaps the chrome cannot orphan it.
+void drawRuleEditorModal(AppState& state, Controller& controller) {
     if (pendingDraft) {
         loadEditorFromRule(*pendingDraft, true);
         pendingDraft.reset();
     }
-    // The editor draws first so it is reachable on EVERY path out of this
-    // function - with zero rules the page returns early at the empty state,
-    // which used to strand a just-opened editor (the + NEW RULE click did
-    // nothing on a fresh vault).
     drawEditor(state, controller);
+}
 
+void drawWhitelist(AppState& state, Controller& controller) {
     heading("Whitelist");
     subtext("Rules scoped by signer, contract, action and parameter ranges. Pinned rules "
             "watch the contract's code and ABI hashes and suspend themselves the moment "
@@ -640,8 +674,12 @@ void drawWhitelist(AppState& state, Controller& controller) {
                     controller.setRuleStatus(rule.id, disabled ? guard::RuleStatus::Active
                                                                : guard::RuleStatus::Disabled);
                 ImGui::SameLine(0, 2);
-                if (iconButton("##del", Icon::Trash, "Delete", col::Danger, 14.0f))
+                if (iconButton("##del", Icon::Trash, "Delete", col::Danger, 14.0f) ||
+                    qa::forceOpen("rule-del-confirm"))
                     ImGui::OpenPopup("##confirmdel");
+                if (qa::active())
+                    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
+                                            ImGuiCond_Appearing, {0.5f, 0.5f});
                 if (ImGui::BeginPopup("##confirmdel")) {
                     ImGui::TextUnformatted("Delete this rule?");
                     if (neonButton("DELETE", BtnKind::Danger, {90, 30})) {

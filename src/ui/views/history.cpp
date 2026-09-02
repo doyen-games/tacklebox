@@ -10,6 +10,24 @@
 
 namespace tb::ui {
 
+namespace {
+
+// "eosio.token::transfer alice -> bob 1.0000 EOS" -> a prefilled rule draft;
+// the app-level editor opens right here for condition setup.
+void whitelistFromEntry(const AuditEntry& entry) {
+    std::string target = entry.summary.substr(0, entry.summary.find(' '));
+    auto sep = target.find("::");
+    guard::WhitelistRule draft;
+    draft.chainId = entry.chainId;
+    draft.signer = entry.signer;
+    draft.contract = sep == std::string::npos ? target : target.substr(0, sep);
+    draft.action = sep == std::string::npos ? "*" : target.substr(sep + 2);
+    draft.note = "from history " + formatLocal(entry.time);
+    openRuleEditor(draft);
+}
+
+}  // namespace
+
 void drawHistory(AppState& state, Controller& controller) {
     (void)controller;
     heading("History");
@@ -79,6 +97,11 @@ void drawHistory(AppState& state, Controller& controller) {
                     badge("REJECTED", col::Danger);
                 ImGui::SameLine(0, 6);
                 badge(entry.verdict.c_str(), col::Steel);
+                ImGui::SameLine(0, 6);
+                if (iconButton("##mkrule", Icon::Shield,
+                               "Whitelist this action (opens the rule editor)",
+                               col::CyanDim, 13.0f))
+                    whitelistFromEntry(entry);
                 if (!entry.txId.empty()) {
                     ImGui::SameLine();
                     if (iconButton("##cptx", Icon::Copy, "Copy transaction id", col::Slate,
@@ -100,7 +123,7 @@ void drawHistory(AppState& state, Controller& controller) {
             ImGui::TableSetupColumn("Signer", ImGuiTableColumnFlags_WidthStretch, 0.22f);
             ImGui::TableSetupColumn("Transaction", ImGuiTableColumnFlags_WidthStretch, 0.42f);
             ImGui::TableSetupColumn("Verdict", ImGuiTableColumnFlags_WidthFixed, 130.0f);
-            ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed, 96.0f);
+            ImGui::TableSetupColumn("Result", ImGuiTableColumnFlags_WidthFixed, 130.0f);
             ImGui::PushFont(fonts().uiSemi, kTextSm);
             ImGui::TableHeadersRow();
             ImGui::PopFont();
@@ -153,6 +176,11 @@ void drawHistory(AppState& state, Controller& controller) {
                     badgeFilled("SIGNED", col::Success);
                 else
                     badge("REJECTED", col::Danger);
+                ImGui::SameLine(0, 4);
+                if (iconButton("##mkrule", Icon::Shield,
+                               "Whitelist this action (opens the rule editor)",
+                               col::CyanDim, 13.0f))
+                    whitelistFromEntry(entry);
                 ImGui::PopID();
             }
             ImGui::EndTable();

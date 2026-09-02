@@ -73,6 +73,14 @@ void kvRow(const char* key, const std::string& value, bool mono = false,
 // kvRow for money: the value renders through assetText.
 void kvAsset(const char* key, const std::string& asset);
 
+// Two labeled fields sharing one row (stacked into one column on phones).
+// A table resets the text-baseline carry that makes a SameLine'd group sag
+// after a framed widget - the bug behind ragged Contract/Action pairs.
+// Fields inside should take the full cell (FieldOpts width 0 / -FLT_MIN).
+bool beginFieldPair(const char* id);
+bool nextField();
+void endFieldPair();
+
 // Scrollable body for a modal form with a pinned footer (save/cancel row).
 // Desktop: auto-height capped to the viewport. Phone sheet: fills all the
 // remaining height, leaving exactly footerReserve. Always pair with

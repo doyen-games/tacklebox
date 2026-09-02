@@ -236,6 +236,7 @@ void drawBottomBar(AppState& state, Controller& controller, float barH) {
 }
 
 void drawMoreSheet(AppState& state, Controller& controller) {
+    if (qa::forceOpen("more-sheet")) g_moreOpen = true;
     if (!g_moreOpen) return;
     ImGui::OpenPopup("##moresheet");
     ImGuiViewport* vp = ImGui::GetMainViewport();

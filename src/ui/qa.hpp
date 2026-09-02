@@ -26,6 +26,9 @@ float pageScrollY();
 // forceOpen(tag) is true while the active step requests `tag` (one caller
 // per frame wins, so a tag shared by several widgets opens only the first).
 bool forceOpen(const char* tag);
+// Non-consuming peek at the active step's tag: for prerequisites of the
+// forceOpen site (switching to the tab that hosts the combo).
+bool wantsOpen(const char* tag);
 // Force the next combo with this label open (call right before BeginCombo,
 // same ID stack). QA-only; uses imgui internals.
 void openCombo(const char* label);

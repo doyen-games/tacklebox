@@ -496,6 +496,22 @@ void kvRow(const char* key, const std::string& value, bool mono, bool copyable) 
     ImGui::PopID();
 }
 
+bool beginFieldPair(const char* id) {
+    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, {5, 2});
+    bool open = ImGui::BeginTable(id, layout().phone() ? 1 : 2,
+                                  ImGuiTableFlags_SizingStretchSame |
+                                      ImGuiTableFlags_NoPadOuterX);
+    if (!open) ImGui::PopStyleVar();
+    return open;
+}
+
+bool nextField() { return ImGui::TableNextColumn(); }
+
+void endFieldPair() {
+    ImGui::EndTable();
+    ImGui::PopStyleVar();
+}
+
 void beginModalBody(const char* id, float footerReserve) {
     if (layout().phone()) {
         // The sheet owns the whole screen; the body takes everything above

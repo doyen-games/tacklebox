@@ -34,9 +34,13 @@ void drawSettings(AppState& state, Controller& controller);
 void drawSignModal(AppState& state, Controller& controller);
 void drawPluginPrompt(AppState& state, Controller& controller);
 
-// Whitelist editor entry point: other views (the signing modal) can stage a
-// prefilled draft; the Whitelist page opens its editor on next draw.
+// Whitelist editor entry point: any view (whitelist page, signing modal,
+// history) can stage a prefilled draft; the app-level modal opens next draw.
 void openRuleEditor(const guard::WhitelistRule& draft);
+// The rule editor modal itself; drawApp draws it once per frame, above the
+// signing modal, so rules can be created mid-prompt.
+void drawRuleEditorModal(AppState& state, Controller& controller);
+void closeRuleEditor();  // discard any open draft (QA step isolation)
 
 // Autopilot schedule editor entry point (QA tour).
 void openScheduleEditor();
@@ -47,5 +51,8 @@ void openMsigTemplateEditor();
 // Contact editor entry points (transfer page owns the modal).
 void openContactEditor(const Contact& prefill, bool isNew);
 void drawContactEditorModal(Controller& controller);
+
+// Reveal-key modal entry point (QA tour; shows the password-check state).
+void openRevealModal(const std::string& pub);
 
 }  // namespace tb::ui

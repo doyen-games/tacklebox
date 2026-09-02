@@ -7,6 +7,7 @@
 #include "core/util.hpp"
 #include "ui/app_ui.hpp"
 #include "ui/layout.hpp"
+#include "ui/qa.hpp"
 #include "ui/ui_helpers.h"
 #include "ui/widgets.hpp"
 
@@ -24,6 +25,17 @@ struct RevealState {
     bool busy = false;
 };
 RevealState reveal;
+
+}  // namespace
+
+// QA hook: show the reveal modal's password-check state without a click.
+void openRevealModal(const std::string& pub) {
+    reveal = RevealState{};
+    reveal.open = true;
+    reveal.pub = pub;
+}
+
+namespace {
 
 void drawRevealModal(AppState& state, Controller& controller) {
     (void)state;
@@ -192,8 +204,12 @@ void drawVaultView(AppState& state, Controller& controller) {
                 reveal.pub = key.pub;
             }
             ImGui::SameLine(0, 2);
-            if (iconButton("##del", Icon::Trash, "Remove from vault", col::Danger, 14.0f))
+            if (iconButton("##del", Icon::Trash, "Remove from vault", col::Danger, 14.0f) ||
+                qa::forceOpen("key-del-confirm"))
                 ImGui::OpenPopup("##confirmkey");
+            if (qa::active())
+                ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
+                                        ImGuiCond_Appearing, {0.5f, 0.5f});
             if (ImGui::BeginPopup("##confirmkey")) {
                 ImGui::TextWrapped("Remove this key? Its accounts become watch-only.\n"
                                    "Without a backup the key is unrecoverable.");
@@ -310,6 +326,7 @@ void drawVaultView(AppState& state, Controller& controller) {
             ImGui::SetCursorPosX(endX - 104);
             ImGui::SetCursorPosY(rowTop + (rowH - 26.0f) * 0.5f);
             // Compact picker: the arrow box matches the USE button height.
+            if (qa::forceOpen("group-pick")) qa::openCombo("##grouppick");
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {6, 4});
             ImGui::SetNextItemWidth(26);
             bool groupPickOpen = ImGui::BeginCombo("##grouppick", "",

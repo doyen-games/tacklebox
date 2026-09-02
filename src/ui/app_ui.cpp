@@ -50,6 +50,10 @@ void drawApp(AppState& state, Controller& controller) {
 
     drawSignModal(state, controller);
     drawPluginPrompt(state, controller);
+    // The rule editor draws at app level so it works over any page. With a
+    // signing prompt up, the signing modal hosts it instead (a popup must
+    // open from inside the prompt's scope to stack above it).
+    if (state.unlocked && !state.signPrompt) drawRuleEditorModal(state, controller);
     drawDiagnostics(state);
     drawToasts(state);
 

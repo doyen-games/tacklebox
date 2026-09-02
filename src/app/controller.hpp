@@ -99,6 +99,9 @@ public:
     // --- chain data ---------------------------------------------------------
     void refreshAccount(bool force);
     void probeEndpoints(const std::string& chainId);  // all node types
+    // Ping every enabled node, then reorder each pool by latency (fastest
+    // becomes the top-priority / primary node). Persists + refreshes health.
+    void rankEndpoints(const std::string& chainId);
     // USD prices via the network's oracle (60s TTL unless forced). No-op with
     // the oracle off. Display-only by design.
     void refreshPrices(bool force);
@@ -176,6 +179,12 @@ public:
     // --- saved contracts ----------------------------------------------------
     void saveContractBookmark(const SavedContract& saved);
     void removeContractBookmark(const std::string& chainId, const std::string& account);
+    void saveActionBookmark(const SavedAction& saved);
+    void removeActionBookmark(const SavedAction& saved);
+
+    // Re-run the whitelist evaluation for the live signing prompt (after a
+    // rule was created from inside it) so verdict badges update in place.
+    void reevaluateSignPrompt();
 
     // --- pinned queries -----------------------------------------------------
     void savePinnedQuery(const PinnedQuery& query);

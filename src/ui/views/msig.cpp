@@ -41,19 +41,16 @@ void openMsigTemplateFromBuilder(AppState& state) {
 
 void drawTemplateEditor(AppState& state, Controller& controller) {
     (void)state;
-    static bool live = false;
-    if (tplEditor.open && !live) {
-        ImGui::OpenPopup("Msig template");
-        live = true;
-    }
-    if (!live) return;
+    // Reopen every frame while open: survives ImGui-side closes (window
+    // resize across breakpoints); ESC cancels explicitly.
+    if (tplEditor.open) ImGui::OpenPopup("Msig template");
     if (beginAdaptiveModal("Msig template", 620.0f)) {
         if (!tplEditor.open) {
-            live = false;
             ImGui::CloseCurrentPopup();
             endAdaptiveModal();
             return;
         }
+        if (ImGui::IsKeyPressed(ImGuiKey_Escape, false)) tplEditor.open = false;
         heading(tplEditor.id.empty() ? "New msig template" : "Edit msig template", 24.0f);
         subtext("Applying a template predisposes the proposal builder: actions, "
                 "requested approvals, expiry and a suggested name.");
@@ -63,27 +60,26 @@ void drawTemplateEditor(AppState& state, Controller& controller) {
             opts.placeholder = "template name, e.g. weekly payroll";
             textField("Label", tplEditor.label, sizeof tplEditor.label, opts);
         }
-        float half = (ImGui::GetContentRegionAvail().x - 10) * 0.5f;
-        ImGui::BeginGroup();
-        {
-            FieldOpts opts;
-            opts.mono = true;
-            opts.width = half;
-            opts.hint = "suggested proposal name";
-            textField("Proposal name", tplEditor.name, sizeof tplEditor.name, opts);
+        if (beginFieldPair("##tplrow")) {
+            nextField();
+            {
+                FieldOpts opts;
+                opts.mono = true;
+                opts.hint = "suggested proposal name";
+                textField("Proposal name", tplEditor.name, sizeof tplEditor.name, opts);
+            }
+            nextField();
+            ImGui::PushFont(fonts().uiSemi, kTextSm);
+            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+            ImGui::TextUnformatted("Expires (hours)");
+            ImGui::PopStyleColor();
+            ImGui::PopFont();
+            ImGui::Dummy({0, 1});
+            ImGui::SetNextItemWidth(::ui::S(160.0f));
+            ImGui::InputInt("##tplexp", &tplEditor.expireHours, 24);
+            if (tplEditor.expireHours < 1) tplEditor.expireHours = 1;
+            endFieldPair();
         }
-        ImGui::EndGroup();
-        ImGui::SameLine(0, 10);
-        ImGui::BeginGroup();
-        ImGui::PushFont(fonts().uiSemi, kTextSm);
-        ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
-        ImGui::TextUnformatted("Expires (hours)");
-        ImGui::PopStyleColor();
-        ImGui::PopFont();
-        ImGui::SetNextItemWidth(::ui::S(160.0f));
-        ImGui::InputInt("##tplexp", &tplEditor.expireHours, 24);
-        if (tplEditor.expireHours < 1) tplEditor.expireHours = 1;
-        ImGui::EndGroup();
         {
             FieldOpts opts;
             opts.mono = true;

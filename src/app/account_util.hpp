@@ -43,4 +43,17 @@ std::optional<json> makeAuthority(const AuthorityDraft& draft, std::string* why 
 // zero stays formattable (callers skip zero stakes).
 std::optional<std::string> formatStake(const std::string& text, const std::string& coreSymbol);
 
+// Core-token position from a raw get_account response: liquid (the primary
+// value everywhere), self stake, stake delegated to others, pending refund,
+// and their sum. All strings are formatted assets in the core symbol.
+struct StakeBreakdown {
+    bool any = false;             // false: chain exposes no staking fields
+    std::string available;        // core_liquid_balance ("0" asset if absent)
+    std::string stakedSelf;       // self_delegated_bandwidth cpu+net
+    std::string stakedDelegated;  // voter_info.staked minus self stake
+    std::string refunding;        // refund_request cpu+net
+    std::string total;            // available + all of the above
+};
+StakeBreakdown stakeBreakdown(const json& raw, const std::string& coreSymbol /*"4,EOS"*/);
+
 }  // namespace tb::acct

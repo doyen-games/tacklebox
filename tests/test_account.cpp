@@ -74,3 +74,31 @@ TEST_CASE("stake formatting follows the core symbol precision") {
     CHECK_FALSE(acct::formatStake("abc", "4,EOS").has_value());
     CHECK_FALSE(acct::formatStake("1", "EOS").has_value());  // malformed symbol
 }
+
+TEST_CASE("stakeBreakdown: liquid + self + delegated + refunding sum up") {
+    dwarfkit::json raw = {
+        {"core_liquid_balance", "1234.5678 EOS"},
+        {"voter_info", {{"staked", 2000000}}},  // 200.0000 EOS total stake
+        {"self_delegated_bandwidth",
+         {{"cpu_weight", "150.0000 EOS"}, {"net_weight", "10.0000 EOS"}}},
+        {"refund_request",
+         {{"cpu_amount", "3.0000 EOS"}, {"net_amount", "2.0000 EOS"}}}};
+    auto b = tb::acct::stakeBreakdown(raw, "4,EOS");
+    CHECK(b.any);
+    CHECK(b.available == "1234.5678 EOS");
+    CHECK(b.stakedSelf == "160.0000 EOS");
+    CHECK(b.stakedDelegated == "40.0000 EOS");
+    CHECK(b.refunding == "5.0000 EOS");
+    CHECK(b.total == "1439.5678 EOS");
+}
+
+TEST_CASE("stakeBreakdown: no staking fields reports any=false") {
+    dwarfkit::json raw = {{"created", "2021-01-01T00:00:00.000"}};
+    auto b = tb::acct::stakeBreakdown(raw, "4,EOS");
+    CHECK_FALSE(b.any);
+    // Wrong-symbol assets are ignored rather than mis-summed.
+    dwarfkit::json mixed = {{"core_liquid_balance", "5.0000 WAX"}};
+    auto m = tb::acct::stakeBreakdown(mixed, "4,EOS");
+    CHECK_FALSE(m.any);
+    CHECK(m.total == "0.0000 EOS");
+}

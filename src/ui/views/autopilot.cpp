@@ -75,6 +75,10 @@ void drawEditor(AppState& state, Controller& controller) {
     if (!editor.open) return;
     ImGui::OpenPopup("Schedule editor");
     if (beginAdaptiveModal("Schedule editor", 620.0f)) {
+        if (ImGui::IsKeyPressed(ImGuiKey_Escape, false)) {
+            editor.open = false;
+            ImGui::CloseCurrentPopup();
+        }
         heading(editor.id.empty() ? "New schedule" : "Edit schedule", 24.0f);
         subtext("Runs while TackleBox is open and the vault unlocked. Signing happens "
                 "ONLY through a pinned auto-sign whitelist rule matching this exact "
@@ -88,24 +92,21 @@ void drawEditor(AppState& state, Controller& controller) {
         opts.placeholder = "what future-you should see";
         textField("Label", editor.label, sizeof editor.label, opts);
 
-        float half = (ImGui::GetContentRegionAvail().x - 10) * 0.5f;
-        ImGui::BeginGroup();
-        {
-            FieldOpts f;
-            f.mono = true;
-            f.width = half;
-            textField("Contract", editor.contract, sizeof editor.contract, f);
+        if (beginFieldPair("##ca")) {
+            nextField();
+            {
+                FieldOpts f;
+                f.mono = true;
+                textField("Contract", editor.contract, sizeof editor.contract, f);
+            }
+            nextField();
+            {
+                FieldOpts f;
+                f.mono = true;
+                textField("Action", editor.action, sizeof editor.action, f);
+            }
+            endFieldPair();
         }
-        ImGui::EndGroup();
-        ImGui::SameLine(0, 10);
-        ImGui::BeginGroup();
-        {
-            FieldOpts f;
-            f.mono = true;
-            f.width = half;
-            textField("Action", editor.action, sizeof editor.action, f);
-        }
-        ImGui::EndGroup();
 
         FieldOpts dataOpts;
         dataOpts.mono = true;
@@ -203,28 +204,26 @@ void drawEditor(AppState& state, Controller& controller) {
 
         // Start / end window (every mode). Empty start = now; empty end =
         // runs forever.
-        float halfw = (ImGui::GetContentRegionAvail().x - 10) * 0.5f;
-        ImGui::BeginGroup();
-        {
-            FieldOpts f;
-            f.mono = true;
-            f.width = halfw;
-            f.placeholder = "now  (or YYYY-MM-DD HH:MM:SS)";
-            textField(editor.timingMode == Schedule::TimeAnchored ? "Start / grid origin"
-                                                                  : "Start",
-                      editor.startBuf, sizeof editor.startBuf, f);
+        if (beginFieldPair("##window")) {
+            nextField();
+            {
+                FieldOpts f;
+                f.mono = true;
+                f.placeholder = "now  (or YYYY-MM-DD HH:MM:SS)";
+                textField(editor.timingMode == Schedule::TimeAnchored
+                              ? "Start / grid origin"
+                              : "Start",
+                          editor.startBuf, sizeof editor.startBuf, f);
+            }
+            nextField();
+            {
+                FieldOpts f;
+                f.mono = true;
+                f.placeholder = "never  (or YYYY-MM-DD HH:MM:SS)";
+                textField("End", editor.endBuf, sizeof editor.endBuf, f);
+            }
+            endFieldPair();
         }
-        ImGui::EndGroup();
-        ImGui::SameLine(0, 10);
-        ImGui::BeginGroup();
-        {
-            FieldOpts f;
-            f.mono = true;
-            f.width = halfw;
-            f.placeholder = "never  (or YYYY-MM-DD HH:MM:SS)";
-            textField("End", editor.endBuf, sizeof editor.endBuf, f);
-        }
-        ImGui::EndGroup();
 
         toggle("Run missed executions on unlock", &editor.runMissed,
                "If a run was due while the wallet was closed or locked, fire it on the "

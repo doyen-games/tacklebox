@@ -10,6 +10,7 @@
 #include "core/util.hpp"
 #include "ui/app_ui.hpp"
 #include "ui/layout.hpp"
+#include "ui/qa.hpp"
 #include "ui/ui_helpers.h"
 #include "ui/widgets.hpp"
 
@@ -64,6 +65,7 @@ void drawPermEditor(AppState& state, const char* title, PermDraft& draft,
     ImGui::SetNextItemWidth(::ui::S(phone ? 186.0f : 230.0f));
     const char* modes[] = {"generate a fresh key (default)", "use a vault key",
                            "paste a public key"};
+    if (qa::forceOpen("ca-keymode")) qa::openCombo("##mode");
     ImGui::Combo("##mode", &draft.mode, modes, 3);
     ::ui::HandOnHover();
 

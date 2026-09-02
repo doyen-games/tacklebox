@@ -46,9 +46,7 @@ TEST_CASE("create, populate, lock, unlock round trip") {
         net.name = "Test Net";
         net.rpc.nodes = {{"https://example.invalid", "primary", 0, true},
                          {"https://backup.invalid", "backup", 1, false}};
-        net.rpc.mode = static_cast<int>(SelectMode::Auto);
-        net.rpc.autoThresholdQueries = 200;
-        net.rpc.autoWindowSec = 30;
+        net.rpc.roundRobin = false;  // non-default, must survive the trip
         net.atomic.nodes = {{"https://aa.example.invalid", "", 0, true}};
         net.light.nodes = {{"https://light.example.invalid", "", 0, true}};
         net.lightSlug = "testa";
@@ -145,9 +143,7 @@ TEST_CASE("create, populate, lock, unlock round trip") {
         REQUIRE(net.rpc.nodes.size() == 2);
         CHECK(net.rpc.nodes[0].nickname == "primary");
         CHECK_FALSE(net.rpc.nodes[1].enabled);
-        CHECK(net.rpc.mode == static_cast<int>(SelectMode::Auto));
-        CHECK(net.rpc.autoThresholdQueries == 200);
-        CHECK(net.rpc.autoWindowSec == 30);
+        CHECK_FALSE(net.rpc.roundRobin);
         // The disabled backup never becomes primary.
         CHECK(net.activeEndpoint() == "https://example.invalid");
         CHECK(net.atomic.primaryUrl() == "https://aa.example.invalid");
@@ -268,11 +264,8 @@ TEST_CASE("network json: old vault shapes migrate to endpoint pools") {
     net.name = "New Net";
     net.rpc.nodes = {{"https://p.invalid", "home node", 0, true},
                      {"https://q.invalid", "", 1, false}};
-    net.rpc.mode = static_cast<int>(SelectMode::RoundRobin);
+    net.rpc.roundRobin = false;
     net.hyperion.nodes = {{"https://h.invalid", "hyp", 0, true}};
-    net.hyperion.mode = static_cast<int>(SelectMode::Auto);
-    net.hyperion.autoThresholdQueries = 200;
-    net.hyperion.autoWindowSec = 30;
     net.light.nodes = {{"https://l.invalid", "", 0, true}};
     net.lightSlug = "cthree";
     net.oracle = {static_cast<int>(OracleProvider::CoinGecko),
@@ -281,11 +274,20 @@ TEST_CASE("network json: old vault shapes migrate to endpoint pools") {
     CHECK(back.rpc.nodes.size() == 2);
     CHECK(back.rpc.nodes[0].nickname == "home node");
     CHECK_FALSE(back.rpc.nodes[1].enabled);
-    CHECK(back.rpc.mode == static_cast<int>(SelectMode::RoundRobin));
-    CHECK(back.hyperion.mode == static_cast<int>(SelectMode::Auto));
-    CHECK(back.hyperion.autoThresholdQueries == 200);
-    CHECK(back.hyperion.autoWindowSec == 30);
+    CHECK_FALSE(back.rpc.roundRobin);
+    CHECK(back.hyperion.roundRobin);  // default stays on
     CHECK(back.light.primaryUrl() == "https://l.invalid");
+    // Legacy policy fields migrate onto the toggle: Priority -> off,
+    // RoundRobin / Auto -> on.
+    dwarfkit::json legacyPriority = {
+        {"chain", "c4"},
+        {"name", "Legacy"},
+        {"rpc", {{"nodes", dwarfkit::json::array({{{"url", "https://z.invalid"}}})},
+                 {"mode", 0}}}};
+    CHECK_FALSE(networkFromJson(legacyPriority).rpc.roundRobin);
+    dwarfkit::json legacyAuto = legacyPriority;
+    legacyAuto["rpc"]["mode"] = 2;
+    CHECK(networkFromJson(legacyAuto).rpc.roundRobin);
     CHECK(back.lightSlug == "cthree");
     CHECK(back.oracle.provider == static_cast<int>(OracleProvider::CoinGecko));
     CHECK(back.oracle.url == "https://api.coingecko.com");

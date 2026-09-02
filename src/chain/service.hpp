@@ -105,10 +105,11 @@ public:
     std::shared_ptr<dwarfkit::FetchProvider> fetch() const { return fetch_; }
 
     // --- endpoint selection --------------------------------------------------
-    // Pick a node per the pool's policy (Priority / RoundRobin / Auto) and
-    // record the query into the auto-mode window. "" when the pool is empty.
+    // Pick a node: round-robin across the enabled pool when the toggle is
+    // on, else always the top-priority node. "" when the pool is empty.
     std::string pickUrl(NodeType type);
-    // Queries recorded for this type inside its auto window (UI display).
+    // Queries recorded for this type inside the display window.
+    static constexpr int kQueryWindowSec = 60;
     int recentQueries(NodeType type);
     // Probe one node of a given type (health panel).
     EndpointHealth probe(NodeType type, const std::string& url);

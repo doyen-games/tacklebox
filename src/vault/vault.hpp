@@ -69,6 +69,13 @@ struct SavedContract {
     std::string note;
 };
 
+// A bookmarked contract action (chain + contract + action).
+struct SavedAction {
+    std::string chainId;
+    std::string contract;
+    std::string action;
+};
+
 struct AccountRef {
     std::string chainId;     // hex
     std::string actor;
@@ -97,21 +104,22 @@ struct Endpoint {
     bool enabled = true;
 };
 
-// Selection policy for a pool.
+// Legacy selection policy values (pre-toggle vaults); parse-time migration
+// maps them onto the roundRobin flag.
 enum class SelectMode {
-    Priority = 0,   // always the best-priority enabled node
-    RoundRobin = 1, // rotate every request across enabled nodes
-    Auto = 2,       // Priority normally; RoundRobin IF the recent query volume
-                    // exceeds autoThresholdQueries within autoWindowSec
+    Priority = 0,
+    RoundRobin = 1,
+    Auto = 2,
 };
 
 // One node type's endpoint pool + its selection policy. Rotation state lives
 // in the chain service (runtime), only the policy persists here.
+// Round robin is a plain toggle: ON spreads queries across every enabled
+// node; single-shot interactions (broadcasting a transaction) always start
+// from the top-priority node regardless.
 struct EndpointList {
     std::vector<Endpoint> nodes;
-    int mode = static_cast<int>(SelectMode::Priority);
-    int autoThresholdQueries = 10;  // "use round robin IF > N queries..."
-    int autoWindowSec = 60;         // "...within this many seconds"
+    bool roundRobin = true;
 
     bool empty() const { return nodes.empty(); }
     // Enabled nodes, best priority first (stable for equal priorities).
@@ -382,6 +390,11 @@ public:
     void upsertSavedContract(const SavedContract& saved);  // keyed by chain+account
     bool removeSavedContract(const std::string& chainId, const std::string& account);
 
+    // --- saved actions ------------------------------------------------------
+    const std::vector<SavedAction>& savedActions() const { return savedActions_; }
+    void upsertSavedAction(const SavedAction& saved);  // keyed by chain+contract+action
+    bool removeSavedAction(const SavedAction& saved);
+
     // --- pinned queries ----------------------------------------------------
     const std::vector<PinnedQuery>& pinnedQueries() const { return pinned_; }
     void upsertPinnedQuery(const PinnedQuery& query);  // also adds its tile
@@ -448,6 +461,7 @@ private:
     std::vector<Contact> contacts_;
     std::vector<MsigTemplate> msigTemplates_;
     std::vector<SavedContract> savedContracts_;
+    std::vector<SavedAction> savedActions_;
     std::vector<std::string> accountGroups_;  // ordered, nameable sections
     int64_t lastBackupAt_ = 0;
     std::vector<LinkSession> links_;

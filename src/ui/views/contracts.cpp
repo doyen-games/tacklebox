@@ -5,6 +5,8 @@
 
 #include "core/util.hpp"
 #include "ui/app_ui.hpp"
+#include "ui/qa.hpp"
+#include "ui/ui_helpers.h"
 #include "ui/widgets.hpp"
 
 namespace tb::ui {
@@ -80,6 +82,26 @@ void drawActionForm(AppState& state, Controller& controller, const dwarfkit::ABI
     ImGui::PushFont(fonts().uiSemi, kTextLg);
     ImGui::TextUnformatted(actionName.c_str());
     ImGui::PopFont();
+    // Bookmark: pinned actions surface in the saved-actions dropdown.
+    {
+        const NetworkDef* net = state.currentNetwork();
+        std::string chainId = net ? net->chainId : "";
+        SavedAction key{chainId, state.contracts.account, actionName};
+        bool saved = false;
+        for (const auto& s : state.vault.savedActions)
+            if (s.chainId == key.chainId && s.contract == key.contract &&
+                s.action == key.action)
+                saved = true;
+        ImGui::SameLine(0, 8);
+        if (iconButton("##savea", Icon::Pin,
+                       saved ? "Remove from saved actions" : "Save this action",
+                       saved ? col::Cyan : col::Slate, 13.0f)) {
+            if (saved)
+                controller.removeActionBookmark(key);
+            else
+                controller.saveActionBookmark(key);
+        }
+    }
     if (!structDef) {
         subtext("No parameter struct found in the ABI for this action.");
     } else {
@@ -261,28 +283,68 @@ void drawContracts(AppState& state, Controller& controller) {
             controller.loadContract(trim(contractBuf));
     }
 
-    // Saved contracts: one-click chips for the ones this chain uses a lot.
+    // Saved contracts + saved actions: per-chain dropdowns for one-click
+    // recall; the pin icons (contract card / action form) feed them.
     {
         const NetworkDef* net = state.currentNetwork();
         std::string chainId = net ? net->chainId : "";
-        bool any = false;
-        for (const auto& saved : state.vault.savedContracts) {
-            if (saved.chainId != chainId) continue;
-            ImGui::PushID(saved.account.c_str());
-            float w = ImGui::CalcTextSize(saved.account.c_str()).x + 26.0f;
-            if (any && ImGui::GetContentRegionAvail().x < w + 6)
-                ImGui::NewLine();
-            else if (any)
-                ImGui::SameLine(0, 6);
-            any = true;
-            if (neonButton(saved.account.c_str(), BtnKind::Subtle, {w, 26})) {
-                std::snprintf(contractBuf, sizeof contractBuf, "%s",
-                              saved.account.c_str());
-                controller.loadContract(saved.account);
+        int savedContracts = 0, savedActions = 0;
+        for (const auto& saved : state.vault.savedContracts)
+            if (saved.chainId == chainId) ++savedContracts;
+        for (const auto& saved : state.vault.savedActions)
+            if (saved.chainId == chainId) ++savedActions;
+        if (savedContracts > 0 || savedActions > 0) {
+            if (savedContracts > 0) {
+                ImGui::SetNextItemWidth(::ui::S(220.0f));
+                if (qa::forceOpen("saved-contracts")) qa::openCombo("##savedc");
+                if (ImGui::BeginCombo("##savedc", "saved contracts...")) {
+                    for (const auto& saved : state.vault.savedContracts) {
+                        if (saved.chainId != chainId) continue;
+                        ImGui::PushID(saved.account.c_str());
+                        if (ImGui::Selectable(saved.account.c_str(), false)) {
+                            std::snprintf(contractBuf, sizeof contractBuf, "%s",
+                                          saved.account.c_str());
+                            controller.loadContract(saved.account);
+                        }
+                        ::ui::HandOnHover();
+                        ImGui::SameLine();
+                        if (iconButton("##rmsc", Icon::Trash, "Remove bookmark",
+                                       col::Slate, 11.0f))
+                            controller.removeContractBookmark(chainId, saved.account);
+                        ImGui::PopID();
+                    }
+                    ImGui::EndCombo();
+                }
+                ::ui::HandOnHover();
             }
-            ImGui::PopID();
+            if (savedActions > 0) {
+                if (savedContracts > 0) ImGui::SameLine(0, 8);
+                ImGui::SetNextItemWidth(::ui::S(240.0f));
+                if (qa::forceOpen("saved-actions")) qa::openCombo("##saveda");
+                if (ImGui::BeginCombo("##saveda", "saved actions...")) {
+                    for (const auto& saved : state.vault.savedActions) {
+                        if (saved.chainId != chainId) continue;
+                        std::string label = saved.contract + "::" + saved.action;
+                        ImGui::PushID(label.c_str());
+                        if (ImGui::Selectable(label.c_str(), false)) {
+                            std::snprintf(contractBuf, sizeof contractBuf, "%s",
+                                          saved.contract.c_str());
+                            state.contracts.jumpAction = saved.action;
+                            controller.loadContract(saved.contract);
+                        }
+                        ::ui::HandOnHover();
+                        ImGui::SameLine();
+                        if (iconButton("##rmsa", Icon::Trash, "Remove bookmark",
+                                       col::Slate, 11.0f))
+                            controller.removeActionBookmark(saved);
+                        ImGui::PopID();
+                    }
+                    ImGui::EndCombo();
+                }
+                ::ui::HandOnHover();
+            }
+            vspace(2);
         }
-        if (any) vspace(2);
     }
     vspace(8);
 
@@ -334,6 +396,8 @@ void drawContracts(AppState& state, Controller& controller) {
     vspace(10);
 
     static int tab = 0;
+    if (!cv.jumpAction.empty()) tab = 0;  // a saved-action pick lands here
+    if (qa::wantsOpen("table-combo")) tab = 1;  // the combo lives in TABLES
     const char* tabs[] = {"ACTIONS", "TABLES"};
     for (int i = 0; i < 2; ++i) {
         bool active = tab == i;
@@ -347,6 +411,10 @@ void drawContracts(AppState& state, Controller& controller) {
         // Two columns: action list, then the generated form.
         float listW = 240.0f;
         static std::string selected;
+        if (!cv.jumpAction.empty()) {
+            selected = cv.jumpAction;
+            cv.jumpAction.clear();
+        }
         if (beginCard("actlist", listW)) {
             for (const auto& action : cv.abi->actions) {
                 std::string name = dwarfkit::Name(action.name).toString();
@@ -379,7 +447,8 @@ void drawContracts(AppState& state, Controller& controller) {
             float avail = ImGui::GetContentRegionAvail().x;
             ImGui::SetNextItemWidth(200);
             static std::string tableSel;
-            if (ImGui::BeginCombo("##table", tableSel.empty() ? "table..." : tableSel.c_str())) {
+            if (qa::forceOpen("table-combo")) qa::openCombo("##table");
+        if (ImGui::BeginCombo("##table", tableSel.empty() ? "table..." : tableSel.c_str())) {
                 for (const auto& table : cv.abi->tables) {
                     std::string name = dwarfkit::Name(table.name).toString();
                     if (ImGui::Selectable(name.c_str(), tableSel == name)) tableSel = name;

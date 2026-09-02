@@ -67,10 +67,7 @@ json endpointListToJson(const EndpointList& list) {
                          {"nick", node.nickname},
                          {"priority", node.priority},
                          {"enabled", node.enabled}});
-    return json{{"nodes", nodes},
-                {"mode", list.mode},
-                {"autoThresholdQueries", list.autoThresholdQueries},
-                {"autoWindowSec", list.autoWindowSec}};
+    return json{{"nodes", nodes}, {"roundRobin", list.roundRobin}};
 }
 
 EndpointList endpointListFromJson(const json& j) {
@@ -92,12 +89,12 @@ EndpointList endpointListFromJson(const json& j) {
             if (url.is_string())
                 list.nodes.push_back({url.get<std::string>(), "", priority++, true});
     }
-    list.mode = j.value("mode", 0);
-    if (list.mode < 0 || list.mode > 2) list.mode = 0;
-    list.autoThresholdQueries = j.value("autoThresholdQueries", 10);
-    list.autoWindowSec = j.value("autoWindowSec", 60);
-    if (list.autoThresholdQueries < 1) list.autoThresholdQueries = 1;
-    if (list.autoWindowSec < 5) list.autoWindowSec = 5;
+    if (j.contains("roundRobin")) {
+        list.roundRobin = j.value("roundRobin", true);
+    } else if (j.contains("mode")) {
+        // Legacy policy migration: Priority -> off; RoundRobin/Auto -> on.
+        list.roundRobin = j.value("mode", 0) != static_cast<int>(SelectMode::Priority);
+    }
     return list;
 }
 
@@ -242,6 +239,11 @@ json Vault::serializePayload() const {
         savedContracts.push_back(
             {{"chain", s.chainId}, {"account", s.account}, {"note", s.note}});
 
+    json savedActions = json::array();
+    for (const auto& s : savedActions_)
+        savedActions.push_back(
+            {{"chain", s.chainId}, {"contract", s.contract}, {"action", s.action}});
+
     json accounts = json::array();
     for (const auto& a : accounts_)
         accounts.push_back({{"chain", a.chainId},
@@ -333,6 +335,7 @@ json Vault::serializePayload() const {
                 {"contacts", contacts},
                 {"msigTemplates", msigTemplates},
                 {"savedContracts", savedContracts},
+                {"savedActions", savedActions},
                 {"accountGroups", accountGroups_},
                 {"lastBackupAt", lastBackupAt_},
                 {"links", links},
@@ -383,6 +386,9 @@ Result<void> Vault::parsePayload(const json& p) {
     for (const auto& s : p.value("savedContracts", json::array()))
         savedContracts_.push_back(
             {s.value("chain", ""), s.value("account", ""), s.value("note", "")});
+    for (const auto& s : p.value("savedActions", json::array()))
+        savedActions_.push_back(
+            {s.value("chain", ""), s.value("contract", ""), s.value("action", "")});
     lastBackupAt_ = p.value("lastBackupAt", int64_t(0));
 
     for (const auto& a : p.value("accounts", json::array()))
@@ -621,6 +627,7 @@ void Vault::wipeState() {
     contacts_.clear();
     msigTemplates_.clear();
     savedContracts_.clear();
+    savedActions_.clear();
     links_.clear();
     lastAccount_.clear();
     security_ = SecurityPrefs{};
@@ -938,6 +945,25 @@ bool Vault::removeSavedContract(const std::string& chainId, const std::string& a
         return s.chainId == chainId && s.account == account;
     });
     if (savedContracts_.size() == before) return false;
+    return bool(save());
+}
+
+void Vault::upsertSavedAction(const SavedAction& saved) {
+    for (const auto& existing : savedActions_)
+        if (existing.chainId == saved.chainId && existing.contract == saved.contract &&
+            existing.action == saved.action)
+            return;  // exact bookmark already present
+    savedActions_.push_back(saved);
+    (void)save();
+}
+
+bool Vault::removeSavedAction(const SavedAction& saved) {
+    size_t before = savedActions_.size();
+    std::erase_if(savedActions_, [&](const SavedAction& s) {
+        return s.chainId == saved.chainId && s.contract == saved.contract &&
+               s.action == saved.action;
+    });
+    if (savedActions_.size() == before) return false;
     return bool(save());
 }
 

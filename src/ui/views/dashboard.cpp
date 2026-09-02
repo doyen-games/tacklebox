@@ -6,6 +6,7 @@
 #include <cinttypes>
 #include <cstdlib>
 
+#include "app/account_util.hpp"
 #include "chain/prices.hpp"
 #include "core/util.hpp"
 #include "guard/engine.hpp"
@@ -158,6 +159,38 @@ void drawBalanceTile(AppState& state, Controller& controller, const AccountRef& 
             ImGui::PopFont();
         }
     }
+    // The whole position: available stays the headline number above; this
+    // line adds staked + delegated + refunding and their sum.
+    {
+        const NetworkDef* net = state.currentNetwork();
+        auto breakdown =
+            acct::stakeBreakdown(data.snap.raw, net ? net->coreSymbol : "4,EOS");
+        if (breakdown.any) {
+            bool phone = layout().phone();
+            auto part = [&](const char* label, const std::string& asset, bool first) {
+                if (!first) {
+                    if (phone)
+                        ImGui::Dummy({0, 0});
+                    else
+                        ImGui::SameLine(0, 12);
+                }
+                ImGui::PushFont(fonts().ui, kMonoSm);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
+                ImGui::TextUnformatted(label);
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+                ImGui::SameLine(0, 5);
+                assetText(asset, kMonoSm, /*dim=*/true);
+            };
+            part("total", breakdown.total, true);
+            part("staked", breakdown.stakedSelf, false);
+            part("delegated", breakdown.stakedDelegated, false);
+            if (breakdown.refunding.rfind("0.", 0) != 0)
+                part("refunding", breakdown.refunding, false);
+            vspace(2);
+        }
+    }
+
     // Registered tokens under the core balance, priced where known.
     if (data.snap.balances.size() > 1 &&
         ImGui::BeginTable("##tokens", 4, ImGuiTableFlags_SizingFixedFit |
@@ -215,8 +248,12 @@ void drawBalanceTile(AppState& state, Controller& controller, const AccountRef& 
     if (neonButton("SEND", BtnKind::Primary, {130, 40}, account.watch))
         state.page = Page::Transfer;
     ImGui::SameLine(0, 10);
-    if (neonButton("RECEIVE", BtnKind::Ghost, {130, 40})) ImGui::OpenPopup("##receive");
+    if (neonButton("RECEIVE", BtnKind::Ghost, {130, 40}) || qa::forceOpen("receive"))
+        ImGui::OpenPopup("##receive");
     ImGui::SetNextWindowSize({320, 0});
+    if (qa::active())
+        ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
+                                ImGuiCond_Appearing, {0.5f, 0.5f});
     if (ImGui::BeginPopup("##receive")) {
         ImGui::PushFont(fonts().uiSemi, kText);
         ImGui::TextUnformatted("Receive to this account");

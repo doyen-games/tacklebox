@@ -56,6 +56,7 @@ struct VaultSnapshot {
     std::vector<Contact> contacts;          // address book
     std::vector<MsigTemplate> msigTemplates;
     std::vector<SavedContract> savedContracts;
+    std::vector<SavedAction> savedActions;
     std::vector<std::string> accountGroups; // pinned wallet sections, in order
     int64_t lastBackupAt = 0;               // last vault export
     uint64_t version = 0;
@@ -224,6 +225,7 @@ struct DeployViewState {
 
 struct ContractsViewState {
     std::string account;          // contract being inspected
+    std::string jumpAction;       // saved-action pick: preselect on next draw
     bool loading = false;
     std::string error;
     std::shared_ptr<dwarfkit::ABI> abi;

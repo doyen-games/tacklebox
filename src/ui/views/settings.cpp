@@ -39,73 +39,30 @@ void drawEndpointPool(AppState& state, Controller& controller, const NetworkDef&
     ImGui::PopStyleColor();
     ImGui::PopFont();
     ImGui::SameLine(::ui::S(86.0f));
-    int mode = list.mode;
-    ImGui::SetNextItemWidth(::ui::S(150.0f));
-    if (qa::forceOpen("pool-mode")) qa::openCombo("##mode");
-    const char* modes[] = {"priority", "round-robin", "auto"};
-    if (ImGui::Combo("##mode", &mode, modes, 3)) {
+    // Round robin is a plain on/off. Off = always the top-priority node;
+    // on = queries rotate across the pool, while single-shot interactions
+    // (broadcasting a signed transaction) still go to the priority node.
+    bool roundRobin = list.roundRobin;
+    ImGui::PushID("rr");
+    if (toggle(phone ? "Round robin" : "Round robin (queries spread across the pool)",
+               &roundRobin,
+               "On: every query rotates across the enabled nodes.\n"
+               "Off: always the top-priority node.\n"
+               "Broadcasting a transaction always uses the priority node.")) {
         NetworkDef updated = net;
-        updated.list(type).mode = mode;
+        updated.list(type).roundRobin = roundRobin;
         controller.addNetwork(updated);
     }
-    ::ui::HandOnHover();
-    tooltip("priority: always the best enabled node.\n"
-            "round-robin: rotate every request.\n"
-            "auto: priority normally, round-robin under load.");
-
-    // Auto policy: the user's IF sentence, on its own line so it fits phones.
-    if (list.mode == static_cast<int>(SelectMode::Auto)) {
-        if (ImGui::BeginTable("##if", 5, ImGuiTableFlags_SizingFixedFit)) {
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            if (!phone) {
-                ImGui::Dummy({::ui::S(78.0f), 0});
-                ImGui::SameLine(0, 0);
-            }
-            ImGui::AlignTextToFramePadding();
-            ImGui::PushFont(fonts().ui, kTextSm);
-            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
-            ImGui::TextUnformatted("round-robin IF >");
-            ImGui::PopStyleColor();
-            ImGui::PopFont();
-            ImGui::TableNextColumn();
-            int threshold = list.autoThresholdQueries;
-            ImGui::SetNextItemWidth(::ui::S(phone ? 56.0f : 64.0f));
-            ImGui::InputInt("##thr", &threshold, 0);
-            if (ImGui::IsItemDeactivatedAfterEdit() && threshold > 0) {
-                NetworkDef updated = net;
-                updated.list(type).autoThresholdQueries = threshold;
-                controller.addNetwork(updated);
-            }
-            ImGui::TableNextColumn();
-            ImGui::AlignTextToFramePadding();
-            ImGui::PushFont(fonts().ui, kTextSm);
-            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
-            ImGui::TextUnformatted("queries in");
-            ImGui::PopStyleColor();
-            ImGui::PopFont();
-            ImGui::TableNextColumn();
-            int window = list.autoWindowSec;
-            ImGui::SetNextItemWidth(::ui::S(phone ? 56.0f : 64.0f));
-            ImGui::InputInt("##win", &window, 0);
-            if (ImGui::IsItemDeactivatedAfterEdit() && window >= 5) {
-                NetworkDef updated = net;
-                updated.list(type).autoWindowSec = window;
-                controller.addNetwork(updated);
-            }
-            ImGui::TableNextColumn();
-            ImGui::AlignTextToFramePadding();
-            ImGui::PushFont(fonts().ui, kTextSm);
-            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
-            if (auto svc = controller.currentService();
-                svc && svc->net().chainId == net.chainId)
-                ImGui::Text("s   (recent: %d)", svc->recentQueries(type));
-            else
-                ImGui::TextUnformatted("s");
-            ImGui::PopStyleColor();
-            ImGui::PopFont();
-            ImGui::EndTable();
-        }
+    ImGui::PopID();
+    if (auto svc = controller.currentService();
+        svc && svc->net().chainId == net.chainId && svc->recentQueries(type) > 0) {
+        ImGui::SameLine(0, 10);
+        ImGui::AlignTextToFramePadding();
+        ImGui::PushFont(fonts().mono, kMonoSm);
+        ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
+        ImGui::Text("%d queries / min", svc->recentQueries(type));
+        ImGui::PopStyleColor();
+        ImGui::PopFont();
     }
 
     // Nodes, best priority first; the last row adds a node.
@@ -292,10 +249,11 @@ void drawNetworks(AppState& state, Controller& controller) {
     }
     sectionTitle("Networks & endpoints");
     subtext("Per chain, per node type: RPC (nodeos), Atomic Assets (NFTs), Hyperion "
-            "(history) and Light API (all-token balances). Priority mode uses the best "
-            "enabled node; round-robin splits requests across them; auto switches to "
-            "round-robin only past your query threshold. Everything lives inside the "
-            "encrypted vault, and RPC chain identity is verified on every probe.");
+            "(history) and Light API (all-token balances). Round robin spreads queries "
+            "across each pool; broadcasting always uses the top-priority node. PING & "
+            "RANK measures every node and reorders each pool fastest-first. Everything "
+            "lives inside the encrypted vault, and RPC chain identity is verified on "
+            "every probe.");
     ::ui::VSpace(0.4f);
 
     for (const auto& net : state.vault.networks) {
@@ -316,7 +274,12 @@ void drawNetworks(AppState& state, Controller& controller) {
         }
         ImGui::SameLine();
         float endX = ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x;
-        ImGui::SetCursorPosX(endX - ::ui::S(124.0f));
+        ImGui::SetCursorPosX(endX - ::ui::S(238.0f));
+        if (neonButton("PING & RANK", BtnKind::Subtle, {::ui::S(106.0f), 26}))
+            controller.rankEndpoints(net.chainId);
+        tooltip("Ping every enabled node and reorder each pool by latency;\n"
+                "the fastest node becomes the priority pick.");
+        ImGui::SameLine(0, 4);
         if (neonButton("PROBE ALL", BtnKind::Subtle, {::ui::S(90.0f), 26}))
             controller.probeEndpoints(net.chainId);
         ImGui::SameLine(0, 4);
@@ -537,6 +500,7 @@ void drawNetworks(AppState& state, Controller& controller) {
         if (!present) addable.push_back(preset);
     }
     if (!addable.empty()) {
+        if (qa::forceOpen("net-preset")) qa::openCombo("##preset");
         if (ImGui::BeginCombo("##preset", presetIdx >= 0 &&
                                                   presetIdx < static_cast<int>(addable.size())
                                               ? addable[presetIdx].name.c_str()
@@ -896,8 +860,12 @@ void drawPortability(AppState& state, Controller& controller) {
     }
     ImGui::SameLine(0, 8);
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 22);
-    if (neonButton("IMPORT", BtnKind::Danger, {110, 38}) && importPath[0])
+    if ((neonButton("IMPORT", BtnKind::Danger, {110, 38}) && importPath[0]) ||
+        qa::forceOpen("import-confirm"))
         ImGui::OpenPopup("##confirmimport");
+    if (qa::active())
+        ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
+                                ImGuiCond_Appearing, {0.5f, 0.5f});
     if (ImGui::BeginPopup("##confirmimport")) {
         ImGui::TextWrapped("Replace the current vault with the imported file?\n"
                            "The wallet locks and the current vault is kept as a backup.");

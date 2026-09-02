@@ -134,6 +134,7 @@ void Controller::refreshSnapshot() {
     snap.contacts = vault_.contacts();
     snap.msigTemplates = vault_.msigTemplates();
     snap.savedContracts = vault_.savedContracts();
+    snap.savedActions = vault_.savedActions();
     snap.accountGroups = vault_.accountGroups();
     snap.lastBackupAt = vault_.lastBackupAt();
     snap.linkSessions = vault_.linkSessions();
@@ -756,6 +757,104 @@ void Controller::probeEndpoints(const std::string& chainId) {
                     state_.health[chainId] = shared->results;
                     state_.busyHealth = false;
                 });
+        });
+    }
+}
+
+void Controller::rankEndpoints(const std::string& chainId) {
+    auto svc = service(chainId);
+    if (!svc || state_.busyHealth) return;
+    state_.busyHealth = true;
+    NetworkDef net = svc->net();
+
+    struct Job {
+        NodeType type;
+        std::string url, nickname;
+    };
+    std::vector<Job> jobs;
+    for (NodeType type : {NodeType::Rpc, NodeType::Atomic, NodeType::Hyperion,
+                          NodeType::Light})
+        for (const auto& node : net.list(type).nodes)
+            if (node.enabled) jobs.push_back({type, node.url, node.nickname});
+    if (jobs.empty()) {
+        state_.busyHealth = false;
+        toast(Toast::Warn, "No enabled endpoints to rank");
+        return;
+    }
+
+    struct Shared {
+        std::mutex mutex;
+        std::vector<EndpointHealth> results;
+        size_t remaining = 0;
+    };
+    auto shared = std::make_shared<Shared>();
+    shared->results.resize(jobs.size());
+    shared->remaining = jobs.size();
+
+    for (size_t i = 0; i < jobs.size(); ++i) {
+        Job job = jobs[i];
+        runner_.run([this, svc, chainId, job, shared, i] {
+            EndpointHealth health = svc->probe(job.type, job.url);
+            health.nickname = job.nickname;
+            bool last = false;
+            {
+                std::lock_guard<std::mutex> lock(shared->mutex);
+                shared->results[i] = std::move(health);
+                last = --shared->remaining == 0;
+            }
+            if (!last) return;
+            runner_.postMain([this, chainId, shared] {
+                state_.health[chainId] = shared->results;
+                // Latency per url; unreachable nodes rank behind everything
+                // that answered but keep their old relative order.
+                std::map<std::string, int> latency;
+                for (const auto& health : shared->results)
+                    latency[health.url] =
+                        health.ok && health.latencyMs >= 0 ? health.latencyMs : INT_MAX;
+                std::string fastest;
+                int fastestMs = INT_MAX;
+                {
+                    std::lock_guard<std::mutex> lock(vaultMutex_);
+                    if (NetworkDef* live = vault_.network(chainId)) {
+                        for (NodeType type : {NodeType::Rpc, NodeType::Atomic,
+                                              NodeType::Hyperion, NodeType::Light}) {
+                            auto& nodes = live->list(type).nodes;
+                            std::stable_sort(
+                                nodes.begin(), nodes.end(),
+                                [&](const Endpoint& a, const Endpoint& b) {
+                                    if (a.enabled != b.enabled) return a.enabled;
+                                    auto la = latency.count(a.url) ? latency[a.url]
+                                                                   : INT_MAX;
+                                    auto lb = latency.count(b.url) ? latency[b.url]
+                                                                   : INT_MAX;
+                                    return la < lb;
+                                });
+                            int priority = 0;
+                            for (auto& node : nodes) node.priority = priority++;
+                        }
+                        auto sorted = live->rpc.enabledSorted();
+                        if (!sorted.empty()) {
+                            const Endpoint* top = sorted.front();
+                            fastest = top->nickname.empty() ? top->url : top->nickname;
+                            if (latency.count(top->url) && latency[top->url] != INT_MAX)
+                                fastestMs = latency[top->url];
+                        }
+                        (void)vault_.save();
+                    }
+                }
+                refreshSnapshot();
+                state_.busyHealth = false;
+                if (fastest.empty()) {
+                    toast(Toast::Warn, "Ranked, but no endpoint answered the probe");
+                } else if (fastestMs != INT_MAX) {
+                    toast(Toast::Success, "Endpoints ranked by latency - primary RPC is "
+                                          "now " + fastest + " (" +
+                                          std::to_string(fastestMs) + " ms)");
+                } else {
+                    toast(Toast::Warn, "Endpoints ranked; the RPC pool never answered - "
+                                       "order unchanged");
+                }
+            });
         });
     }
 }
@@ -2415,6 +2514,67 @@ void Controller::removeContractBookmark(const std::string& chainId,
         vault_.removeSavedContract(chainId, account);
     }
     refreshSnapshot();
+}
+
+void Controller::saveActionBookmark(const SavedAction& saved) {
+    if (saved.contract.empty() || saved.action.empty()) return;
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        vault_.upsertSavedAction(saved);
+    }
+    refreshSnapshot();
+    toast(Toast::Success, saved.contract + "::" + saved.action + " saved");
+}
+
+void Controller::removeActionBookmark(const SavedAction& saved) {
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        vault_.removeSavedAction(saved);
+    }
+    refreshSnapshot();
+}
+
+void Controller::reevaluateSignPrompt() {
+    auto prompt = state_.signPrompt;
+    if (!prompt) return;
+    std::vector<guard::WhitelistRule> rules;
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        rules = vault_.rules();
+    }
+    auto svc = service(prompt->chainId);
+    if (!svc) return;
+    auto at = prompt->signer.find('@');
+    std::string actor =
+        at == std::string::npos ? prompt->signer : prompt->signer.substr(0, at);
+    std::string permission =
+        at == std::string::npos ? std::string("active") : prompt->signer.substr(at + 1);
+    std::vector<guard::ActionInput> inputs;
+    for (const auto& view : prompt->actions)
+        inputs.push_back({view.contract, view.action, view.data, "", ""});
+    runner_.run([this, prompt, svc, rules = std::move(rules), actor, permission,
+                 inputs = std::move(inputs)]() mutable {
+        // The rule was pinned moments ago, so these are warm cache hits.
+        for (auto& input : inputs) {
+            auto hashes = svc->fetchContractHashes(input.contract, 300);
+            if (hashes) {
+                input.codeHash = hashes->codeHash;
+                input.abiHash = hashes->abiHash;
+            }
+        }
+        auto evaluation =
+            guard::evaluate(rules, prompt->chainId, actor, permission, inputs);
+        runner_.postMain([this, prompt, evaluation = std::move(evaluation)] {
+            if (state_.signPrompt != prompt) return;  // prompt already resolved
+            for (size_t i = 0;
+                 i < prompt->actions.size() && i < evaluation.actions.size(); ++i)
+                prompt->actions[i].verdict = evaluation.actions[i];
+            prompt->overall = evaluation.overall;
+        });
+    });
 }
 
 void Controller::msigPropose(const std::string& proposalName,

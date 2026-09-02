@@ -25,19 +25,16 @@ struct ContactEditor {
 ContactEditor contactEditor;
 
 void drawContactEditor(Controller& controller) {
-    static bool live = false;
-    if (contactEditor.open && !live) {
-        ImGui::OpenPopup("Contact");
-        live = true;
-    }
-    if (!live) return;
+    // Reopen every frame while open: survives ImGui-side closes (window
+    // resize across breakpoints); ESC cancels explicitly.
+    if (contactEditor.open) ImGui::OpenPopup("Contact");
     if (beginAdaptiveModal("Contact", 440.0f)) {
         if (!contactEditor.open) {
-            live = false;
             ImGui::CloseCurrentPopup();
             endAdaptiveModal();
             return;
         }
+        if (ImGui::IsKeyPressed(ImGuiKey_Escape, false)) contactEditor.open = false;
         heading(contactEditor.isNew ? "Add contact" : "Edit contact", 24.0f);
         {
             FieldOpts opts;

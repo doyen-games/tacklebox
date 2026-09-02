@@ -16,6 +16,8 @@
 
 #include <imgui_internal.h>  // openCombo: force combo popups for the tour
 
+#include <dwarfkit/antelope/chain/abi.hpp>
+
 #include "app/controller.hpp"
 #include "app/state.hpp"
 #include "chain/netreg.hpp"
@@ -69,13 +71,14 @@ void injectFixtures(AppState& state) {
     v.networks = defaultNetworks();
     std::string eosId = v.networks[0].chainId;
     std::string waxId = v.networks.size() > 1 ? v.networks[1].chainId : eosId;
-    // Exercise the endpoint policy UI: an auto pool with its IF thresholds, a
-    // nicknamed disabled node, and health rows for the settings screenshot.
+    // Exercise the endpoint policy UI: round robin on, a nicknamed disabled
+    // node, and health rows for the settings screenshot.
     NetworkDef& fixtureNet = v.networks[0];
-    fixtureNet.rpc.mode = static_cast<int>(SelectMode::Auto);
-    fixtureNet.rpc.autoThresholdQueries = 200;
-    fixtureNet.rpc.autoWindowSec = 60;
+    fixtureNet.rpc.roundRobin = true;
     if (fixtureNet.rpc.nodes.size() > 1) fixtureNet.rpc.nodes[1].enabled = false;
+    // The Assets page needs an Atomic pool to reach its grid at all.
+    if (fixtureNet.atomic.empty())
+        fixtureNet.atomic.nodes.push_back({"https://aa.example.invalid", "", 0, true});
     for (const auto& node : fixtureNet.rpc.enabledSorted())
         state.health[eosId].push_back(
             {NodeType::Rpc, node->url, node->nickname, true, true, 42, "", ""});
@@ -197,6 +200,64 @@ void injectFixtures(AppState& state) {
     v.savedContracts = {{eosId, "eosio.token", ""},
                         {eosId, "atomicassets", ""},
                         {eosId, "swap.defi", ""}};
+    v.savedActions = {{eosId, "eosio.token", "transfer"},
+                      {eosId, "eosio", "delegatebw"}};
+
+    // A loaded contract so the Contracts page shows the identity card, the
+    // action list (with bookmark pins) and the table browser.
+    ContractsViewState& cv = state.contracts;
+    cv.account = "eosio.token";
+    cv.codeHash = "aa11bb22cc33dd44ee55ff66aa11bb22cc33dd44aa11bb22cc33dd44ee55ff66";
+    cv.abiHash = "1122334455667788991122334455667788991122334455667788991122334455";
+    auto abi = std::make_shared<dwarfkit::ABI>();
+    dwarfkit::ABI::Struct transferStruct;
+    transferStruct.name = "transfer";
+    transferStruct.fields = {{"from", "name"},
+                             {"to", "name"},
+                             {"quantity", "asset"},
+                             {"memo", "string"}};
+    abi->structs.push_back(transferStruct);
+    dwarfkit::ABI::Struct issueStruct;
+    issueStruct.name = "issue";
+    issueStruct.fields = {{"to", "name"}, {"quantity", "asset"}, {"memo", "string"}};
+    abi->structs.push_back(issueStruct);
+    dwarfkit::ABI::Action transferAction;
+    transferAction.name = dwarfkit::Name::from("transfer");
+    transferAction.type = "transfer";
+    abi->actions.push_back(transferAction);
+    dwarfkit::ABI::Action issueAction;
+    issueAction.name = dwarfkit::Name::from("issue");
+    issueAction.type = "issue";
+    abi->actions.push_back(issueAction);
+    dwarfkit::ABI::Table accountsTable;
+    accountsTable.name = dwarfkit::Name::from("accounts");
+    accountsTable.type = "account";
+    abi->tables.push_back(accountsTable);
+    dwarfkit::ABI::Table statTable;
+    statTable.name = dwarfkit::Name::from("stat");
+    statTable.type = "currency_stats";
+    abi->tables.push_back(statTable);
+    cv.abi = abi;
+
+    // Assets grid + detail sheet.
+    AssetsViewState& av = state.assets;
+    av.owner = "seafarer.gm";
+    av.fetchedAt = now;
+    av.assets = dwarfkit::json{
+        {"data",
+         dwarfkit::json::array(
+             {{{"asset_id", "1099511627776"},
+               {"name", "Tackle Crate"},
+               {"owner", "seafarer.gm"},
+               {"template_mint", "42"},
+               {"collection", {{"collection_name", "tacklecrates"}}},
+               {"schema", {{"schema_name", "crates"}}}},
+              {{"asset_id", "1099511627777"},
+               {"name", "Rusty Anchor"},
+               {"owner", "seafarer.gm"},
+               {"template_mint", "7"},
+               {"collection", {{"collection_name", "tacklecrates"}}},
+               {"schema", {{"schema_name", "relics"}}}}})}};
 
     PinnedQuery pin;
     pin.id = "qa-pin-1";
@@ -235,10 +296,17 @@ void injectFixtures(AppState& state) {
     acct.snap.ramBytes = {5100, 12288};
     acct.snap.raw = dwarfkit::json{
         {"created", "2021-04-02T11:22:33.000"},
+        {"core_liquid_balance", "1234.5678 EOS"},
         {"voter_info",
-         {{"proxy", ""}, {"producers", dwarfkit::json::array({"teamgreymass", "aus1genereos"})}}},
+         {{"proxy", ""},
+          {"staked", 2000000},  // 200.0000 EOS total -> 40 delegated out
+          {"producers", dwarfkit::json::array({"teamgreymass", "aus1genereos"})}}},
         {"self_delegated_bandwidth",
-         {{"cpu_weight", "150.0000 EOS"}, {"net_weight", "10.0000 EOS"}}}};
+         {{"cpu_weight", "150.0000 EOS"}, {"net_weight", "10.0000 EOS"}}},
+        {"refund_request",
+         {{"cpu_amount", "3.0000 EOS"},
+          {"net_amount", "2.0000 EOS"},
+          {"request_time", "2026-08-30T10:00:00"}}}};
 
     // Chain-scoped view fixtures, stamped fresh so nothing fetches.
     ExploreViewState& ex = state.explore;
@@ -356,6 +424,8 @@ void showShellPage(AppState& state, Controller& controller, Page page) {
     state.standbyLocked = false;
     injectFixtures(state);
     state.signPrompt.reset();
+    state.pluginPrompt.reset();
+    tb::ui::closeRuleEditor();
     state.page = page;
     controller.noteActivity();
 }
@@ -464,10 +534,10 @@ const Step kSteps[] = {
          g_forceOpenTag = "add-tile";
          g_pageScroll = ::ui::S(99999.0f);  // palette button sits at the bottom
      }},
-    {"24-endpoint-mode-combo",
+    {"24-endpoint-pools",
      [](AppState& s, Controller& c) {
+         // Round-robin toggles + PING & RANK live at the top of the card.
          showShellPage(s, c, Page::Settings);
-         g_forceOpenTag = "pool-mode";
      }},
     {"25-token-combo",
      [](AppState& s, Controller& c) {
@@ -532,6 +602,107 @@ const Step kSteps[] = {
          showLocked(state, c);
          state.standbyLocked = true;  // the note must clear the tagline
      }},
+    // Full modal/dropdown coverage: every surface that only exists after a
+    // click gets its own opened shot.
+    {"35-receive-qr",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Dashboard);
+         g_forceOpenTag = "receive";
+     }},
+    {"36-more-sheet",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Dashboard);
+         g_forceOpenTag = "more-sheet";  // phone bottom-bar sheet
+     }},
+    {"37-reveal-key",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Vault);
+         if (!s.vault.keys.empty()) tb::ui::openRevealModal(s.vault.keys[0].pub);
+     }},
+    {"38-rule-del-confirm",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Whitelist);
+         g_forceOpenTag = "rule-del-confirm";
+     }},
+    {"39-key-del-confirm",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Vault);
+         g_forceOpenTag = "key-del-confirm";
+     }},
+    {"40-import-confirm",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Settings);
+         g_forceOpenTag = "import-confirm";
+     }},
+    {"41-asset-detail",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Assets);
+         if (s.assets.assets.contains("data") && !s.assets.assets["data"].empty())
+             s.assets.selected = s.assets.assets["data"][0];
+     }},
+    {"42-contracts-actions",
+     [](AppState& s, Controller& c) {
+         // Loaded contract: identity card, bookmark pin, generated form.
+         showShellPage(s, c, Page::Contracts);
+     }},
+    {"43-contracts-table-combo",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Contracts);
+         g_forceOpenTag = "table-combo";  // also flips to the TABLES tab
+     }},
+    {"44-sign-whitelist-stacked",
+     [](AppState& state, Controller& c) {
+         // The in-prompt whitelist flow: rule editor stacked over the
+         // signing modal, prefilled from the action.
+         showShellPage(state, c, Page::Dashboard);
+         state.signPrompt = makeSignPrompt(state);
+         guard::WhitelistRule draft;
+         draft.chainId = state.signPrompt->chainId;
+         draft.signer = state.signPrompt->signer;
+         draft.contract = "eosio";
+         draft.action = "updateauth";
+         draft.note = "from signing request";
+         tb::ui::openRuleEditor(draft);
+     }},
+    {"45-vault-grouppick",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Vault);
+         if (s.vault.accountGroups.empty() && !s.vault.accounts.empty())
+             s.vault.accountGroups = {"Daily drivers", "Cold storage"};
+         g_forceOpenTag = "group-pick";
+     }},
+    {"46-create-keymode",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::CreateAccount);
+         g_forceOpenTag = "ca-keymode";
+     }},
+    {"47-network-preset",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Settings);
+         if (s.vault.networks.size() > 1) s.vault.networks.resize(1);
+         g_forceOpenTag = "net-preset";  // the add-network preset picker
+         g_pageScroll = ::ui::S(700.0f);
+     }},
+    {"48-saved-contracts",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Contracts);
+         g_forceOpenTag = "saved-contracts";
+     }},
+    {"49-saved-actions",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Contracts);
+         g_forceOpenTag = "saved-actions";
+     }},
+    {"50-plugin-prompt",
+     [](AppState& state, Controller& c) {
+         showShellPage(state, c, Page::Dashboard);
+         auto prompt = std::make_shared<PluginPrompt>();
+         prompt->title = "Resource provider";
+         prompt->body = "The transaction service offers to cover CPU for this "
+                        "transaction.";
+         prompt->lines = {"fee: 0.0150 EOS", "provider: fuel.example"};
+         state.pluginPrompt = prompt;
+     }},
 };
 constexpr int kStepCount = static_cast<int>(sizeof(kSteps) / sizeof(kSteps[0]));
 constexpr int kSettleFrames = 6;
@@ -554,6 +725,8 @@ bool forceOpen(const char* tag) {
     g_forceOpenUsed = true;
     return true;
 }
+
+bool wantsOpen(const char* tag) { return g_active && g_forceOpenTag == tag; }
 
 void openCombo(const char* label) {
     // BeginCombo's popup id, per imgui internals; must run in the same ID

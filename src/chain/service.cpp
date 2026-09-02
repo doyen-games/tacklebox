@@ -65,25 +65,18 @@ std::string ChainService::pickUrl(NodeType type) {
     auto enabled = list.enabledSorted();
     if (enabled.empty()) return {};
 
-    // Record this query into the sliding window that drives Auto mode.
+    // Record this query into the sliding load window (display only).
     int slot = static_cast<int>(type);
     int64_t now = nowSec();
     auto& window = queryTimes_[slot];
     window.push_back(now);
-    while (!window.empty() && now - window.front() > list.autoWindowSec)
+    while (!window.empty() && now - window.front() > kQueryWindowSec)
         window.pop_front();
 
-    bool roundRobin = false;
-    switch (static_cast<SelectMode>(list.mode)) {
-        case SelectMode::Priority: roundRobin = false; break;
-        case SelectMode::RoundRobin: roundRobin = true; break;
-        case SelectMode::Auto:
-            // "use round robin IF > N queries in the window"
-            roundRobin =
-                static_cast<int>(window.size()) > list.autoThresholdQueries;
-            break;
-    }
-    if (!roundRobin || enabled.size() == 1) return enabled.front()->url;
+    // Round robin (a plain toggle) spreads queries across the whole pool.
+    // Single-target interactions (broadcasting through client()) always go
+    // through the top-priority node instead of this picker.
+    if (!list.roundRobin || enabled.size() == 1) return enabled.front()->url;
     return enabled[rrCounter_[slot]++ % enabled.size()]->url;
 }
 
@@ -91,11 +84,11 @@ int ChainService::recentQueries(NodeType type) {
     std::lock_guard<std::mutex> lock(mutex_);
     int slot = static_cast<int>(type);
     int64_t now = nowSec();
-    int windowSec = net_.list(type).autoWindowSec;
     auto& window = queryTimes_[slot];
-    while (!window.empty() && now - window.front() > windowSec) window.pop_front();
+    while (!window.empty() && now - window.front() > kQueryWindowSec) window.pop_front();
     return static_cast<int>(window.size());
 }
+
 
 bool ChainService::inCooldown(const std::string& url, int64_t now) const {
     auto it = failedUntil_.find(url);

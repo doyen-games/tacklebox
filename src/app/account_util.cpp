@@ -116,4 +116,79 @@ std::optional<std::string> formatStake(const std::string& text, const std::strin
     return std::string(buf);
 }
 
+namespace {
+
+// "150.0000 EOS" -> raw units at `precision`, or 0 on absence/mismatch.
+int64_t assetUnits(const json& parent, const char* field, int precision,
+                   const std::string& code, bool* seen) {
+    if (!parent.is_object() || !parent.contains(field) || !parent[field].is_string())
+        return 0;
+    const std::string& text = parent[field].get_ref<const std::string&>();
+    // Minimal asset parse: amount then symbol code.
+    char parsedCode[16] = {};
+    double amount = 0.0;
+    if (std::sscanf(text.c_str(), "%lf %15s", &amount, parsedCode) != 2) return 0;
+    if (code != parsedCode) return 0;
+    if (seen) *seen = true;
+    return static_cast<int64_t>(std::llround(amount * std::pow(10.0, precision)));
+}
+
+std::string formatUnits(int64_t units, int precision, const std::string& code) {
+    double amount = static_cast<double>(units) / std::pow(10.0, precision);
+    char buf[64];
+    std::snprintf(buf, sizeof buf, "%.*f %s", precision, amount, code.c_str());
+    return buf;
+}
+
+}  // namespace
+
+StakeBreakdown stakeBreakdown(const json& raw, const std::string& coreSymbol) {
+    StakeBreakdown out;
+    int precision = 4;
+    std::string code = coreSymbol;
+    if (auto comma = coreSymbol.find(','); comma != std::string::npos) {
+        precision = std::atoi(coreSymbol.substr(0, comma).c_str());
+        code = coreSymbol.substr(comma + 1);
+    }
+    if (!raw.is_object()) return out;
+
+    bool seen = false;
+    int64_t available =
+        assetUnits(raw, "core_liquid_balance", precision, code, &seen);
+
+    int64_t stakedSelf = 0;
+    if (raw.contains("self_delegated_bandwidth")) {
+        const json& self = raw["self_delegated_bandwidth"];
+        stakedSelf += assetUnits(self, "cpu_weight", precision, code, &seen);
+        stakedSelf += assetUnits(self, "net_weight", precision, code, &seen);
+    }
+
+    // voter_info.staked covers every delegatebw from this account (self and
+    // others) in raw units; the delta beyond self stake is delegated out.
+    int64_t stakedTotal = stakedSelf;
+    if (raw.contains("voter_info") && raw["voter_info"].is_object() &&
+        raw["voter_info"].contains("staked") &&
+        raw["voter_info"]["staked"].is_number()) {
+        stakedTotal = raw["voter_info"]["staked"].get<int64_t>();
+        seen = true;
+    }
+    int64_t stakedDelegated = stakedTotal > stakedSelf ? stakedTotal - stakedSelf : 0;
+
+    int64_t refunding = 0;
+    if (raw.contains("refund_request")) {
+        const json& refund = raw["refund_request"];
+        refunding += assetUnits(refund, "cpu_amount", precision, code, &seen);
+        refunding += assetUnits(refund, "net_amount", precision, code, &seen);
+    }
+
+    out.any = seen;
+    out.available = formatUnits(available, precision, code);
+    out.stakedSelf = formatUnits(stakedSelf, precision, code);
+    out.stakedDelegated = formatUnits(stakedDelegated, precision, code);
+    out.refunding = formatUnits(refunding, precision, code);
+    out.total =
+        formatUnits(available + stakedSelf + stakedDelegated + refunding, precision, code);
+    return out;
+}
+
 }  // namespace tb::acct

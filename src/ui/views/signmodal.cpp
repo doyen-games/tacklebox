@@ -128,7 +128,7 @@ void drawActionCard(const SignPrompt::ActionView& action, size_t index, bool& wa
         if (action.verdict.level == guard::VerdictLevel::Unlisted ||
             action.verdict.level == guard::VerdictLevel::ConstraintFail) {
             vspace(2);
-            if (neonButton("DRAFT WHITELIST RULE FROM THIS", BtnKind::Subtle, {240, 28}))
+            if (neonButton("WHITELIST THIS ACTION...", BtnKind::Subtle, {220, 28}))
                 wantRule = true;
         }
     }
@@ -316,7 +316,6 @@ void drawSignModal(AppState& state, Controller& controller) {
                       prompt->overall == guard::VerdictLevel::StalePin;
 
     auto approve = [&] {
-        if (wantRuleFromAction) { /* handled below, before resolution */ }
         controller.resolveSignPrompt(true);
         secureWipe(signPw, sizeof signPw);
         signPwError.clear();
@@ -387,15 +386,15 @@ void drawSignModal(AppState& state, Controller& controller) {
         }
     }
 
-    // Stage a whitelist draft for after the modal closes.
+    // Whitelist-in-place: the rule editor opens STACKED above this prompt,
+    // prefilled from the action's parameters. Saving re-evaluates the
+    // verdict badges, then the user continues to approve - no page change.
     if (wantRuleFromAction) {
         auto draft = controller.draftRuleFromAction(prompt->actions[ruleActionIndex],
                                                     prompt->chainId, prompt->signer);
         openRuleEditor(draft);
-        state.page = Page::Whitelist;
-        controller.toast(Toast::Info,
-                         "Rule drafted from the action - finish it after this decision");
     }
+    drawRuleEditorModal(state, controller);
 
     endAdaptiveModal();
     ImGui::PopStyleColor();
