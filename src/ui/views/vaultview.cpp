@@ -272,22 +272,29 @@ void drawVaultView(AppState& state, Controller& controller) {
                 if (net.chainId == account.chainId) network = &net;
 
             bool selected = static_cast<int>(i) == state.selectedAccount;
+            // Everything on this row centers on one line: the grip, the
+            // name, the badges and the three controls share a centerline.
+            float rowH = ImGui::GetFrameHeight();
             if (selected) {
                 ImVec2 pos = ImGui::GetCursorScreenPos();
-                glowLine(ImGui::GetWindowDrawList(), {pos.x - 8, pos.y + 2},
-                         {pos.x - 8, pos.y + 20}, col::Cyan, 0.6f, 3.0f);
+                glowLine(ImGui::GetWindowDrawList(), {pos.x - 8, pos.y + 4},
+                         {pos.x - 8, pos.y + rowH - 4}, col::Cyan, 0.6f, 3.0f);
             }
+            float rowTop = ImGui::GetCursorPosY();
+            ImGui::SetCursorPosY(rowTop + (rowH - ImGui::GetFrameHeight() * 0.8f) * 0.5f);
             if (int dropped = dragGrip("##accounts", static_cast<int>(i),
                                        account.display().c_str());
                 dropped >= 0) {
                 acctFrom = dropped;
                 acctTo = static_cast<int>(i);
             }
-            ImGui::SameLine(0, 6);
+            ImGui::SameLine(0, 8);
+            ImGui::SetCursorPosY(rowTop);
+            ImGui::AlignTextToFramePadding();
             ImGui::PushFont(fonts().mono, kMono);
             ImGui::TextUnformatted(account.display().c_str());
             ImGui::PopFont();
-            ImGui::SameLine();
+            ImGui::SameLine(0, 8);
             badge(network ? network->name.c_str() : "unknown chain",
                   network && network->testnet ? col::Warn : col::CyanDim);
             if (account.watch) {
@@ -300,9 +307,15 @@ void drawVaultView(AppState& state, Controller& controller) {
             }
             ImGui::SameLine();
             float endX = ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x;
-            ImGui::SetCursorPosX(endX - 100);
-            ImGui::SetNextItemWidth(28);
-            if (ImGui::BeginCombo("##grouppick", "", ImGuiComboFlags_NoPreview)) {
+            ImGui::SetCursorPosX(endX - 104);
+            ImGui::SetCursorPosY(rowTop + (rowH - 26.0f) * 0.5f);
+            // Compact picker: the arrow box matches the USE button height.
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {6, 4});
+            ImGui::SetNextItemWidth(26);
+            bool groupPickOpen = ImGui::BeginCombo("##grouppick", "",
+                                                   ImGuiComboFlags_NoPreview);
+            ImGui::PopStyleVar();
+            if (groupPickOpen) {
                 if (ImGui::Selectable("ungrouped", account.group.empty()))
                     controller.setAccountGroup(account.key(), "");
                 for (const auto& group : state.vault.accountGroups) {
@@ -331,14 +344,17 @@ void drawVaultView(AppState& state, Controller& controller) {
             }
             ::ui::HandOnHover();
             tooltip("Pin this wallet to a named section of the account selector");
-            ImGui::SameLine(0, 2);
-            if (!selected && neonButton("USE", BtnKind::Subtle, {36, 26}))
+            ImGui::SameLine(0, 4);
+            ImGui::SetCursorPosY(rowTop + (rowH - 26.0f) * 0.5f);
+            if (!selected && neonButton("USE", BtnKind::Subtle, {40, 26}))
                 controller.selectAccount(static_cast<int>(i));
-            if (selected) ImGui::Dummy({36, 26});
-            ImGui::SameLine(0, 2);
+            if (selected) ImGui::Dummy({40, 26});
+            ImGui::SameLine(0, 4);
+            ImGui::SetCursorPosY(rowTop + (rowH - 26.0f) * 0.5f);
             if (iconButton("##rmacct", Icon::Trash, "Remove account", col::Slate, 14.0f))
                 controller.removeAccount(account);
             ImGui::PopID();
+            vspace(2);
         }
         if (acctFrom >= 0 && acctTo >= 0 && acctFrom != acctTo)
             controller.moveAccount(static_cast<size_t>(acctFrom),
@@ -396,55 +412,65 @@ void drawVaultView(AppState& state, Controller& controller) {
         static char actorBuf[16] = {};
         static char permBuf[16] = "active";
         static int chainIdx = 0;
-        float avail = ImGui::GetContentRegionAvail().x;
 
-        ImGui::BeginGroup();
-        ImGui::PushFont(fonts().uiSemi, kTextSm);
-        ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
-        ImGui::TextUnformatted("Network");
-        ImGui::PopStyleColor();
-        ImGui::PopFont();
-        ImGui::SetNextItemWidth(avail * 0.28f);
-        if (ImGui::BeginCombo("##chain",
-                              state.vault.networks.empty()
-                                  ? "no networks"
-                                  : state.vault.networks[static_cast<size_t>(chainIdx) %
-                                                         state.vault.networks.size()]
-                                        .name.c_str())) {
-            for (int n = 0; n < static_cast<int>(state.vault.networks.size()); ++n)
-                if (ImGui::Selectable(state.vault.networks[n].name.c_str(), chainIdx == n))
-                    chainIdx = n;
-            ImGui::EndCombo();
-        }
-        ImGui::EndGroup();
-        ImGui::SameLine(0, 10);
-        ImGui::BeginGroup();
-        {
-            FieldOpts opts;
-            opts.mono = true;
-            opts.placeholder = "accountname";
-            opts.width = avail * 0.28f;
-            textField("Account", actorBuf, sizeof actorBuf, opts);
-        }
-        ImGui::EndGroup();
-        ImGui::SameLine(0, 10);
-        ImGui::BeginGroup();
-        {
-            FieldOpts opts;
-            opts.mono = true;
-            opts.width = avail * 0.16f;
-            textField("Permission", permBuf, sizeof permBuf, opts);
-        }
-        ImGui::EndGroup();
-        ImGui::SameLine(0, 10);
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 22);
-        if (neonButton("ADD", BtnKind::Primary, {80, 38}) && actorBuf[0] &&
-            !state.vault.networks.empty()) {
-            controller.addAccount(
-                state.vault.networks[static_cast<size_t>(chainIdx) % state.vault.networks.size()]
-                    .chainId,
-                toLower(trim(actorBuf)), toLower(trim(permBuf)));
-            actorBuf[0] = 0;
+        // One row, four columns; every field top-aligns under an identical
+        // label line, and the ADD button matches the field height exactly.
+        auto fieldLabel = [](const char* text) {
+            ImGui::PushFont(fonts().uiSemi, kTextSm);
+            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+            ImGui::TextUnformatted(text);
+            ImGui::PopStyleColor();
+            ImGui::PopFont();
+            ImGui::Dummy({0, 1});
+        };
+        if (ImGui::BeginTable("##addacct", 4, ImGuiTableFlags_SizingStretchProp)) {
+            ImGui::TableSetupColumn("net", ImGuiTableColumnFlags_WidthStretch, 0.30f);
+            ImGui::TableSetupColumn("acct", ImGuiTableColumnFlags_WidthStretch, 0.34f);
+            ImGui::TableSetupColumn("perm", ImGuiTableColumnFlags_WidthStretch, 0.20f);
+            ImGui::TableSetupColumn("add", ImGuiTableColumnFlags_WidthFixed,
+                                    ::ui::S(92.0f));
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            fieldLabel("Network");
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::BeginCombo("##chain",
+                                  state.vault.networks.empty()
+                                      ? "no networks"
+                                      : state.vault.networks[static_cast<size_t>(chainIdx) %
+                                                             state.vault.networks.size()]
+                                            .name.c_str())) {
+                for (int n = 0; n < static_cast<int>(state.vault.networks.size()); ++n)
+                    if (ImGui::Selectable(state.vault.networks[n].name.c_str(),
+                                          chainIdx == n))
+                        chainIdx = n;
+                ImGui::EndCombo();
+            }
+            ::ui::HandOnHover();
+            ImGui::TableNextColumn();
+            {
+                FieldOpts opts;
+                opts.mono = true;
+                opts.placeholder = "accountname";
+                textField("Account", actorBuf, sizeof actorBuf, opts);
+            }
+            ImGui::TableNextColumn();
+            {
+                FieldOpts opts;
+                opts.mono = true;
+                textField("Permission", permBuf, sizeof permBuf, opts);
+            }
+            ImGui::TableNextColumn();
+            fieldLabel(" ");  // spacer so the button starts level with the fields
+            if (neonButton("ADD", BtnKind::Primary, {-FLT_MIN, ImGui::GetFrameHeight()}) &&
+                actorBuf[0] && !state.vault.networks.empty()) {
+                controller.addAccount(
+                    state.vault.networks[static_cast<size_t>(chainIdx) %
+                                         state.vault.networks.size()]
+                        .chainId,
+                    toLower(trim(actorBuf)), toLower(trim(permBuf)));
+                actorBuf[0] = 0;
+            }
+            ImGui::EndTable();
         }
         subtext("The account is checked on-chain; if a vault key appears in the chosen "
                 "permission's authority it links automatically, otherwise it is added "

@@ -241,15 +241,32 @@ int main(int argc, char** argv) {
 
     bool running = true;
     bool textInputActive = false;
+    int swapInterval = 1;
     while (running) {
+        const Uint64 frameStartNs = SDL_GetTicksNS();
         bool focused = (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS) != 0;
         bool busy = runner.pending() > 0 || state.signPrompt || state.pluginPrompt ||
                     !state.toasts.empty() || !state.pipelineStatus.empty();
 
+        // Framerate policy (Settings > Performance): each state has its own
+        // cap; 0 means display sync, background -1 means match the focused
+        // cap. Animations stay smooth in the background by default (30).
+        int cap = focused ? tb::ui::cosmetics().fpsFocused
+                          : (tb::ui::cosmetics().fpsBackground < 0
+                                 ? tb::ui::cosmetics().fpsFocused
+                                 : tb::ui::cosmetics().fpsBackground);
+        int wantSwap = cap == 0 ? 1 : 0;  // caps pace manually; sync otherwise
+        if (wantSwap != swapInterval) {
+            SDL_GL_SetSwapInterval(wantSwap);
+            swapInterval = wantSwap;
+        }
+
         SDL_Event event;
-        // Idle politely when unfocused and quiet; stay hot otherwise.
+        // Unfocused and quiet: sleep in the event wait for the frame budget
+        // so a click or deep link still wakes the loop instantly.
         if (!focused && !busy) {
-            if (SDL_WaitEventTimeout(&event, 250)) {
+            int budgetMs = cap > 0 ? (1000 + cap - 1) / cap : 16;
+            if (SDL_WaitEventTimeout(&event, budgetMs)) {
                 do {
                     ImGui_ImplSDL3_ProcessEvent(&event);
                     if (event.type == SDL_EVENT_QUIT) running = false;
@@ -327,6 +344,15 @@ int main(int argc, char** argv) {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         tb::ui::qa::capture(window);
         SDL_GL_SwapWindow(window);
+
+        // Manual pacing for capped modes (the event wait above already spent
+        // part of the budget; only the remainder sleeps).
+        if (cap > 0 && !tb::ui::qa::active()) {
+            const Uint64 budgetNs = 1000000000ull / static_cast<Uint64>(cap);
+            const Uint64 spentNs = SDL_GetTicksNS() - frameStartNs;
+            if (spentNs < budgetNs)
+                SDL_Delay(static_cast<Uint32>((budgetNs - spentNs) / 1000000ull));
+        }
     }
 
     instanceServer.stop();

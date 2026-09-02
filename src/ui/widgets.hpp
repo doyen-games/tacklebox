@@ -20,6 +20,10 @@ void subtext(const char* text);                       // steel, small
 void sectionTitle(const char* text);                  // spaced caps + hairline
 void monoText(const std::string& text, ImU32 color = col::Ice, float size = kMono);
 void vspace(float px);
+// Money gets ONE look app-wide: the quantity in col::Amount, the ticker in
+// col::Ticker, mono. Anything shaped like "12.3456 WAX" splits; any other
+// string renders whole in the amount color. dim mutes both (secondary rows).
+void assetText(const std::string& asset, float size = kMono, bool dim = false);
 
 // --- containers -------------------------------------------------------------
 // A bordered panel. width 0 = full available width. Always pair with endCard.
@@ -66,6 +70,15 @@ void emptyState(Icon icon, const char* title, const char* sub);
 // Key/value row; copyable adds a copy icon (plain clipboard, non-sensitive).
 void kvRow(const char* key, const std::string& value, bool mono = false,
            bool copyable = false);
+// kvRow for money: the value renders through assetText.
+void kvAsset(const char* key, const std::string& asset);
+
+// Scrollable body for a modal form with a pinned footer (save/cancel row).
+// Desktop: auto-height capped to the viewport. Phone sheet: fills all the
+// remaining height, leaving exactly footerReserve. Always pair with
+// endModalBody before drawing the footer.
+void beginModalBody(const char* id, float footerReserve);
+void endModalBody();
 void jsonTree(const dwarfkit::json& value, const char* id);
 void drawQr(const std::string& text, float targetPx);
 

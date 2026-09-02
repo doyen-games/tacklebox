@@ -33,6 +33,11 @@ inline const ImU32 Warn      = rgba(0xFFB020);
 inline const ImU32 Danger    = rgba(0xFF3D5F);
 inline const ImU32 Violet    = rgba(0xB44BFF);  // auto-sign accent
 
+// Money gets one look everywhere (widgets.hpp assetText): the quantity in a
+// luminous near-white, the ticker in gold. Nothing else uses these two.
+inline const ImU32 Amount    = rgba(0xEAFBFF);
+inline const ImU32 Ticker    = rgba(0xFFC845);
+
 inline ImU32 alpha(ImU32 color, float a) {
     unsigned v = static_cast<unsigned>((color >> IM_COL32_A_SHIFT & 0xFF) * a);
     return (color & ~IM_COL32_A_MASK) | (v << IM_COL32_A_SHIFT);
@@ -69,6 +74,10 @@ struct Cosmetics {
     // before the GL context exists, so it lives here and not in the vault;
     // changes apply at the next launch.
     bool preferHighPerfGpu = true;
+    // Framerate caps, in Hz. Focused: 0 = display sync (vsync), else a cap.
+    // Background: -1 = match focused, else a cap; 4 is the power-saver trickle.
+    int fpsFocused = 0;
+    int fpsBackground = 30;
 };
 Cosmetics& cosmetics();
 void loadCosmetics();

@@ -7,6 +7,8 @@
 #include <dwarfkit/core/json.hpp>
 #include <dwarfkit/core/result.hpp>
 
+#include "vault/vault.hpp"
+
 namespace tb::autopilot {
 
 // floor(percent% of `balance`), optionally leaving `reserve` untouched.
@@ -29,5 +31,18 @@ struct TemplateContext {
     int64_t unixSec = 0;  // stamp for {date}/{time}
 };
 dwarfkit::json applyTemplates(dwarfkit::json data, const TemplateContext& context);
+
+// --- schedule timing ---------------------------------------------------------
+// Local-time parsing for the schedule editor. Malformed text errors so the
+// editor can refuse the save instead of silently misfiring.
+dwarfkit::Result<int64_t> parseDateTimeLocal(const std::string& text);  // "YYYY-MM-DD HH:MM[:SS]"
+dwarfkit::Result<int> parseTimeOfDay(const std::string& text);          // "HH:MM[:SS]"
+std::string formatDateTimeLocal(int64_t unixSec);
+std::string formatTimeOfDay(int secOfDay);
+
+// The next moment this schedule should fire, strictly after `now`. Honors
+// the timing mode, the startAt/endAt window and lastRunAt. Returns 0 when
+// no future run is possible (past endAt) - the caller disables the schedule.
+int64_t computeNextRun(const Schedule& schedule, int64_t now);
 
 }  // namespace tb::autopilot

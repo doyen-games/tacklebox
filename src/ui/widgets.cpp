@@ -63,6 +63,37 @@ void monoText(const std::string& text, ImU32 color, float size) {
 
 void vspace(float px) { ImGui::Dummy({0, px}); }
 
+void assetText(const std::string& asset, float size, bool dim) {
+    // "12.3456 WAX" splits at the last space when the tail reads as a symbol
+    // code (1-7 uppercase letters); anything else renders whole.
+    size_t space = asset.rfind(' ');
+    bool split = space != std::string::npos && space + 1 < asset.size() &&
+                 asset.size() - space - 1 <= 7;
+    if (split)
+        for (size_t i = space + 1; i < asset.size(); ++i)
+            if (asset[i] < 'A' || asset[i] > 'Z') {
+                split = false;
+                break;
+            }
+    ImU32 amount = dim ? col::alpha(col::Amount, 0.62f) : col::Amount;
+    ImU32 ticker = dim ? col::alpha(col::Ticker, 0.62f) : col::Ticker;
+    ImGui::PushFont(fonts().mono, size);
+    if (!split) {
+        ImGui::PushStyleColor(ImGuiCol_Text, col::vec(amount));
+        ImGui::TextUnformatted(asset.c_str());
+        ImGui::PopStyleColor();
+    } else {
+        ImGui::PushStyleColor(ImGuiCol_Text, col::vec(amount));
+        ImGui::TextUnformatted(asset.c_str(), asset.c_str() + space);
+        ImGui::PopStyleColor();
+        ImGui::SameLine(0, ImGui::CalcTextSize(" ").x);
+        ImGui::PushStyleColor(ImGuiCol_Text, col::vec(ticker));
+        ImGui::TextUnformatted(asset.c_str() + space + 1);
+        ImGui::PopStyleColor();
+    }
+    ImGui::PopFont();
+}
+
 // --- containers -------------------------------------------------------------
 
 bool beginCard(const char* id, float width, bool brackets) {
@@ -465,12 +496,44 @@ void kvRow(const char* key, const std::string& value, bool mono, bool copyable) 
     ImGui::PopID();
 }
 
+void beginModalBody(const char* id, float footerReserve) {
+    if (layout().phone()) {
+        // The sheet owns the whole screen; the body takes everything above
+        // the footer so the form scrolls and the buttons never move.
+        ImGui::BeginChild(id, {0, -footerReserve}, ImGuiChildFlags_NavFlattened);
+        return;
+    }
+    float cap = ImGui::GetMainViewport()->WorkSize.y * 0.9f - footerReserve -
+                ImGui::GetCursorPosY();
+    if (cap < 160.0f) cap = 160.0f;
+    ImGui::SetNextWindowSizeConstraints({0, 0}, {FLT_MAX, cap});
+    ImGui::BeginChild(id, {0, 0},
+                      ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_NavFlattened);
+}
+
+void endModalBody() { ImGui::EndChild(); }
+
+void kvAsset(const char* key, const std::string& asset) {
+    ImGui::PushID(key);
+    ImGui::PushFont(fonts().ui, kTextSm);
+    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+    ImGui::TextUnformatted(key);
+    ImGui::PopStyleColor();
+    ImGui::PopFont();
+    ImGui::SameLine(150);
+    assetText(asset);
+    ImGui::PopID();
+}
+
 static void jsonValueInline(const dwarfkit::json& v) {
     using dwarfkit::json;
     if (v.is_string()) {
         const std::string& s = v.get_ref<const std::string&>();
-        bool isAsset = tb::guard::parseAsset(s).has_value();
-        monoText("\"" + s + "\"", isAsset ? col::Cyan : col::rgba(0xA8E6C9), kMonoSm);
+        // Assets get the app-wide amount/ticker treatment, even inside JSON.
+        if (tb::guard::parseAsset(s).has_value())
+            assetText(s, kMonoSm);
+        else
+            monoText("\"" + s + "\"", col::rgba(0xA8E6C9), kMonoSm);
     } else if (v.is_number()) {
         monoText(v.dump(), col::Cyan, kMonoSm);
     } else if (v.is_boolean()) {
@@ -558,6 +621,8 @@ bool beginAdaptiveModal(const char* id, float desktopWidth) {
     const Layout& lay = layout();
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,
                         lay.phone() ? ImVec2(16, 14) : ImVec2(22, 20));
+    // Opaque sheet: the page underneath must never ghost through a form.
+    ImGui::PushStyleColor(ImGuiCol_PopupBg, col::vec(col::Bg));
     if (lay.phone()) {
         // Full-screen sheet: content fills the viewport minus safe areas.
         ImGui::SetNextWindowPos({vp->WorkPos.x, vp->WorkPos.y + lay.safeTop});
@@ -567,7 +632,10 @@ bool beginAdaptiveModal(const char* id, float desktopWidth) {
                                            ImGuiWindowFlags_NoResize |
                                                ImGuiWindowFlags_NoTitleBar |
                                                ImGuiWindowFlags_NoMove);
-        if (!open) ImGui::PopStyleVar();
+        if (!open) {
+            ImGui::PopStyleColor();
+            ImGui::PopStyleVar();
+        }
         return open;
     }
     float w = std::min(desktopWidth, vp->WorkSize.x - 60.0f);
@@ -578,12 +646,16 @@ bool beginAdaptiveModal(const char* id, float desktopWidth) {
                                        ImGuiWindowFlags_NoResize |
                                            ImGuiWindowFlags_NoTitleBar |
                                            ImGuiWindowFlags_NoMove);
-    if (!open) ImGui::PopStyleVar();
+    if (!open) {
+        ImGui::PopStyleColor();
+        ImGui::PopStyleVar();
+    }
     return open;
 }
 
 void endAdaptiveModal() {
     ImGui::EndPopup();
+    ImGui::PopStyleColor();
     ImGui::PopStyleVar();
 }
 

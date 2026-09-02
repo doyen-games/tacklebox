@@ -49,24 +49,28 @@ void drawUnlock(AppState& state, Controller& controller) {
     float top = min.y + size.y * 0.24f;
     wordmark(centerX, top);
 
-    // Autopilot standby: the UI is locked while schedules keep running.
+    // Autopilot standby: the UI is locked while schedules keep running. The
+    // note sits below the tagline (wordmark bottom = top + 42 + 44 + line),
+    // and the password card shifts down with it.
+    float cardTop = top + 130.0f;
     if (state.standbyLocked) {
         ImGui::PushFont(fonts().uiSemi, kTextSm);
         const char* note = "AUTOPILOT STANDBY - SCHEDULES STILL RUNNING";
         ImVec2 noteSize = ImGui::CalcTextSize(note);
-        dl->AddText({centerX - noteSize.x * 0.5f, top + 92.0f},
+        float noteY = top + 86.0f + ImGui::GetTextLineHeight() + 14.0f;
+        dl->AddText({centerX - noteSize.x * 0.5f, noteY},
                     col::alpha(col::Warn, 0.95f), note);
+        cardTop = noteY + ImGui::GetTextLineHeight() + 26.0f;
         ImGui::PopFont();
     }
 
     // Card with the password prompt.
     float cardW = std::min(380.0f, size.x - 36.0f);
-    ImGui::SetCursorScreenPos({centerX - cardW * 0.5f, top + 130.0f});
     static char password[256] = {};
     static float shake = 0.0f;
     shake = std::max(0.0f, shake - ImGui::GetIO().DeltaTime * 3.0f);
     float shakeOff = shake > 0 ? std::sin(shake * 40.0f) * 6.0f * shake : 0.0f;
-    ImGui::SetCursorScreenPos({centerX - cardW * 0.5f + shakeOff, top + 130.0f});
+    ImGui::SetCursorScreenPos({centerX - cardW * 0.5f + shakeOff, cardTop});
 
     ImGui::BeginGroup();
     ImGui::PushItemWidth(cardW);

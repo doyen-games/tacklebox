@@ -124,13 +124,15 @@ void drawBalanceTile(AppState& state, Controller& controller, const AccountRef& 
         symbol = balance.substr(sp + 1);
     }
     ImGui::PushFont(fonts().mono, kHero);
+    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Amount));
     ImGui::TextUnformatted(amount.c_str());
+    ImGui::PopStyleColor();
     ImGui::PopFont();
     if (!symbol.empty()) {
         ImGui::SameLine(0, 10);
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 16);
         ImGui::PushFont(fonts().uiSemi, kTextLg);
-        ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Cyan));
+        ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Ticker));
         ImGui::TextUnformatted(symbol.c_str());
         ImGui::PopStyleColor();
         ImGui::PopFont();
@@ -169,7 +171,7 @@ void drawBalanceTile(AppState& state, Controller& controller, const AccountRef& 
             ImGui::PushID(static_cast<int>(i));
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            monoText(token.quantity, col::Ice, kMono);
+            assetText(token.quantity, kMono);
             ImGui::TableNextColumn();
             ImGui::PushFont(fonts().ui, kMonoSm);
             ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));

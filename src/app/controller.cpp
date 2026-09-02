@@ -132,6 +132,8 @@ void Controller::refreshSnapshot() {
     snap.schedules = vault_.schedules();
     snap.dashboardTiles = vault_.dashboardTiles();
     snap.contacts = vault_.contacts();
+    snap.msigTemplates = vault_.msigTemplates();
+    snap.savedContracts = vault_.savedContracts();
     snap.accountGroups = vault_.accountGroups();
     snap.lastBackupAt = vault_.lastBackupAt();
     snap.linkSessions = vault_.linkSessions();
@@ -1910,6 +1912,32 @@ void Controller::loadRamMarket(bool force) {
     });
 }
 
+void Controller::loadDelegations(bool force) {
+    const AccountRef* account = state_.currentAccount();
+    auto svc = currentService();
+    if (!svc || !account) return;
+    ResourcesViewState& rv = state_.resources;
+    if (rv.delegationsLoading) return;
+    bool sameActor = rv.delegationsActor == account->actor;
+    if (!force && sameActor && nowSec() - rv.delegationsFetchedAt < 120) return;
+    rv.delegationsLoading = true;
+    rv.delegationsError.clear();
+    std::string actor = account->actor;
+    runner_.run([this, svc, actor] {
+        auto rows = svc->fetchDelegations(actor);
+        runner_.postMain([this, actor, rows = std::move(rows)] {
+            ResourcesViewState& view = state_.resources;
+            view.delegationsLoading = false;
+            view.delegationsFetchedAt = nowSec();
+            view.delegationsActor = actor;
+            if (rows)
+                view.delegations = *rows;
+            else
+                view.delegationsError = rows.error().message;
+        });
+    });
+}
+
 void Controller::quotePowerUp(double cpuMs, double netKb) {
     auto svc = currentService();
     if (!svc || state_.resources.quoteLoading) return;
@@ -2033,6 +2061,30 @@ void Controller::loadProducers(bool force) {
                 view.producers = *producers;
             else
                 view.error = producers.error().message;
+        });
+    });
+}
+
+void Controller::loadProxies(bool force) {
+    auto svc = currentService();
+    if (!svc) return;
+    GovernanceViewState& gv = state_.governance;
+    if (gv.proxiesLoading) return;
+    if (!force && nowSec() - gv.proxiesFetchedAt < 600) return;
+    gv.proxiesLoading = true;
+    gv.proxiesError.clear();
+    runner_.run([this, svc] {
+        // One registry read plus a voters-table lookup per proxy: capped so
+        // the worst case stays a few dozen light RPCs on a worker thread.
+        auto proxies = svc->fetchProxies(48);
+        runner_.postMain([this, proxies = std::move(proxies)] {
+            GovernanceViewState& view = state_.governance;
+            view.proxiesLoading = false;
+            view.proxiesFetchedAt = nowSec();
+            if (proxies)
+                view.proxies = *proxies;
+            else
+                view.proxiesError = proxies.error().message;
         });
     });
 }
@@ -2306,6 +2358,63 @@ void Controller::stageMsigAction(const json& action) {
     state_.msig.draftActions.push_back(action);
     toast(Toast::Info, "Action staged in the msig builder (" +
                            std::to_string(state_.msig.draftActions.size()) + " staged)");
+}
+
+void Controller::saveMsigTemplate(const MsigTemplate& tpl) {
+    if (tpl.id.empty() || tpl.label.empty()) return;
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        vault_.upsertMsigTemplate(tpl);
+    }
+    refreshSnapshot();
+    toast(Toast::Success, "Msig template '" + tpl.label + "' saved");
+}
+
+void Controller::removeMsigTemplate(const std::string& id) {
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        vault_.removeMsigTemplate(id);
+    }
+    refreshSnapshot();
+}
+
+void Controller::applyMsigTemplate(const std::string& id) {
+    for (const auto& tpl : state_.vault.msigTemplates) {
+        if (tpl.id != id) continue;
+        MsigViewState& mv = state_.msig;
+        mv.draftActions.clear();
+        if (tpl.actions.is_array())
+            for (const auto& action : tpl.actions) mv.draftActions.push_back(action);
+        std::snprintf(mv.draftName, sizeof mv.draftName, "%s", tpl.proposalName.c_str());
+        std::snprintf(mv.draftRequested, sizeof mv.draftRequested, "%s",
+                      tpl.requested.c_str());
+        mv.draftExpireHours = tpl.expireHours;
+        toast(Toast::Info, "Template '" + tpl.label + "' loaded into the builder");
+        return;
+    }
+}
+
+void Controller::saveContractBookmark(const SavedContract& saved) {
+    if (saved.account.empty()) return;
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        vault_.upsertSavedContract(saved);
+    }
+    refreshSnapshot();
+    toast(Toast::Success, saved.account + " saved to contracts");
+}
+
+void Controller::removeContractBookmark(const std::string& chainId,
+                                        const std::string& account) {
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        if (!vault_.unlocked()) return;
+        vault_.removeSavedContract(chainId, account);
+    }
+    refreshSnapshot();
 }
 
 void Controller::msigPropose(const std::string& proposalName,
@@ -2641,7 +2750,30 @@ void Controller::refreshPinnedQueries() {
 
 void Controller::saveSchedule(Schedule schedule) {
     if (schedule.intervalSec < 60) schedule.intervalSec = 60;
-    if (schedule.nextRunAt == 0) schedule.nextRunAt = nowSec() + schedule.intervalSec;
+    {
+        std::lock_guard<std::mutex> lock(vaultMutex_);
+        // Keep the armed clock when nothing about the timing changed (an
+        // ARM/PAUSE flip or a label edit must not push the next run out);
+        // recompute otherwise.
+        if (Schedule* old = vault_.schedule(schedule.id)) {
+            bool timingChanged = old->intervalSec != schedule.intervalSec ||
+                                 old->timingMode != schedule.timingMode ||
+                                 old->dailySec != schedule.dailySec ||
+                                 old->startAt != schedule.startAt ||
+                                 old->endAt != schedule.endAt;
+            if (!timingChanged && schedule.nextRunAt == 0)
+                schedule.nextRunAt = old->nextRunAt;
+            else if (timingChanged)
+                schedule.nextRunAt = 0;
+        }
+    }
+    if (schedule.nextRunAt == 0) {
+        schedule.nextRunAt = autopilot::computeNextRun(schedule, nowSec());
+        if (schedule.nextRunAt == 0) {
+            schedule.enabled = false;
+            schedule.lastResult = "never armed: the end time is already in the past";
+        }
+    }
     {
         std::lock_guard<std::mutex> lock(vaultMutex_);
         vault_.upsertSchedule(schedule);
@@ -2691,10 +2823,16 @@ void Controller::runScheduleNow(const std::string& id) {
             std::lock_guard<std::mutex> lock(vaultMutex_);
             if (Schedule* s = vault_.schedule(id)) {
                 s->lastRunAt = nowSec();
-                int64_t wait = s->intervalSec;
-                if (backoff) wait = std::min<int64_t>(wait, 300);
-                s->nextRunAt = nowSec() + wait;
                 s->lastResult = result;
+                if (backoff) {
+                    s->nextRunAt = nowSec() + std::min<int64_t>(s->intervalSec, 300);
+                } else {
+                    s->nextRunAt = autopilot::computeNextRun(*s, nowSec());
+                    if (s->nextRunAt == 0) {  // past the schedule's end time
+                        s->enabled = false;
+                        s->lastResult += "  -  schedule reached its end time";
+                    }
+                }
                 (void)vault_.save();
             }
         }
@@ -2815,16 +2953,46 @@ void Controller::tickSchedules() {
         schedules = vault_.schedules();
     }
     int64_t now = nowSec();
+    bool mutated = false;
     for (const auto& schedule : schedules) {
         if (!schedule.enabled || schedule.nextRunAt == 0) continue;
         if (state_.schedulesInFlight.count(schedule.id)) continue;
-        bool due = schedule.nextRunAt <= now;
-        // A long-missed run only fires when the schedule opted in.
-        if (due && now - schedule.nextRunAt > schedule.intervalSec &&
-            !schedule.runMissedOnUnlock)
+        // Not in the run window yet.
+        if (schedule.startAt > 0 && now < schedule.startAt) continue;
+        // The window closed while armed: retire the schedule once.
+        if (schedule.endAt > 0 && schedule.nextRunAt > schedule.endAt) {
+            std::lock_guard<std::mutex> lock(vaultMutex_);
+            if (Schedule* s = vault_.schedule(schedule.id)) {
+                s->enabled = false;
+                s->lastResult = "schedule reached its end time";
+                (void)vault_.save();
+                mutated = true;
+            }
             continue;
+        }
+        bool due = schedule.nextRunAt <= now;
+        // A long-missed run only fires when the schedule opted in. Grid and
+        // daily clocks roll forward to the next point instead of re-asking
+        // every tick forever.
+        if (due && now - schedule.nextRunAt > schedule.intervalSec &&
+            !schedule.runMissedOnUnlock) {
+            if (schedule.timingMode != Schedule::TimeRelative) {
+                std::lock_guard<std::mutex> lock(vaultMutex_);
+                if (Schedule* s = vault_.schedule(schedule.id)) {
+                    s->nextRunAt = autopilot::computeNextRun(*s, now);
+                    if (s->nextRunAt == 0) {
+                        s->enabled = false;
+                        s->lastResult = "schedule reached its end time";
+                    }
+                    (void)vault_.save();
+                    mutated = true;
+                }
+            }
+            continue;
+        }
         if (due) runScheduleNow(schedule.id);
     }
+    if (mutated) refreshSnapshot();
 }
 
 // --- tokens ---------------------------------------------------------------------

@@ -1,13 +1,16 @@
 // Autopilot: recurring transactions that only ever execute through the
 // guard's auto-sign fast path. A schedule is a clock, never a fourth way to
 // sign - no matching pinned auto-sign rule means the run is skipped.
+#include <algorithm>
 #include <cctype>
 #include <cstring>
 
+#include "app/autopilot_util.hpp"
 #include "core/util.hpp"
 #include "guard/rules.hpp"
 #include "ui/app_ui.hpp"
 #include "ui/layout.hpp"
+#include "ui/qa.hpp"
 #include "ui/ui_helpers.h"
 #include "ui/widgets.hpp"
 
@@ -25,6 +28,11 @@ struct EditorState {
     int intervalValue = 24;
     int intervalUnit = 2;  // 0 minutes, 1 hours, 2 days
     bool runMissed = true;
+    // timing
+    int timingMode = 0;            // Schedule::TimingMode
+    char dailyBuf[12] = "09:00:00";
+    char startBuf[24] = {};        // "" = now
+    char endBuf[24] = {};          // "" = never
     // dynamic amount
     int amountMode = 0;            // Schedule::AmountFixed / AmountPercent
     char percentBuf[8] = "10";
@@ -72,6 +80,9 @@ void drawEditor(AppState& state, Controller& controller) {
                 "ONLY through a pinned auto-sign whitelist rule matching this exact "
                 "action - otherwise the run is recorded as blocked.");
         vspace(6);
+        // The form scrolls in a bounded child so SAVE/CANCEL never leave the
+        // screen (same treatment as the rule editor).
+        beginModalBody("##schedbody", ImGui::GetFrameHeight() * 2.4f + 60.0f);
 
         FieldOpts opts;
         opts.placeholder = "what future-you should see";
@@ -141,20 +152,84 @@ void drawEditor(AppState& state, Controller& controller) {
                     "Exact 'to' and cap nothing.");
         }
 
+        // Timing: how the clock advances, then the interval or exact time,
+        // then the optional start/end window.
         ImGui::PushFont(fonts().uiSemi, kTextSm);
         ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
-        ImGui::TextUnformatted("Every");
+        ImGui::TextUnformatted("Timing");
         ImGui::PopStyleColor();
         ImGui::PopFont();
-        ImGui::SetNextItemWidth(110);
-        ImGui::InputInt("##ival", &editor.intervalValue);
-        ImGui::SameLine(0, 6);
-        ImGui::SetNextItemWidth(110);
-        const char* units[] = {"minutes", "hours", "days"};
-        ImGui::Combo("##iunit", &editor.intervalUnit, units, 3);
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.62f);
+        const char* timings[] = {"interval, counted from the last run",
+                                 "fixed grid: start time + interval (no drift)",
+                                 "daily at an exact time"};
+        if (qa::forceOpen("sched-timing")) qa::openCombo("##timing");
+        ImGui::Combo("##timing", &editor.timingMode, timings, 3);
+        ::ui::HandOnHover();
+
+        if (editor.timingMode == Schedule::TimeDaily) {
+            ImGui::AlignTextToFramePadding();
+            ImGui::PushFont(fonts().uiSemi, kTextSm);
+            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+            ImGui::TextUnformatted("At");
+            ImGui::PopStyleColor();
+            ImGui::PopFont();
+            ImGui::SameLine(0, 8);
+            ImGui::SetNextItemWidth(110);
+            ImGui::PushFont(fonts().mono, kMonoSm);
+            ImGui::InputTextWithHint("##daily", "HH:MM:SS", editor.dailyBuf,
+                                     sizeof editor.dailyBuf);
+            ImGui::PopFont();
+            ImGui::SameLine(0, 8);
+            subtext("local time, every day");
+        } else {
+            ImGui::AlignTextToFramePadding();
+            ImGui::PushFont(fonts().uiSemi, kTextSm);
+            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+            ImGui::TextUnformatted("Every");
+            ImGui::PopStyleColor();
+            ImGui::PopFont();
+            ImGui::SameLine(0, 8);
+            ImGui::SetNextItemWidth(110);
+            ImGui::InputInt("##ival", &editor.intervalValue);
+            ImGui::SameLine(0, 6);
+            ImGui::SetNextItemWidth(110);
+            const char* units[] = {"minutes", "hours", "days"};
+            ImGui::Combo("##iunit", &editor.intervalUnit, units, 3);
+            if (editor.timingMode == Schedule::TimeAnchored)
+                subtext("Runs land exactly on start, start + interval, start + 2x... "
+                        "missed points roll forward to the next grid point.");
+        }
+
+        // Start / end window (every mode). Empty start = now; empty end =
+        // runs forever.
+        float halfw = (ImGui::GetContentRegionAvail().x - 10) * 0.5f;
+        ImGui::BeginGroup();
+        {
+            FieldOpts f;
+            f.mono = true;
+            f.width = halfw;
+            f.placeholder = "now  (or YYYY-MM-DD HH:MM:SS)";
+            textField(editor.timingMode == Schedule::TimeAnchored ? "Start / grid origin"
+                                                                  : "Start",
+                      editor.startBuf, sizeof editor.startBuf, f);
+        }
+        ImGui::EndGroup();
+        ImGui::SameLine(0, 10);
+        ImGui::BeginGroup();
+        {
+            FieldOpts f;
+            f.mono = true;
+            f.width = halfw;
+            f.placeholder = "never  (or YYYY-MM-DD HH:MM:SS)";
+            textField("End", editor.endBuf, sizeof editor.endBuf, f);
+        }
+        ImGui::EndGroup();
+
         toggle("Run missed executions on unlock", &editor.runMissed,
                "If a run was due while the wallet was closed or locked, fire it on the "
                "next unlock");
+        endModalBody();
         vspace(8);
 
         const AccountRef* account = state.currentAccount();
@@ -197,6 +272,44 @@ void drawEditor(AppState& state, Controller& controller) {
                         amountOk = false;
                     }
                 }
+                // Timing: exact times and window bounds must parse before
+                // anything saves; a bad field keeps the editor open.
+                schedule.timingMode = editor.timingMode;
+                if (amountOk && editor.timingMode == Schedule::TimeDaily) {
+                    auto tod = autopilot::parseTimeOfDay(editor.dailyBuf);
+                    if (!tod) {
+                        controller.toast(Toast::Error, "Daily time: " + tod.error().message);
+                        amountOk = false;
+                    } else {
+                        schedule.dailySec = *tod;
+                        schedule.intervalSec = 86400;  // one grid day
+                    }
+                }
+                if (amountOk && editor.startBuf[0]) {
+                    auto at = autopilot::parseDateTimeLocal(editor.startBuf);
+                    if (!at) {
+                        controller.toast(Toast::Error, "Start: " + at.error().message);
+                        amountOk = false;
+                    } else {
+                        schedule.startAt = *at;
+                    }
+                }
+                if (amountOk && editor.endBuf[0]) {
+                    auto at = autopilot::parseDateTimeLocal(editor.endBuf);
+                    if (!at) {
+                        controller.toast(Toast::Error, "End: " + at.error().message);
+                        amountOk = false;
+                    } else {
+                        schedule.endAt = *at;
+                    }
+                }
+                if (amountOk && schedule.endAt > 0 &&
+                    schedule.endAt <= std::max(schedule.startAt, nowSec())) {
+                    controller.toast(Toast::Error,
+                                     "The end time must be after the start (and not "
+                                     "already in the past)");
+                    amountOk = false;
+                }
                 if (!amountOk) {
                     // Leave the editor open with the inputs intact.
                 } else {
@@ -224,6 +337,12 @@ void drawEditor(AppState& state, Controller& controller) {
 }
 
 }  // namespace
+
+// QA hook: the tour opens the editor without a click.
+void openScheduleEditor() {
+    editor = EditorState{};
+    editor.open = true;
+}
 
 void drawAutopilot(AppState& state, Controller& controller) {
     heading("Autopilot");
@@ -336,18 +455,30 @@ void drawAutopilot(AppState& state, Controller& controller) {
 
             monoText(schedule.contract + "::" + schedule.action + "  @" + schedule.actor,
                      col::Steel, kMonoSm);
-            char line[160];
-            std::snprintf(line, sizeof line, "every %s  |  next in %s%s",
-                          humanInterval(schedule.intervalSec).c_str(),
-                          schedule.nextRunAt > nowSec()
-                              ? formatAgo(2 * nowSec() - schedule.nextRunAt).c_str()
-                              : "due now",
-                          schedule.lastRunAt
-                              ? ("  |  last " + formatAgo(schedule.lastRunAt) + " ago").c_str()
-                              : "");
+            std::string when;
+            switch (schedule.timingMode) {
+                case Schedule::TimeDaily:
+                    when = "daily at " + autopilot::formatTimeOfDay(
+                                             schedule.dailySec < 0 ? 0 : schedule.dailySec);
+                    break;
+                case Schedule::TimeAnchored:
+                    when = "grid every " + humanInterval(schedule.intervalSec);
+                    break;
+                default:
+                    when = "every " + humanInterval(schedule.intervalSec);
+            }
+            when += schedule.nextRunAt > nowSec()
+                        ? "  |  next in " + formatAgo(2 * nowSec() - schedule.nextRunAt)
+                        : "  |  due now";
+            if (schedule.startAt > nowSec())
+                when += "  |  starts " + autopilot::formatDateTimeLocal(schedule.startAt);
+            if (schedule.endAt > 0)
+                when += "  |  ends " + autopilot::formatDateTimeLocal(schedule.endAt);
+            if (schedule.lastRunAt)
+                when += "  |  last " + formatAgo(schedule.lastRunAt) + " ago";
             ImGui::PushFont(fonts().ui, kTextSm);
             ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
-            ImGui::TextUnformatted(line);
+            ImGui::TextWrapped("%s", when.c_str());
             ImGui::PopStyleColor();
             ImGui::PopFont();
             if (!schedule.lastResult.empty()) {
@@ -393,6 +524,16 @@ void drawAutopilot(AppState& state, Controller& controller) {
                     editor.intervalValue = static_cast<int>(schedule.intervalSec / 60);
                 }
                 editor.runMissed = schedule.runMissedOnUnlock;
+                editor.timingMode = schedule.timingMode;
+                if (schedule.dailySec >= 0)
+                    std::snprintf(editor.dailyBuf, sizeof editor.dailyBuf, "%s",
+                                  autopilot::formatTimeOfDay(schedule.dailySec).c_str());
+                if (schedule.startAt > 0)
+                    std::snprintf(editor.startBuf, sizeof editor.startBuf, "%s",
+                                  autopilot::formatDateTimeLocal(schedule.startAt).c_str());
+                if (schedule.endAt > 0)
+                    std::snprintf(editor.endBuf, sizeof editor.endBuf, "%s",
+                                  autopilot::formatDateTimeLocal(schedule.endAt).c_str());
                 editor.amountMode = schedule.amountMode == Schedule::AmountPercent ? 1 : 0;
                 std::snprintf(editor.percentBuf, sizeof editor.percentBuf, "%g",
                               schedule.amountPercent > 0 ? schedule.amountPercent : 10.0);

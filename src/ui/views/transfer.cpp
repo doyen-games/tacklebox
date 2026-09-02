@@ -10,6 +10,88 @@
 
 namespace tb::ui {
 
+namespace {
+
+// Add/edit contact modal: opened from the contacts dropdown or the manage
+// card; saves an optional memo that prefills on pick.
+struct ContactEditor {
+    bool open = false;
+    bool isNew = true;
+    char actor[16] = {};
+    char label[64] = {};
+    char memo[128] = {};
+    std::string chainId;  // scope; "" = any chain
+};
+ContactEditor contactEditor;
+
+void drawContactEditor(Controller& controller) {
+    static bool live = false;
+    if (contactEditor.open && !live) {
+        ImGui::OpenPopup("Contact");
+        live = true;
+    }
+    if (!live) return;
+    if (beginAdaptiveModal("Contact", 440.0f)) {
+        if (!contactEditor.open) {
+            live = false;
+            ImGui::CloseCurrentPopup();
+            endAdaptiveModal();
+            return;
+        }
+        heading(contactEditor.isNew ? "Add contact" : "Edit contact", 24.0f);
+        {
+            FieldOpts opts;
+            opts.mono = true;
+            opts.placeholder = "account name";
+            textField("Account", contactEditor.actor, sizeof contactEditor.actor, opts);
+        }
+        {
+            FieldOpts opts;
+            opts.placeholder = "who this is";
+            textField("Label", contactEditor.label, sizeof contactEditor.label, opts);
+        }
+        {
+            FieldOpts opts;
+            opts.mono = true;
+            opts.placeholder = "optional - prefills the memo field on pick";
+            textField("Saved memo", contactEditor.memo, sizeof contactEditor.memo, opts);
+        }
+        subtext("Exchange deposits: save the memo the exchange assigned you so it can "
+                "never be forgotten.");
+        vspace(6);
+        if (neonButton("SAVE", BtnKind::Primary, {120, 38}, !contactEditor.actor[0])) {
+            Contact contact;
+            contact.actor = toLower(trim(contactEditor.actor));
+            contact.label = trim(contactEditor.label);
+            contact.chainId = contactEditor.chainId;
+            contact.memo = trim(contactEditor.memo);
+            controller.addContact(contact);
+            contactEditor.open = false;
+        }
+        ImGui::SameLine(0, 8);
+        if (neonButton("CANCEL", BtnKind::Ghost, {110, 38})) contactEditor.open = false;
+        endAdaptiveModal();
+    }
+}
+
+}  // namespace
+
+// Opens the add-contact modal (QA tour + the manage card's edit path).
+void openContactEditor(const Contact& prefill, bool isNew) {
+    contactEditor = ContactEditor{};
+    contactEditor.open = true;
+    contactEditor.isNew = isNew;
+    contactEditor.chainId = prefill.chainId;
+    std::snprintf(contactEditor.actor, sizeof contactEditor.actor, "%s",
+                  prefill.actor.c_str());
+    std::snprintf(contactEditor.label, sizeof contactEditor.label, "%s",
+                  prefill.label.c_str());
+    std::snprintf(contactEditor.memo, sizeof contactEditor.memo, "%s",
+                  prefill.memo.c_str());
+}
+
+void drawContactEditorModal(Controller& controller) { drawContactEditor(controller); }
+
 void drawTransfer(AppState& state, Controller& controller) {
     const AccountRef* account = state.currentAccount();
     if (!account) {
@@ -75,7 +157,7 @@ void drawTransfer(AppState& state, Controller& controller) {
                 }
             }
         }
-        if (!balance.empty()) kvRow("Available", balance, true);
+        if (!balance.empty()) kvAsset("Available", balance);
         vspace(8);
 
         FieldOpts toOpts;
@@ -98,6 +180,7 @@ void drawTransfer(AppState& state, Controller& controller) {
                     known = &contact;
 
             ImGui::SetNextItemWidth(140.0f);
+            if (qa::forceOpen("contacts-combo")) qa::openCombo("##contacts");
             if (ImGui::BeginCombo("##contacts", "contacts...")) {
                 for (const auto& contact : state.vault.contacts) {
                     if (!contact.chainId.empty() && contact.chainId != chainId) continue;
@@ -105,8 +188,14 @@ void drawTransfer(AppState& state, Controller& controller) {
                     std::string row =
                         contact.actor +
                         (contact.label.empty() ? "" : "  -  " + contact.label);
-                    if (ImGui::Selectable(row.c_str(), false))
+                    if (!contact.memo.empty()) row += "  [memo]";
+                    if (ImGui::Selectable(row.c_str(), false)) {
                         std::snprintf(to, sizeof to, "%s", contact.actor.c_str());
+                        // A saved memo predisposes the memo field (exchange
+                        // deposits); typed memos are never overwritten.
+                        if (!contact.memo.empty() && !memo[0])
+                            std::snprintf(memo, sizeof memo, "%s", contact.memo.c_str());
+                    }
                     ::ui::HandOnHover();
                     ImGui::SameLine();
                     if (iconButton("##rmct", Icon::Trash, "Remove contact", col::Slate,
@@ -121,13 +210,17 @@ void drawTransfer(AppState& state, Controller& controller) {
                     ImGui::PopStyleColor();
                     ImGui::PopFont();
                 }
+                ImGui::Separator();
+                if (ImGui::Selectable("+ Add contact...", false))
+                    openContactEditor({toStr, "", chainId, ""}, true);
+                ::ui::HandOnHover();
                 ImGui::EndCombo();
             }
             ::ui::HandOnHover();
             if (!toStr.empty() && !known) {
                 ImGui::SameLine(0, 8);
                 if (neonButton("SAVE CONTACT", BtnKind::Subtle, {120, 26}))
-                    controller.addContact({toStr, "", chainId});
+                    openContactEditor({toStr, "", chainId, ""}, true);
             }
 
             static const char* kExchangeDeposits[] = {
@@ -260,6 +353,63 @@ void drawTransfer(AppState& state, Controller& controller) {
         if (account->watch) subtext("Watch-only account: signing is unavailable.");
     }
     endCard();
+    vspace(12);
+
+    // Contacts manager: every saved recipient, with its label, scope and
+    // saved memo, editable in place.
+    if (beginCard("contacts", cardW, true)) {
+        sectionTitle("Contacts");
+        ImGui::SameLine();
+        float addX = ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x;
+        ImGui::SetCursorPosX(addX - 110);
+        if (neonButton("+ ADD", BtnKind::Subtle, {100, 26}))
+            openContactEditor({"", "", account->chainId, ""}, true);
+        if (state.vault.contacts.empty()) {
+            subtext("Nobody saved yet. Contacts fill the recipient (and their saved "
+                    "memo) in one click.");
+        } else {
+            for (const auto& contact : state.vault.contacts) {
+                ImGui::PushID((contact.actor + "|" + contact.chainId).c_str());
+                monoText(contact.actor, col::Ice, kMono);
+                if (!contact.label.empty()) {
+                    ImGui::SameLine(0, 8);
+                    ImGui::PushFont(fonts().ui, kTextSm);
+                    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+                    ImGui::TextUnformatted(contact.label.c_str());
+                    ImGui::PopStyleColor();
+                    ImGui::PopFont();
+                }
+                if (contact.chainId.empty()) {
+                    ImGui::SameLine(0, 6);
+                    badge("ANY CHAIN", col::Slate);
+                }
+                if (!contact.memo.empty()) {
+                    ImGui::SameLine(0, 6);
+                    badge("MEMO", col::CyanDim);
+                }
+                ImGui::SameLine();
+                float endX = ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x;
+                ImGui::SetCursorPosX(endX - 52);
+                if (iconButton("##editct", Icon::Gear, "Edit contact", col::Steel, 14.0f))
+                    openContactEditor(contact, false);
+                ImGui::SameLine(0, 4);
+                if (iconButton("##delct", Icon::Trash, "Delete contact", col::Danger,
+                               14.0f))
+                    controller.removeContact(contact.actor, contact.chainId);
+                if (!contact.memo.empty()) {
+                    ImGui::PushFont(fonts().mono, kMonoSm);
+                    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
+                    ImGui::TextUnformatted(("memo: " + contact.memo).c_str());
+                    ImGui::PopStyleColor();
+                    ImGui::PopFont();
+                }
+                ImGui::PopID();
+            }
+        }
+    }
+    endCard();
+
+    drawContactEditorModal(controller);
 }
 
 }  // namespace tb::ui

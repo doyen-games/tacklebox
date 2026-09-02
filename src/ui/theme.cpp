@@ -44,14 +44,27 @@ void loadCosmetics() {
     cosmetics().glow = j.value("glow", 1.0f);
     cosmetics().reduceMotion = j.value("reduceMotion", false);
     cosmetics().preferHighPerfGpu = j.value("preferHighPerfGpu", true);
+    cosmetics().fpsFocused = j.value("fpsFocused", 0);
+    cosmetics().fpsBackground = j.value("fpsBackground", 30);
     if (cosmetics().glow < 0.0f) cosmetics().glow = 0.0f;
     if (cosmetics().glow > 1.0f) cosmetics().glow = 1.0f;
+    // Only the values the pickers offer; anything else falls to the default.
+    auto oneOf = [](int v, std::initializer_list<int> allowed, int fallback) {
+        for (int a : allowed)
+            if (v == a) return v;
+        return fallback;
+    };
+    cosmetics().fpsFocused = oneOf(cosmetics().fpsFocused, {0, 240, 120, 60, 30}, 0);
+    cosmetics().fpsBackground =
+        oneOf(cosmetics().fpsBackground, {-1, 60, 30, 15, 4}, 30);
 }
 
 void saveCosmetics() {
     dwarfkit::json j{{"glow", cosmetics().glow},
                      {"reduceMotion", cosmetics().reduceMotion},
-                     {"preferHighPerfGpu", cosmetics().preferHighPerfGpu}};
+                     {"preferHighPerfGpu", cosmetics().preferHighPerfGpu},
+                     {"fpsFocused", cosmetics().fpsFocused},
+                     {"fpsBackground", cosmetics().fpsBackground}};
     atomicWrite(settingsFile(), j.dump(2), /*keepBackup=*/false);
 }
 

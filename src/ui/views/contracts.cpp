@@ -260,6 +260,30 @@ void drawContracts(AppState& state, Controller& controller) {
         if ((neonButton("LOAD", BtnKind::Primary, {110, 38}) || entered) && contractBuf[0])
             controller.loadContract(trim(contractBuf));
     }
+
+    // Saved contracts: one-click chips for the ones this chain uses a lot.
+    {
+        const NetworkDef* net = state.currentNetwork();
+        std::string chainId = net ? net->chainId : "";
+        bool any = false;
+        for (const auto& saved : state.vault.savedContracts) {
+            if (saved.chainId != chainId) continue;
+            ImGui::PushID(saved.account.c_str());
+            float w = ImGui::CalcTextSize(saved.account.c_str()).x + 26.0f;
+            if (any && ImGui::GetContentRegionAvail().x < w + 6)
+                ImGui::NewLine();
+            else if (any)
+                ImGui::SameLine(0, 6);
+            any = true;
+            if (neonButton(saved.account.c_str(), BtnKind::Subtle, {w, 26})) {
+                std::snprintf(contractBuf, sizeof contractBuf, "%s",
+                              saved.account.c_str());
+                controller.loadContract(saved.account);
+            }
+            ImGui::PopID();
+        }
+        if (any) vspace(2);
+    }
     vspace(8);
 
     ContractsViewState& cv = state.contracts;
@@ -282,6 +306,25 @@ void drawContracts(AppState& state, Controller& controller) {
         ImGui::PushFont(fonts().uiSemi, kTextLg);
         ImGui::TextUnformatted(cv.account.c_str());
         ImGui::PopFont();
+        // Bookmark toggle: the pin keeps this contract on the chip row above.
+        {
+            const NetworkDef* net = state.currentNetwork();
+            std::string chainId = net ? net->chainId : "";
+            bool saved = false;
+            for (const auto& s : state.vault.savedContracts)
+                if (s.chainId == chainId && s.account == cv.account) saved = true;
+            ImGui::SameLine();
+            float pinX = ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x;
+            ImGui::SetCursorPosX(pinX - 26);
+            if (iconButton("##savec", Icon::Pin,
+                           saved ? "Remove from saved contracts" : "Save this contract",
+                           saved ? col::Cyan : col::Slate, 14.0f)) {
+                if (saved)
+                    controller.removeContractBookmark(chainId, cv.account);
+                else
+                    controller.saveContractBookmark({chainId, cv.account, ""});
+            }
+        }
         kvRow("Code hash", cv.codeHash.empty() ? "-" : cv.codeHash, true, true);
         kvRow("ABI hash", cv.abiHash.empty() ? "-" : cv.abiHash, true, true);
         subtext("A whitelist rule pinned to this contract locks onto these exact hashes; "

@@ -53,6 +53,16 @@ struct AccountSnapshot {
     }
 };
 
+// One registered vote proxy, enriched with its live weight.
+struct ProxyInfo {
+    std::string account;
+    std::string name;     // registry display name
+    std::string slogan;
+    std::string website;
+    double weight = 0.0;  // proxied_vote_weight (chain-native decay units)
+    bool active = false;  // voter row still has is_proxy set
+};
+
 // RAM Bancor market snapshot.
 struct RamMarket {
     std::string pricePerKb;   // "0.0134 WAX" (before the 0.5% fee)
@@ -126,6 +136,12 @@ public:
     Result<PowerUpQuote> quotePowerUp(double cpuMs, double netKb);
     // Raw get_producers rows (sorted by vote weight by the node).
     Result<json> fetchProducers(int limit);
+    // Registered vote proxies from the on-chain regproxyinfo registry,
+    // ranked by live proxied vote weight (descending). One voters-table
+    // lookup per proxy, so maxProxies caps the round trips.
+    Result<std::vector<ProxyInfo>> fetchProxies(size_t maxProxies);
+    // Outgoing CPU/NET delegations: eosio delband rows scoped to the actor.
+    Result<json> fetchDelegations(const std::string& actor);
 
     // --- explorer calls -----------------------------------------------------
     Result<json> fetchInfo();                       // raw get_info

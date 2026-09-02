@@ -223,7 +223,24 @@ json Vault::serializePayload() const {
 
     json contacts = json::array();
     for (const auto& c : contacts_)
-        contacts.push_back({{"actor", c.actor}, {"label", c.label}, {"chain", c.chainId}});
+        contacts.push_back({{"actor", c.actor},
+                            {"label", c.label},
+                            {"chain", c.chainId},
+                            {"memo", c.memo}});
+
+    json msigTemplates = json::array();
+    for (const auto& t : msigTemplates_)
+        msigTemplates.push_back({{"id", t.id},
+                                 {"label", t.label},
+                                 {"proposalName", t.proposalName},
+                                 {"requested", t.requested},
+                                 {"expireHours", t.expireHours},
+                                 {"actions", t.actions}});
+
+    json savedContracts = json::array();
+    for (const auto& s : savedContracts_)
+        savedContracts.push_back(
+            {{"chain", s.chainId}, {"account", s.account}, {"note", s.note}});
 
     json accounts = json::array();
     for (const auto& a : accounts_)
@@ -264,6 +281,10 @@ json Vault::serializePayload() const {
                              {"lastRunAt", s.lastRunAt},
                              {"nextRunAt", s.nextRunAt},
                              {"lastResult", s.lastResult},
+                             {"timingMode", s.timingMode},
+                             {"dailySec", s.dailySec},
+                             {"startAt", s.startAt},
+                             {"endAt", s.endAt},
                              {"amountMode", s.amountMode},
                              {"amountField", s.amountField},
                              {"amountPercent", s.amountPercent},
@@ -310,6 +331,8 @@ json Vault::serializePayload() const {
                 {"schedules", schedules},
                 {"dashboard", dashboard},
                 {"contacts", contacts},
+                {"msigTemplates", msigTemplates},
+                {"savedContracts", savedContracts},
                 {"accountGroups", accountGroups_},
                 {"lastBackupAt", lastBackupAt_},
                 {"links", links},
@@ -343,8 +366,23 @@ Result<void> Vault::parsePayload(const json& p) {
         keys_.push_back({k.value("pub", ""), k.value("wif", ""), k.value("label", ""),
                          k.value("created", int64_t(0)), k.value("backedUp", false)});
     for (const auto& c : p.value("contacts", json::array()))
-        contacts_.push_back(
-            {c.value("actor", ""), c.value("label", ""), c.value("chain", "")});
+        contacts_.push_back({c.value("actor", ""), c.value("label", ""),
+                             c.value("chain", ""), c.value("memo", "")});
+    for (const auto& t : p.value("msigTemplates", json::array())) {
+        MsigTemplate tpl;
+        tpl.id = t.value("id", "");
+        tpl.label = t.value("label", "");
+        tpl.proposalName = t.value("proposalName", "");
+        tpl.requested = t.value("requested", "");
+        tpl.expireHours = t.value("expireHours", 168);
+        tpl.actions = t.contains("actions") && t["actions"].is_array()
+                          ? t["actions"]
+                          : json::array();
+        if (!tpl.id.empty()) msigTemplates_.push_back(std::move(tpl));
+    }
+    for (const auto& s : p.value("savedContracts", json::array()))
+        savedContracts_.push_back(
+            {s.value("chain", ""), s.value("account", ""), s.value("note", "")});
     lastBackupAt_ = p.value("lastBackupAt", int64_t(0));
 
     for (const auto& a : p.value("accounts", json::array()))
@@ -419,6 +457,10 @@ Result<void> Vault::parsePayload(const json& p) {
         sched.amountTokenContract = sj.value("amountTokenContract", "");
         sched.amountTokenCode = sj.value("amountTokenCode", "");
         sched.amountReserve = sj.value("amountReserve", "");
+        sched.timingMode = sj.value("timingMode", 0);
+        sched.dailySec = sj.value("dailySec", -1);
+        sched.startAt = sj.value("startAt", int64_t(0));
+        sched.endAt = sj.value("endAt", int64_t(0));
         if (!sched.id.empty()) schedules_.push_back(std::move(sched));
     }
 
@@ -576,6 +618,9 @@ void Vault::wipeState() {
     audit_.clear();
     pinned_.clear();
     schedules_.clear();
+    contacts_.clear();
+    msigTemplates_.clear();
+    savedContracts_.clear();
     links_.clear();
     lastAccount_.clear();
     security_ = SecurityPrefs{};
@@ -855,6 +900,44 @@ bool Vault::removeContact(const std::string& actor, const std::string& chainId) 
         return c.actor == actor && c.chainId == chainId;
     });
     if (contacts_.size() == before) return false;
+    return bool(save());
+}
+
+void Vault::upsertMsigTemplate(const MsigTemplate& tpl) {
+    for (auto& existing : msigTemplates_)
+        if (existing.id == tpl.id) {
+            existing = tpl;
+            (void)save();
+            return;
+        }
+    msigTemplates_.push_back(tpl);
+    (void)save();
+}
+
+bool Vault::removeMsigTemplate(const std::string& id) {
+    size_t before = msigTemplates_.size();
+    std::erase_if(msigTemplates_, [&](const MsigTemplate& t) { return t.id == id; });
+    if (msigTemplates_.size() == before) return false;
+    return bool(save());
+}
+
+void Vault::upsertSavedContract(const SavedContract& saved) {
+    for (auto& existing : savedContracts_)
+        if (existing.chainId == saved.chainId && existing.account == saved.account) {
+            existing = saved;
+            (void)save();
+            return;
+        }
+    savedContracts_.push_back(saved);
+    (void)save();
+}
+
+bool Vault::removeSavedContract(const std::string& chainId, const std::string& account) {
+    size_t before = savedContracts_.size();
+    std::erase_if(savedContracts_, [&](const SavedContract& s) {
+        return s.chainId == chainId && s.account == account;
+    });
+    if (savedContracts_.size() == before) return false;
     return bool(save());
 }
 

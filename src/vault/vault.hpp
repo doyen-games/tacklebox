@@ -48,6 +48,25 @@ struct Contact {
     std::string actor;
     std::string label;
     std::string chainId;  // "" = any chain
+    std::string memo;     // optional saved memo, prefilled on pick
+};
+
+// A reusable eosio.msig proposal shape: predisposed actions + approvals so a
+// recurring proposal is two clicks, not a form.
+struct MsigTemplate {
+    std::string id;
+    std::string label;
+    std::string proposalName;  // suggested name (editable before proposing)
+    std::string requested;     // "alice@active, bob@active"
+    int expireHours = 168;
+    dwarfkit::json actions = dwarfkit::json::array();
+};
+
+// A bookmarked contract in the Contracts browser.
+struct SavedContract {
+    std::string chainId;
+    std::string account;
+    std::string note;
 };
 
 struct AccountRef {
@@ -218,6 +237,12 @@ struct PinnedQuery {
 struct Schedule {
     enum AmountMode { AmountFixed = 0, AmountPercent = 1 };
 
+    // How the clock advances. Relative: next = last run + interval (drifts
+    // with execution). Anchored: a fixed grid from startAt stepped by the
+    // interval (never drifts; missed points roll forward). Daily: the next
+    // occurrence of dailySec (local seconds after midnight).
+    enum TimingMode { TimeRelative = 0, TimeAnchored = 1, TimeDaily = 2 };
+
     std::string id;
     std::string label;
     std::string chainId;
@@ -232,6 +257,11 @@ struct Schedule {
     int64_t lastRunAt = 0;
     int64_t nextRunAt = 0;
     std::string lastResult;   // human-readable outcome of the last attempt
+
+    int timingMode = TimeRelative;
+    int dailySec = -1;        // TimeDaily: seconds after local midnight
+    int64_t startAt = 0;      // no run before this; anchored grid origin. 0 = now
+    int64_t endAt = 0;        // no run after this; the schedule ends. 0 = never
 
     int amountMode = AmountFixed;
     std::string amountField;           // dotted field in data, e.g. "quantity"
@@ -342,6 +372,16 @@ public:
     void upsertContact(const Contact& contact);  // keyed by actor+chainId
     bool removeContact(const std::string& actor, const std::string& chainId);
 
+    // --- msig templates -----------------------------------------------------
+    const std::vector<MsigTemplate>& msigTemplates() const { return msigTemplates_; }
+    void upsertMsigTemplate(const MsigTemplate& tpl);  // keyed by id
+    bool removeMsigTemplate(const std::string& id);
+
+    // --- saved contracts ----------------------------------------------------
+    const std::vector<SavedContract>& savedContracts() const { return savedContracts_; }
+    void upsertSavedContract(const SavedContract& saved);  // keyed by chain+account
+    bool removeSavedContract(const std::string& chainId, const std::string& account);
+
     // --- pinned queries ----------------------------------------------------
     const std::vector<PinnedQuery>& pinnedQueries() const { return pinned_; }
     void upsertPinnedQuery(const PinnedQuery& query);  // also adds its tile
@@ -406,6 +446,8 @@ private:
     std::vector<Schedule> schedules_;
     std::vector<DashTile> dashboard_ = defaultDashboard();
     std::vector<Contact> contacts_;
+    std::vector<MsigTemplate> msigTemplates_;
+    std::vector<SavedContract> savedContracts_;
     std::vector<std::string> accountGroups_;  // ordered, nameable sections
     int64_t lastBackupAt_ = 0;
     std::vector<LinkSession> links_;

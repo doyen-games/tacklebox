@@ -318,6 +318,66 @@ Result<json> ChainService::fetchProducers(int limit) {
     return rpcCall("/v1/chain/get_producers", json{{"json", true}, {"limit", limit}});
 }
 
+Result<std::vector<ProxyInfo>> ChainService::fetchProxies(size_t maxProxies) {
+    // The community proxy registry (regproxyinfo) is itself an on-chain
+    // table, so this stays inside the chain-endpoint policy.
+    DK_TRY(reg, fetchTableRows(json{{"code", "regproxyinfo"},
+                                    {"scope", "regproxyinfo"},
+                                    {"table", "proxies"},
+                                    {"limit", 200},
+                                    {"json", true}}));
+    std::vector<ProxyInfo> proxies;
+    if (reg.contains("rows") && reg["rows"].is_array())
+        for (const auto& row : reg["rows"]) {
+            ProxyInfo p;
+            p.account = row.value("owner", std::string());
+            p.name = row.value("name", std::string());
+            p.slogan = row.value("slogan", std::string());
+            p.website = row.value("website", std::string());
+            if (!p.account.empty()) proxies.push_back(std::move(p));
+            if (proxies.size() >= maxProxies) break;
+        }
+    if (proxies.empty())
+        return dwarfkit::err(dwarfkit::ErrorKind::NotFound,
+                             "this chain has no regproxyinfo registry; enter a proxy "
+                             "account by hand");
+    // Rank by live proxied vote weight from the system voters table. A miss
+    // just leaves that proxy unranked - the registry row still shows.
+    for (auto& p : proxies) {
+        auto voter = fetchTableRows(json{{"code", "eosio"},
+                                         {"scope", "eosio"},
+                                         {"table", "voters"},
+                                         {"lower_bound", p.account},
+                                         {"limit", 1},
+                                         {"json", true}});
+        if (!voter || !voter->contains("rows") || !(*voter)["rows"].is_array() ||
+            (*voter)["rows"].empty())
+            continue;
+        const json& row = (*voter)["rows"][0];
+        if (row.value("owner", std::string()) != p.account) continue;
+        p.active = row.value("is_proxy", 0) != 0;
+        if (row.contains("proxied_vote_weight")) {
+            const json& w = row["proxied_vote_weight"];
+            p.weight = w.is_number() ? w.get<double>()
+                       : w.is_string() ? std::atof(w.get<std::string>().c_str())
+                                       : 0.0;
+        }
+    }
+    std::stable_sort(proxies.begin(), proxies.end(),
+                     [](const ProxyInfo& a, const ProxyInfo& b) {
+                         return a.weight > b.weight;
+                     });
+    return proxies;
+}
+
+Result<json> ChainService::fetchDelegations(const std::string& actor) {
+    return fetchTableRows(json{{"code", "eosio"},
+                               {"scope", actor},
+                               {"table", "delband"},
+                               {"limit", 200},
+                               {"json", true}});
+}
+
 Result<dwarfkit::ABI> ChainService::fetchAbi(const std::string& contract) {
     return abiCache_->getAbi(dwarfkit::Name::from(contract));
 }

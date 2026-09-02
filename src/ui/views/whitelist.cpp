@@ -192,13 +192,7 @@ void drawEditor(AppState& state, Controller& controller) {
         vspace(8);
         // The form scrolls inside a bounded child so the save/cancel row can
         // never fall off a short window.
-        float footerReserve = ImGui::GetFrameHeight() * 2.4f + 60.0f;
-        float bodyCap = ImGui::GetMainViewport()->WorkSize.y * 0.9f - footerReserve -
-                        ImGui::GetCursorPosY();
-        if (bodyCap < 160.0f) bodyCap = 160.0f;
-        ImGui::SetNextWindowSizeConstraints({0, 0}, {FLT_MAX, bodyCap});
-        ImGui::BeginChild("##rulebody", {0, 0},
-                          ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_NavFlattened);
+        beginModalBody("##rulebody", ImGui::GetFrameHeight() * 2.4f + 60.0f);
 
         // Identity row: combo-first (nobody types 64 hex characters), with a
         // custom option that reveals the raw field for patterns.
@@ -273,8 +267,6 @@ void drawEditor(AppState& state, Controller& controller) {
         ImGui::SameLine(0, 10);
         identityCombo("Signer", editor.signer, sizeof editor.signer, false);
         vspace(4);
-
-        ImGui::EndGroup();
 
         ImGui::BeginGroup();
         {
@@ -367,7 +359,7 @@ void drawEditor(AppState& state, Controller& controller) {
         }
         vspace(10);
 
-        ImGui::EndChild();
+        endModalBody();
         vspace(6);
 
         // Pinning needs a chain the wallet can actually query.
@@ -438,6 +430,11 @@ void drawWhitelist(AppState& state, Controller& controller) {
         loadEditorFromRule(*pendingDraft, true);
         pendingDraft.reset();
     }
+    // The editor draws first so it is reachable on EVERY path out of this
+    // function - with zero rules the page returns early at the empty state,
+    // which used to strand a just-opened editor (the + NEW RULE click did
+    // nothing on a fresh vault).
+    drawEditor(state, controller);
 
     heading("Whitelist");
     subtext("Rules scoped by signer, contract, action and parameter ranges. Pinned rules "
@@ -548,7 +545,6 @@ void drawWhitelist(AppState& state, Controller& controller) {
             ImGui::PopID();
             vspace(6);
         }
-        drawEditor(state, controller);
         return;
     }
 
@@ -662,8 +658,6 @@ void drawWhitelist(AppState& state, Controller& controller) {
         }
     }
     endCard();
-
-    drawEditor(state, controller);
 }
 
 }  // namespace tb::ui

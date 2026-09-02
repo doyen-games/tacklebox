@@ -38,4 +38,14 @@ void drawPluginPrompt(AppState& state, Controller& controller);
 // prefilled draft; the Whitelist page opens its editor on next draw.
 void openRuleEditor(const guard::WhitelistRule& draft);
 
+// Autopilot schedule editor entry point (QA tour).
+void openScheduleEditor();
+
+// Msig template editor entry point (QA tour).
+void openMsigTemplateEditor();
+
+// Contact editor entry points (transfer page owns the modal).
+void openContactEditor(const Contact& prefill, bool isNew);
+void drawContactEditorModal(Controller& controller);
+
 }  // namespace tb::ui

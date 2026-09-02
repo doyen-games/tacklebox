@@ -312,6 +312,45 @@ void drawMoreSheet(AppState& state, Controller& controller) {
 
 // --- top bar -----------------------------------------------------------------
 
+// One boxed row inside a switcher popup: a hairline outline at rest, a
+// filled highlight box on hover, an accent border when selected. Title on
+// the left, an optional right-aligned tag, both vertically centered.
+bool menuRow(const char* id, const std::string& title, const std::string& right,
+             ImU32 rightColor, bool selected) {
+    float h = layout().hit() - 2.0f;
+    // The Selectable is interaction-only; the box below paints the states.
+    ImGui::PushStyleColor(ImGuiCol_Header, {0, 0, 0, 0});
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, {0, 0, 0, 0});
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, {0, 0, 0, 0});
+    bool clicked = ImGui::Selectable(id, selected, 0, {0, h});
+    ImGui::PopStyleColor(3);
+    ::ui::HandOnHover();
+    bool hovered = ImGui::IsItemHovered();
+    ImVec2 rmin = ImGui::GetItemRectMin(), rmax = ImGui::GetItemRectMax();
+    ImDrawList* pdl = ImGui::GetWindowDrawList();
+    if (hovered)
+        pdl->AddRectFilled(rmin, rmax, col::alpha(col::PanelHi, 0.95f), 5.0f);
+    else if (selected)
+        pdl->AddRectFilled(rmin, rmax, col::CyanFaint, 5.0f);
+    ImU32 border = selected ? col::alpha(col::Cyan, hovered ? 0.85f : 0.55f)
+                   : hovered ? col::HairHi
+                             : col::Hairline;
+    pdl->AddRect(rmin, rmax, border, 5.0f, 1.0f);
+
+    ImGui::PushFont(fonts().uiSemi, kText);
+    pdl->AddText({rmin.x + 12, rmin.y + (h - kText) * 0.5f},
+                 selected ? col::Cyan : col::Ice, title.c_str());
+    ImGui::PopFont();
+    if (!right.empty()) {
+        ImGui::PushFont(fonts().mono, kMonoSm);
+        float rw = ImGui::CalcTextSize(right.c_str()).x;
+        pdl->AddText({rmax.x - 12 - rw, rmin.y + (h - kMonoSm) * 0.5f}, rightColor,
+                     right.c_str());
+        ImGui::PopFont();
+    }
+    return clicked;
+}
+
 void drawTopbar(AppState& state, Controller& controller, float leftInset, float barH,
                 bool compact) {
     ImDrawList* dl = ImGui::GetWindowDrawList();
@@ -353,41 +392,33 @@ void drawTopbar(AppState& state, Controller& controller, float leftInset, float 
         if (clicked || qa::forceOpen("chain-menu")) ImGui::OpenPopup("##chains");
 
         ImGui::SetNextWindowPos({rmin.x, rmax.y + 4});
-        ImGui::SetNextWindowSizeConstraints({240, 0}, {360, 420});
+        ImGui::SetNextWindowSizeConstraints({260, 0}, {380, 420});
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {10, 10});
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {8, 6});
         if (ImGui::BeginPopup("##chains")) {
             for (const auto& net : state.vault.networks) {
                 ImGui::PushID(net.chainId.c_str());
                 bool selected = network && network->chainId == net.chainId;
-                if (ImGui::Selectable("##chain", selected, 0, {0, layout().hit() - 10})) {
-                    controller.selectChain(net.chainId);
-                    ImGui::CloseCurrentPopup();
-                }
-                ::ui::HandOnHover();
-                ImVec2 rowMin = ImGui::GetItemRectMin();
-                ImDrawList* pdl = ImGui::GetWindowDrawList();
-                ImGui::PushFont(fonts().uiSemi, kText);
-                pdl->AddText({rowMin.x + 8, rowMin.y + 5},
-                             selected ? col::Cyan : col::Ice, net.name.c_str());
-                ImGui::PopFont();
                 int count = 0;
                 for (const auto& a : state.vault.accounts)
                     if (a.chainId == net.chainId) ++count;
-                ImGui::PushFont(fonts().mono, kMonoSm);
                 std::string sub = std::to_string(count) + " acct" +
                                   (net.testnet ? "  TESTNET" : "");
-                pdl->AddText({rowMin.x + 160, rowMin.y + 8},
-                             net.testnet ? col::Warn : col::Slate, sub.c_str());
-                ImGui::PopFont();
+                if (menuRow("##chain", net.name, sub,
+                            net.testnet ? col::Warn : col::Slate, selected)) {
+                    controller.selectChain(net.chainId);
+                    ImGui::CloseCurrentPopup();
+                }
                 ImGui::PopID();
             }
             ImGui::Separator();
-            if (ImGui::Selectable("+ Add chain...", false, 0, {0, layout().hit() - 10})) {
+            if (menuRow("##addchain", "+ Add chain...", "", col::Slate, false)) {
                 state.page = Page::Settings;
                 ImGui::CloseCurrentPopup();
             }
-            ::ui::HandOnHover();
             ImGui::EndPopup();
         }
+        ImGui::PopStyleVar(2);
         ImGui::PopID();
         cursorX = rmax.x + (compact ? 6.0f : 12.0f);
     }
@@ -422,6 +453,8 @@ void drawTopbar(AppState& state, Controller& controller, float leftInset, float 
 
         ImGui::SetNextWindowPos({rmin.x, rmax.y + 4});
         ImGui::SetNextWindowSizeConstraints({300, 0}, {420, 420});
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {10, 10});
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {8, 6});
         if (ImGui::BeginPopup("##accounts")) {
             if (onChain.empty()) {
                 ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
@@ -432,29 +465,18 @@ void drawTopbar(AppState& state, Controller& controller, float leftInset, float 
                 const AccountRef& a = state.vault.accounts[static_cast<size_t>(index)];
                 ImGui::PushID(index);
                 bool selected = index == state.selectedAccount;
-                if (ImGui::Selectable("##row", selected, 0, {0, layout().hit() - 8})) {
+                if (menuRow("##row", a.display(), a.watch ? "WATCH-ONLY" : "", col::Warn,
+                            selected)) {
                     controller.selectAccount(index);
                     ImGui::CloseCurrentPopup();
-                }
-                ::ui::HandOnHover();
-                ImVec2 rowMin = ImGui::GetItemRectMin();
-                ImDrawList* pdl = ImGui::GetWindowDrawList();
-                ImGui::PushFont(fonts().uiSemi, kText);
-                pdl->AddText({rowMin.x + 8, rowMin.y + 5}, selected ? col::Cyan : col::Ice,
-                             a.display().c_str());
-                ImGui::PopFont();
-                if (a.watch) {
-                    ImGui::PushFont(fonts().mono, kMonoSm);
-                    pdl->AddText({rowMin.x + 8 + 170, rowMin.y + 8}, col::Warn, "WATCH-ONLY");
-                    ImGui::PopFont();
                 }
                 ImGui::PopID();
             };
             auto drawHeader = [&](const char* text) {
-                ImGui::Dummy({0, 2});
+                ImGui::Dummy({0, 3});
                 ImGui::PushFont(fonts().uiSemi, kTextSm);
                 ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::CyanDim));
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 8);
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 4);
                 ImGui::TextUnformatted(text);
                 ImGui::PopStyleColor();
                 ImGui::PopFont();
@@ -486,6 +508,7 @@ void drawTopbar(AppState& state, Controller& controller, float leftInset, float 
             }
             ImGui::EndPopup();
         }
+        ImGui::PopStyleVar(2);
         ImGui::PopID();
     }
 

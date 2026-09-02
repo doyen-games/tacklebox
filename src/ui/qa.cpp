@@ -153,7 +153,10 @@ void injectFixtures(AppState& state) {
     stack.amountPercent = 25.0;
     stack.amountTokenCode = "EOS";
     stack.amountField = "quantity";
-    stack.intervalSec = 7 * 86400;
+    stack.timingMode = Schedule::TimeDaily;  // exercise the exact-time card line
+    stack.dailySec = 9 * 3600;
+    stack.intervalSec = 86400;
+    stack.endAt = now + 30 * 86400;
     stack.nextRunAt = now + 5 * 86400;  // far future: the ticker stays quiet
     stack.lastRunAt = now - 2 * 86400;
     stack.lastResult = "signed 4f9c2a...d81 - sent 12.5000 EOS";
@@ -164,8 +167,36 @@ void injectFixtures(AppState& state) {
     blocked.contract = "eosio";
     blocked.action = "voteproducer";
     blocked.amountMode = Schedule::AmountFixed;
+    blocked.timingMode = Schedule::TimeAnchored;  // and the grid card line
+    blocked.dailySec = -1;
+    blocked.intervalSec = 7 * 86400;
+    blocked.startAt = now - 3600;
+    blocked.endAt = 0;
     blocked.lastResult = "blocked: schedule blocked: no matching pinned auto-sign rule";
     v.schedules = {stack, blocked};
+
+    // Address book with a saved exchange memo, msig templates and contract
+    // bookmarks - the new predisposed-data surfaces.
+    v.contacts = {{"treasury.gm", "ops treasury", eosId, ""},
+                  {"binancecleos", "Binance deposit", "", "100234567"}};
+    MsigTemplate payroll;
+    payroll.id = "qa-tpl-1";
+    payroll.label = "weekly payroll";
+    payroll.proposalName = "payroll";
+    payroll.requested = "seafarer.gm@active, deckhand.gm@active";
+    payroll.expireHours = 96;
+    payroll.actions = dwarfkit::json::array(
+        {{{"account", "eosio.token"},
+          {"name", "transfer"},
+          {"authorization", dwarfkit::json::array(
+                                {{{"actor", "treasury.gm"}, {"permission", "active"}}})},
+          {"data",
+           {{"from", "treasury.gm"}, {"to", "crew.gm"}, {"quantity", "250.0000 EOS"},
+            {"memo", "wages"}}}}});
+    v.msigTemplates = {payroll};
+    v.savedContracts = {{eosId, "eosio.token", ""},
+                        {eosId, "atomicassets", ""},
+                        {eosId, "swap.defi", ""}};
 
     PinnedQuery pin;
     pin.id = "qa-pin-1";
@@ -230,9 +261,23 @@ void injectFixtures(AppState& state) {
     rv.ram.baseBytes = 68719476736;
     rv.ram.quoteBalance = "4123456.7890 EOS";
     rv.ram.fetchedAt = now;
+    rv.delegations = dwarfkit::json{
+        {"rows", dwarfkit::json::array(
+                     {{{"from", "seafarer.gm"}, {"to", "seafarer.gm"},
+                       {"net_weight", "10.0000 EOS"}, {"cpu_weight", "150.0000 EOS"}},
+                      {{"from", "seafarer.gm"}, {"to", "workerbee.gm"},
+                       {"net_weight", "5.0000 EOS"}, {"cpu_weight", "25.0000 EOS"}}})}};
+    rv.delegationsFetchedAt = now;
+    rv.delegationsActor = "seafarer.gm";
 
     GovernanceViewState& gv = state.governance;
     gv.fetchedAt = now;
+    gv.proxiesFetchedAt = now;
+    gv.proxies = {{"greymassvote", "Greymass Fuel", "", "https://greymass.com", 8.1e15, true},
+                  {"brockpierce1", "Brock Pierce", "", "", 4.9e15, true},
+                  {"colinproxy11", "Colin Talks Crypto", "", "", 2.2e15, true},
+                  {"investingwad", "Investing WAD", "", "", 9.5e14, true},
+                  {"sleepyproxy1", "Sleepy", "", "", 1.1e14, false}};
     dwarfkit::json producerRows = dwarfkit::json::array();
     const char* producers[] = {"teamgreymass", "aus1genereos", "eosnationftw", "bp.defibox",
                                "newdex.bp",    "big.one",      "eoscannonchn", "atticlabeosb"};
@@ -302,11 +347,13 @@ std::shared_ptr<SignPrompt> makeSignPrompt(const AppState& state) {
 void showLocked(AppState& state, Controller&) {
     state.vaultExists = true;
     state.unlocked = false;
+    state.standbyLocked = false;
 }
 
 void showShellPage(AppState& state, Controller& controller, Page page) {
     state.vaultExists = true;
     state.unlocked = true;
+    state.standbyLocked = false;
     injectFixtures(state);
     state.signPrompt.reset();
     state.page = page;
@@ -436,6 +483,54 @@ const Step kSteps[] = {
              s.vault.accounts[0].group = "Daily drivers";
          }
          g_pageScroll = ::ui::S(99999.0f);  // manager sits below the accounts
+     }},
+    {"27-schedule-editor",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Autopilot);
+         tb::ui::openScheduleEditor();
+         g_forceOpenTag = "sched-timing";  // the timing-mode dropdown, open
+     }},
+    {"28-msig-template",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Msig);
+         tb::ui::openMsigTemplateEditor();
+     }},
+    {"29-governance-proxies",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Governance);
+         g_forceOpenTag = "gov-proxy-tab";  // flips the view to the PROXY tab
+     }},
+    {"30-resources-stake",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Resources);
+         g_forceOpenTag = "res-stake-tab";  // usage meters + delegations table
+         g_pageScroll = ::ui::S(99999.0f);  // the delegations card ends the page
+     }},
+    {"31-contacts-combo",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Transfer);
+         g_forceOpenTag = "contacts-combo";
+     }},
+    {"32-contact-editor",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Transfer);
+         Contact prefill;
+         prefill.actor = "binancecleos";
+         prefill.label = "Binance deposit";
+         prefill.memo = "100234567";
+         tb::ui::openContactEditor(prefill, true);
+     }},
+    {"33-settings-framerate",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Settings);
+         if (s.vault.networks.size() > 1) s.vault.networks.resize(1);
+         g_forceOpenTag = "fps-background";
+         g_pageScroll = ::ui::S(99999.0f);  // appearance card sits near the bottom
+     }},
+    {"34-unlock-standby",
+     [](AppState& state, Controller& c) {
+         showLocked(state, c);
+         state.standbyLocked = true;  // the note must clear the tagline
      }},
 };
 constexpr int kStepCount = static_cast<int>(sizeof(kSteps) / sizeof(kSteps[0]));

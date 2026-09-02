@@ -54,6 +54,8 @@ struct VaultSnapshot {
     std::vector<LinkSession> linkSessions;  // requestKeyWif blanked
     std::vector<DashTile> dashboardTiles;   // board layout, in order
     std::vector<Contact> contacts;          // address book
+    std::vector<MsigTemplate> msigTemplates;
+    std::vector<SavedContract> savedContracts;
     std::vector<std::string> accountGroups; // pinned wallet sections, in order
     int64_t lastBackupAt = 0;               // last vault export
     uint64_t version = 0;
@@ -159,6 +161,12 @@ struct ResourcesViewState {
     bool quoteLoading = false;
     std::string quoteError;
     bool busyAction = false;   // any resource transaction in flight
+    // Outgoing CPU/NET delegations (eosio delband rows for the actor).
+    json delegations;
+    bool delegationsLoading = false;
+    std::string delegationsError;
+    int64_t delegationsFetchedAt = 0;
+    std::string delegationsActor;  // whose rows are cached
 };
 
 // Producer voting / proxying.
@@ -169,6 +177,11 @@ struct GovernanceViewState {
     int64_t fetchedAt = 0;
     std::set<std::string> selected;  // producers picked in the UI (max 30)
     bool busyVote = false;
+    // Registered proxies, ranked by proxied vote weight.
+    std::vector<ProxyInfo> proxies;
+    bool proxiesLoading = false;
+    std::string proxiesError;
+    int64_t proxiesFetchedAt = 0;
 };
 
 // One pinned query's latest data.
@@ -194,6 +207,10 @@ struct MsigViewState {
     bool busyAction = false;
     // builder: actions staged from the Contracts page or entered as JSON
     std::vector<json> draftActions;  // full action objects {account,name,authorization,data}
+    // builder fields live here (not view statics) so templates can prefill.
+    char draftName[16] = {};
+    char draftRequested[256] = {};
+    int draftExpireHours = 168;
 };
 
 // Contract deployment (setcode/setabi).

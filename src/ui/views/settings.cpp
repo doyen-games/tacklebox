@@ -802,6 +802,56 @@ void drawAppearance(AppState& state, Controller& controller) {
     vspace(4);
     changed |= toggle("Reduce motion", &cosmetic.reduceMotion,
                       "Stops the drifting grid, scanlines and pulsing accents");
+    vspace(6);
+
+    // Framerate: separate caps for the focused window and the background so
+    // background smoothness vs. battery is the user's call, not ours.
+    ImGui::PushFont(fonts().uiMedium, kText);
+    ImGui::TextUnformatted("Framerate");
+    ImGui::PopFont();
+    static const int kFgVals[] = {0, 240, 120, 60, 30};
+    static const char* kFgNames[] = {"display sync (default)", "cap at 240 fps",
+                                     "cap at 120 fps", "cap at 60 fps", "cap at 30 fps"};
+    static const int kBgVals[] = {-1, 60, 30, 15, 4};
+    static const char* kBgNames[] = {"match focused", "60 fps", "30 fps (default)",
+                                     "15 fps", "power saver (4 fps)"};
+    auto indexOf = [](const int* vals, int n, int v) {
+        for (int i = 0; i < n; ++i)
+            if (vals[i] == v) return i;
+        return 0;
+    };
+    int fg = indexOf(kFgVals, 5, cosmetic.fpsFocused);
+    int bg = indexOf(kBgVals, 5, cosmetic.fpsBackground);
+    ImGui::AlignTextToFramePadding();
+    ImGui::PushFont(fonts().uiSemi, kTextSm);
+    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+    ImGui::TextUnformatted("While focused");
+    ImGui::PopStyleColor();
+    ImGui::PopFont();
+    ImGui::SameLine(::ui::S(150.0f));
+    ImGui::SetNextItemWidth(::ui::S(210.0f));
+    if (qa::forceOpen("fps-focused")) qa::openCombo("##fpsfg");
+    if (ImGui::Combo("##fpsfg", &fg, kFgNames, 5)) {
+        cosmetic.fpsFocused = kFgVals[fg];
+        changed = true;
+    }
+    ::ui::HandOnHover();
+    ImGui::AlignTextToFramePadding();
+    ImGui::PushFont(fonts().uiSemi, kTextSm);
+    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+    ImGui::TextUnformatted("In the background");
+    ImGui::PopStyleColor();
+    ImGui::PopFont();
+    ImGui::SameLine(::ui::S(150.0f));
+    ImGui::SetNextItemWidth(::ui::S(210.0f));
+    if (qa::forceOpen("fps-background")) qa::openCombo("##fpsbg");
+    if (ImGui::Combo("##fpsbg", &bg, kBgNames, 5)) {
+        cosmetic.fpsBackground = kBgVals[bg];
+        changed = true;
+    }
+    ::ui::HandOnHover();
+    subtext("Background rendering keeps animations smooth while other windows have "
+            "focus. Lower it to trade smoothness for battery and GPU headroom.");
     if (changed) saveCosmetics();
     endCard();
 }

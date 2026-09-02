@@ -84,6 +84,10 @@ TEST_CASE("create, populate, lock, unlock round trip") {
         schedule.amountTokenContract = "eosio.token";
         schedule.amountTokenCode = "WAX";
         schedule.amountReserve = "1.0000 WAX";
+        schedule.timingMode = Schedule::TimeDaily;
+        schedule.dailySec = 9 * 3600 + 30 * 60;
+        schedule.startAt = 1900000000;
+        schedule.endAt = 1950000000;
         vault.upsertSchedule(schedule);
 
         vault.setLastChain("chainA");
@@ -100,9 +104,21 @@ TEST_CASE("create, populate, lock, unlock round trip") {
 
         vault.setLastAccount("chainA|alice|active");
 
-        vault.upsertContact({"exchangehot1", "OKX deposit", "chainA"});
+        vault.upsertContact({"exchangehot1", "OKX deposit", "chainA", "memo-12345"});
         vault.upsertContact({"friendaccnt1", "roommate", ""});
         vault.upsertContact({"friendaccnt1", "roommate (renamed)", ""});  // upsert
+
+        MsigTemplate tpl;
+        tpl.id = "tpl1";
+        tpl.label = "weekly payroll";
+        tpl.proposalName = "payroll";
+        tpl.requested = "alice@active, bob@active";
+        tpl.expireHours = 96;
+        tpl.actions = dwarfkit::json::array(
+            {{{"account", "eosio.token"}, {"name", "transfer"}}});
+        vault.upsertMsigTemplate(tpl);
+        vault.upsertSavedContract({"chainA", "eosio.token", "the token hub"});
+        vault.upsertSavedContract({"chainA", "atomicassets", ""});
         vault.setAccountGroup("chainA|alice|active", "Daily drivers");
         REQUIRE(vault.markKeyBackedUp(pub));
         CHECK_FALSE(vault.markKeyBackedUp(pub));  // already backed up
@@ -152,6 +168,10 @@ TEST_CASE("create, populate, lock, unlock round trip") {
         CHECK(vault.schedules()[0].amountPercent == 12.5);
         CHECK(vault.schedules()[0].amountTokenCode == "WAX");
         CHECK(vault.schedules()[0].amountReserve == "1.0000 WAX");
+        CHECK(vault.schedules()[0].timingMode == Schedule::TimeDaily);
+        CHECK(vault.schedules()[0].dailySec == 9 * 3600 + 30 * 60);
+        CHECK(vault.schedules()[0].startAt == 1900000000);
+        CHECK(vault.schedules()[0].endAt == 1950000000);
         CHECK(vault.lastChain() == "chainA");
         REQUIRE(vault.linkSessions().size() == 1);
         CHECK(vault.linkSessions()[0].channelId == "chan-uuid");
@@ -159,6 +179,20 @@ TEST_CASE("create, populate, lock, unlock round trip") {
         CHECK(vault.lastAccount() == "chainA|alice|active");
         REQUIRE(vault.contacts().size() == 2);
         CHECK(vault.contacts()[1].label == "roommate (renamed)");
+        CHECK(vault.contacts()[0].memo == "memo-12345");
+        // Msig templates and saved contracts survive the round trip.
+        REQUIRE(vault.msigTemplates().size() == 1);
+        CHECK(vault.msigTemplates()[0].label == "weekly payroll");
+        CHECK(vault.msigTemplates()[0].requested == "alice@active, bob@active");
+        CHECK(vault.msigTemplates()[0].expireHours == 96);
+        REQUIRE(vault.msigTemplates()[0].actions.is_array());
+        CHECK(vault.msigTemplates()[0].actions.size() == 1);
+        REQUIRE(vault.savedContracts().size() == 2);
+        CHECK(vault.savedContracts()[0].note == "the token hub");
+        REQUIRE(vault.removeSavedContract("chainA", "atomicassets"));
+        CHECK_FALSE(vault.removeSavedContract("chainA", "atomicassets"));
+        REQUIRE(vault.removeMsigTemplate("tpl1"));
+        CHECK_FALSE(vault.removeMsigTemplate("tpl1"));
         CHECK(vault.keys()[0].backedUp);
         CHECK(vault.lastBackupAt() > 0);
         REQUIRE(vault.removeContact("exchangehot1", "chainA"));

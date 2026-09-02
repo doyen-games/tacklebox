@@ -1,10 +1,12 @@
 // Governance: block producer voting (pick up to 30) and vote proxying, with
 // a one-click path to put the vote on autopilot.
+#include <algorithm>
 #include <cstring>
 
 #include "core/util.hpp"
 #include "ui/app_ui.hpp"
 #include "ui/layout.hpp"
+#include "ui/qa.hpp"
 #include "ui/widgets.hpp"
 
 namespace tb::ui {
@@ -60,6 +62,7 @@ void drawGovernance(AppState& state, Controller& controller) {
     GovernanceViewState& gv = state.governance;
 
     static int tab = 0;
+    if (qa::forceOpen("gov-proxy-tab")) tab = 1;
     const char* tabs[] = {"PRODUCERS", "PROXY"};
     for (int i = 0; i < 2; ++i) {
         if (neonButton(tabs[i], tab == i ? BtnKind::Primary : BtnKind::Subtle, {120, 32}))
@@ -81,6 +84,116 @@ void drawGovernance(AppState& state, Controller& controller) {
             ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 1);
             if (neonButton("SET PROXY", BtnKind::Primary, {130, 38}, gv.busyVote) && proxy[0])
                 controller.voteProxy(toLower(trim(proxy)));
+        }
+        endCard();
+        vspace(10);
+
+        // The registry, ranked by live proxied vote weight.
+        controller.loadProxies(false);
+        if (beginCard("proxyrank")) {
+            sectionTitle("Registered proxies");
+            ImGui::SameLine();
+            float pinX = ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x;
+            ImGui::SetCursorPosX(pinX - 26);
+            if (iconButton("##proxyref", Icon::Refresh, "Refresh the ranking"))
+                controller.loadProxies(true);
+            if (gv.proxiesLoading && gv.proxies.empty()) {
+                spinner(13.0f);
+            } else if (!gv.proxiesError.empty() && gv.proxies.empty()) {
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Warn));
+                ImGui::TextWrapped("%s", gv.proxiesError.c_str());
+                ImGui::PopStyleColor();
+            } else if (!gv.proxies.empty()) {
+                // Whose proxy is set right now (highlight that row).
+                std::string currentProxy;
+                {
+                    AccountData& data = state.accountData[state.accountKey(*account)];
+                    if (data.loaded && data.snap.raw.contains("voter_info") &&
+                        data.snap.raw["voter_info"].is_object())
+                        currentProxy =
+                            data.snap.raw["voter_info"].value("proxy", std::string());
+                }
+                double topWeight = 0.0;
+                for (const auto& p : gv.proxies) topWeight = std::max(topWeight, p.weight);
+                bool wide = !layout().phone();
+                if (ImGui::BeginTable("proxytable", wide ? 4 : 3,
+                                      ImGuiTableFlags_RowBg |
+                                          ImGuiTableFlags_BordersInnerH)) {
+                    ImGui::TableSetupColumn("Rank", ImGuiTableColumnFlags_WidthFixed, 52.0f);
+                    ImGui::TableSetupColumn("Proxy", ImGuiTableColumnFlags_WidthStretch,
+                                            wide ? 0.42f : 0.6f);
+                    if (wide)
+                        ImGui::TableSetupColumn("Vote weight",
+                                                ImGuiTableColumnFlags_WidthStretch, 0.38f);
+                    ImGui::TableSetupColumn("##use", ImGuiTableColumnFlags_WidthFixed,
+                                            96.0f);
+                    ImGui::PushFont(fonts().uiSemi, kTextSm);
+                    ImGui::TableHeadersRow();
+                    ImGui::PopFont();
+                    int rank = 0;
+                    for (const auto& p : gv.proxies) {
+                        ++rank;
+                        ImGui::PushID(p.account.c_str());
+                        ImGui::TableNextRow();
+                        ImGui::TableNextColumn();
+                        ImGui::PushFont(fonts().mono, kMonoSm);
+                        ImGui::Text("#%d", rank);
+                        ImGui::PopFont();
+                        ImGui::TableNextColumn();
+                        bool mine = !currentProxy.empty() && currentProxy == p.account;
+                        ImGui::PushFont(fonts().mono, kMono);
+                        ImGui::PushStyleColor(ImGuiCol_Text,
+                                              col::vec(mine ? col::Cyan : col::Ice));
+                        ImGui::TextUnformatted(p.account.c_str());
+                        ImGui::PopStyleColor();
+                        ImGui::PopFont();
+                        if (mine) {
+                            ImGui::SameLine();
+                            badgeFilled("YOUR PROXY", col::Success);
+                        }
+                        if (!p.name.empty()) {
+                            ImGui::PushFont(fonts().ui, kMonoSm);
+                            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
+                            ImGui::TextUnformatted(p.name.c_str());
+                            ImGui::PopStyleColor();
+                            ImGui::PopFont();
+                        }
+                        if (wide) {
+                            ImGui::TableNextColumn();
+                            // Relative share bar against the heaviest proxy;
+                            // the raw weight unit is chain-specific noise.
+                            float frac = topWeight > 0
+                                             ? static_cast<float>(p.weight / topWeight)
+                                             : 0.0f;
+                            ImVec2 base = ImGui::GetCursorScreenPos();
+                            float barW = ImGui::GetContentRegionAvail().x - 8;
+                            float barH = 6.0f;
+                            ImDrawList* dl = ImGui::GetWindowDrawList();
+                            float y = base.y + ImGui::GetTextLineHeight() * 0.5f;
+                            dl->AddRectFilled({base.x, y}, {base.x + barW, y + barH},
+                                              col::alpha(col::Hairline, 0.9f), 3.0f);
+                            dl->AddRectFilled({base.x, y},
+                                              {base.x + barW * frac, y + barH},
+                                              col::alpha(col::CyanDim, 0.95f), 3.0f);
+                            ImGui::Dummy({barW, ImGui::GetTextLineHeight()});
+                            ImGui::PushFont(fonts().mono, kMonoSm);
+                            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
+                            ImGui::Text("%.1f%% of #1%s", frac * 100.0,
+                                        p.active ? "" : "  (inactive)");
+                            ImGui::PopStyleColor();
+                            ImGui::PopFont();
+                        }
+                        ImGui::TableNextColumn();
+                        if (!mine &&
+                            neonButton("SET", BtnKind::Subtle, {84, 28}, gv.busyVote))
+                            controller.voteProxy(p.account);
+                        ImGui::PopID();
+                    }
+                    ImGui::EndTable();
+                }
+            } else {
+                subtext("No proxy registry rows yet.");
+            }
         }
         endCard();
         return;

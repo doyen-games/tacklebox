@@ -140,6 +140,7 @@ public:
     void transferRam(const std::string& to, int64_t bytes, const std::string& memo);
     void stake(const std::string& receiver, const std::string& netQty,
                const std::string& cpuQty);
+    void loadDelegations(bool force);  // outgoing delband rows for the actor
     void unstake(const std::string& receiver, const std::string& netQty,
                  const std::string& cpuQty);
     void powerUp(uint32_t days, int64_t cpuFrac, int64_t netFrac,
@@ -149,6 +150,7 @@ public:
     void loadProducers(bool force);
     void voteProducers(std::vector<std::string> producers);  // sorted internally
     void voteProxy(const std::string& proxy);
+    void loadProxies(bool force);  // ranked registry, cached ~10 minutes
 
     // --- contract deployment ------------------------------------------------
     // Reads .wasm/.abi on a worker, stages a preview (hash, size) then a
@@ -166,6 +168,14 @@ public:
     void msigExec(const std::string& proposer, const std::string& name);
     void msigCancel(const std::string& proposer, const std::string& name);
     void stageMsigAction(const json& action);  // from the Contracts page
+    // Msig templates: reusable proposal shapes with predisposed fields.
+    void saveMsigTemplate(const MsigTemplate& tpl);
+    void removeMsigTemplate(const std::string& id);
+    void applyMsigTemplate(const std::string& id);  // fills the builder draft
+
+    // --- saved contracts ----------------------------------------------------
+    void saveContractBookmark(const SavedContract& saved);
+    void removeContractBookmark(const std::string& chainId, const std::string& account);
 
     // --- pinned queries -----------------------------------------------------
     void savePinnedQuery(const PinnedQuery& query);
