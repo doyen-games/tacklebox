@@ -61,6 +61,10 @@ jobs:
             Where-Object FullName -match "x64" | Select-Object -Last 1
           & $signtool.FullName sign /f "$env:RUNNER_TEMP\signing.pfx" /p $env:CERT_PASSWORD `
             /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 build\tacklebox.exe
+      # windows-latest images no longer preinstall NSIS.
+      - name: Install NSIS
+        shell: pwsh
+        run: choco install nsis -y --no-progress
       - name: Package (NSIS installer + portable ZIP)
         shell: bash
         run: cd build && cpack -G "NSIS;ZIP"
