@@ -235,9 +235,14 @@ void drawBottomBar(AppState& state, Controller& controller, float barH) {
     ImGui::PopFont();
 }
 
+Page g_morePage = Page::Dashboard;  // the page the sheet opened over
+
 void drawMoreSheet(AppState& state, Controller& controller) {
     if (qa::forceOpen("more-sheet")) g_moreOpen = true;
-    if (!g_moreOpen) return;
+    if (!g_moreOpen) {
+        g_morePage = state.page;
+        return;
+    }
     ImGui::OpenPopup("##moresheet");
     ImGuiViewport* vp = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos({vp->WorkPos.x, vp->WorkPos.y + vp->WorkSize.y * 0.28f});
@@ -247,6 +252,12 @@ void drawMoreSheet(AppState& state, Controller& controller) {
     if (ImGui::BeginPopupModal("##moresheet", nullptr,
                                ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar |
                                    ImGuiWindowFlags_NoMove)) {
+        // The sheet exists to change pages: when something else did (a tile
+        // jump, a deep link, the tour), it has nothing left to offer.
+        if (state.page != g_morePage) {
+            g_moreOpen = false;
+            ImGui::CloseCurrentPopup();
+        }
         // Grab handle.
         ImDrawList* dl = ImGui::GetWindowDrawList();
         ImVec2 wpos = ImGui::GetWindowPos();
@@ -583,9 +594,16 @@ void drawShell(AppState& state, Controller& controller) {
                       ImGuiChildFlags_AlwaysUseWindowPadding);
     // QA tour steps pin the page at a scroll offset for deep sections; the
     // shared content child otherwise keeps its scroll across steps, so every
-    // step without an explicit offset starts at the top.
+    // step without an explicit offset starts at the top. Outside the tour,
+    // pages that append content ask for a scroll through requestPageScroll.
     if (qa::active())
         ImGui::SetScrollY(qa::pageScrollY() >= 0.0f ? qa::pageScrollY() : 0.0f);
+    else if (float requested = takePageScrollRequest(); requested >= 0.0f)
+        ImGui::SetScrollY(requested);
+    setPageRect(ImGui::GetWindowPos(),
+                {ImGui::GetWindowPos().x + ImGui::GetWindowSize().x,
+                 ImGui::GetWindowPos().y + ImGui::GetWindowSize().y},
+                ImGui::GetScrollY());
 
     // Constrain content width for readability on wide screens.
     float avail = ImGui::GetContentRegionAvail().x;

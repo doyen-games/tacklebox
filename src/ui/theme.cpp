@@ -57,6 +57,7 @@ void loadCosmetics() {
     cosmetics().fpsFocused = oneOf(cosmetics().fpsFocused, {0, 240, 120, 60, 30}, 0);
     cosmetics().fpsBackground =
         oneOf(cosmetics().fpsBackground, {-1, 60, 30, 15, 4}, 30);
+    cosmetics().textSizePct = oneOf(j.value("textSizePct", 100), {90, 100, 115, 130}, 100);
 }
 
 void saveCosmetics() {
@@ -64,7 +65,8 @@ void saveCosmetics() {
                      {"reduceMotion", cosmetics().reduceMotion},
                      {"preferHighPerfGpu", cosmetics().preferHighPerfGpu},
                      {"fpsFocused", cosmetics().fpsFocused},
-                     {"fpsBackground", cosmetics().fpsBackground}};
+                     {"fpsBackground", cosmetics().fpsBackground},
+                     {"textSizePct", cosmetics().textSizePct}};
     atomicWrite(settingsFile(), j.dump(2), /*keepBackup=*/false);
 }
 

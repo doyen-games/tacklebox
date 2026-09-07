@@ -83,6 +83,8 @@ struct Cosmetics {
     // Background: -1 = match focused, else a cap; 4 is the power-saver trickle.
     int fpsFocused = 0;
     int fpsBackground = 30;
+    // Global text size as a percentage of the design size (90, 100, 115, 130).
+    int textSizePct = 100;
 };
 Cosmetics& cosmetics();
 void loadCosmetics();

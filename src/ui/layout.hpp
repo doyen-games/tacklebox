@@ -40,11 +40,26 @@ struct Layout {
 struct LayoutConfig {
     int override_ = -1;
     bool forceTouch = false;
+    int textSizePct = 0;  // --text-size <pct>: overrides the cosmetic for QA runs; 0 = settings
 };
 LayoutConfig& layoutConfig();
 
 // Recompute from the current viewport; call once per frame before drawApp.
 void updateLayout(float safeTop = 0.0f, float safeBottom = 0.0f);
 const Layout& layout();
+
+// The routed page's screen rect, recorded by the shell each frame before the
+// page draws: popups anchored near the end of a page flip upward when they
+// would run past pageBottom().
+void setPageRect(const ImVec2& min, const ImVec2& max, float scrollY);
+float pageTop();
+float pageBottom();
+float pageScroll();  // the routed page's current vertical scroll offset
+
+// Ask the shell to scroll the routed page to `y` (FLT_MAX = the bottom) over
+// the next frames, so content appended to a page comes into view instead of
+// landing below the fold. takePageScrollRequest() is -1 when nothing is due.
+void requestPageScroll(float y);
+float takePageScrollRequest();
 
 }  // namespace tb::ui

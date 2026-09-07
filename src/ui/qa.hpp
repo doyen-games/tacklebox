@@ -32,6 +32,12 @@ bool wantsOpen(const char* tag);
 // Force the next combo with this label open (call right before BeginCombo,
 // same ID stack). QA-only; uses imgui internals.
 void openCombo(const char* label);
+// Scroll the routed page so the current cursor position sits `fraction` of
+// the way down the visible page. Call at page level (outside cards, which
+// are child windows that skip their body once clipped) right before the
+// surface a step targets, guarded by wantsOpen(tag); overrides the step's
+// own pageScrollY from the next frame on.
+void anchorHere(float fraction = 0.15f);
 
 // Before NewFrame: advance the tour (inject fixtures, flip pages).
 // Returns false when the tour is finished and the app should quit.

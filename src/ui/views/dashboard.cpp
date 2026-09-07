@@ -3,10 +3,12 @@
 // unpinned here and re-added from the ADD TILE palette or pinned from their
 // home pages (RAM market, chain status, contract table pins...).
 #include <algorithm>
+#include <cfloat>
 #include <cinttypes>
 #include <cstdlib>
 
 #include "app/account_util.hpp"
+#include "tb_version.h"
 #include "chain/prices.hpp"
 #include "core/util.hpp"
 #include "guard/engine.hpp"
@@ -96,6 +98,12 @@ constexpr TileInfo kTileCatalog[] = {
     {"guard", "GUARD", 1},              {"activity", "RECENT ACTIVITY", 2},
     {"ram", "RAM MARKET", 1},           {"chaininfo", "CHAIN STATUS", 1},
     {"prices", "PRICES", 1},            {"schedules", "AUTOPILOT", 1},
+    // One per remaining sidebar page (Explore, Resources, Whitelist, Autopilot
+    // and History are the tiles above), each a summary plus a jump.
+    {"transfer", "TRANSFER", 1},        {"assets", "ASSETS", 1},
+    {"contracts", "CONTRACTS", 1},      {"governance", "GOVERNANCE", 1},
+    {"msig", "MULTISIG", 1},            {"vault", "VAULT", 1},
+    {"create", "CREATE ACCOUNT", 1},    {"settings", "SETTINGS", 1},
 };
 
 const TileInfo* tileInfo(const std::string& kind) {
@@ -105,6 +113,11 @@ const TileInfo* tileInfo(const std::string& kind) {
 }
 
 // --- tile bodies -------------------------------------------------------------
+
+// The jump every page tile ends with.
+void openPageButton(const char* label, AppState& state, Page page, bool disabled = false) {
+    if (neonButton(label, BtnKind::Subtle, {150, 30}, disabled)) state.page = page;
+}
 
 void drawBalanceTile(AppState& state, Controller& controller, const AccountRef& account,
                      AccountData& data, const NetworkDef* network) {
@@ -118,7 +131,10 @@ void drawBalanceTile(AppState& state, Controller& controller, const AccountRef& 
         ImGui::PopStyleColor();
         return;
     }
-    std::string balance = data.snap.coreBalance().empty() ? "-" : data.snap.coreBalance();
+    // Amounts on this card show at most four decimals (the chain's full
+    // precision stays in the snapshot for anything that transacts).
+    std::string balance =
+        data.snap.coreBalance().empty() ? "-" : acct::displayAsset(data.snap.coreBalance());
     std::string amount = balance, symbol;
     if (auto sp = balance.find(' '); sp != std::string::npos) {
         amount = balance.substr(0, sp);
@@ -180,7 +196,7 @@ void drawBalanceTile(AppState& state, Controller& controller, const AccountRef& 
                 ImGui::PopStyleColor();
                 ImGui::PopFont();
                 ImGui::SameLine(0, 5);
-                assetText(asset, kMonoSm, /*dim=*/true);
+                assetText(acct::displayAsset(asset), kMonoSm, /*dim=*/true);
             };
             part("total", breakdown.total, true);
             part("staked", breakdown.stakedSelf, false);
@@ -204,7 +220,7 @@ void drawBalanceTile(AppState& state, Controller& controller, const AccountRef& 
             ImGui::PushID(static_cast<int>(i));
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            assetText(token.quantity, kMono);
+            assetText(acct::displayAsset(token.quantity), kMono);
             ImGui::TableNextColumn();
             ImGui::PushFont(fonts().ui, kMonoSm);
             ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
@@ -311,11 +327,13 @@ void drawGuardTile(AppState& state) {
           state.vault.security.autoLockMinutes > 0
               ? std::to_string(state.vault.security.autoLockMinutes) + " min"
               : "off");
+    if (stale == 0) openPageButton("OPEN WHITELIST", state, Page::Whitelist);
 }
 
 void drawActivityTile(AppState& state) {
     if (state.vault.audit.empty()) {
         subtext("Nothing signed yet. Activity from this vault will land here.");
+        openPageButton("OPEN HISTORY", state, Page::History);
         return;
     }
     int shown = 0;
@@ -335,9 +353,7 @@ void drawActivityTile(AppState& state) {
         ImGui::PopFont();
         ImGui::PopID();
     }
-    if (state.vault.audit.size() > 6) {
-        if (neonButton("FULL LOG", BtnKind::Subtle, {100, 30})) state.page = Page::History;
-    }
+    openPageButton("OPEN HISTORY", state, Page::History);
 }
 
 void drawRamTile(AppState& state, Controller& controller) {
@@ -486,6 +502,115 @@ void drawPinTile(AppState& state, const PinnedQuery& pin) {
 
 // Header row inside a tile card, on one line: grip, title, unpin at right.
 // Returns the drop-source index when a row is dropped on the grip.
+// --- one tile per sidebar page ---------------------------------------------
+
+void drawTransferTile(AppState& state, const AccountRef& account) {
+    if (state.vault.contacts.empty()) {
+        subtext("Send tokens to any account; saved contacts land here.");
+    } else {
+        int shown = 0;
+        for (const auto& contact : state.vault.contacts) {
+            if (shown++ >= 3) break;
+            ImGui::PushID(shown);
+            kvRow(contact.label.empty() ? contact.actor.c_str() : contact.label.c_str(),
+                  contact.actor, true);
+            ImGui::PopID();
+        }
+        if (state.vault.contacts.size() > 3)
+            subtext(("+ " + std::to_string(state.vault.contacts.size() - 3) + " more contacts")
+                        .c_str());
+    }
+    if (account.watch) subtext("Watch-only: no signing key for this account.");
+    openPageButton("OPEN TRANSFER", state, Page::Transfer);
+}
+
+void drawAssetsTile(AppState& state, const AccountRef& account) {
+    const AssetsViewState& av = state.assets;
+    const bool mine = av.owner == account.actor;
+    if (mine && av.assets.is_object() && av.assets.contains("data") &&
+        av.assets["data"].is_array()) {
+        kvRow("Loaded", std::to_string(av.assets["data"].size()) + " NFTs", true);
+        if (av.fetchedAt) kvRow("Updated", formatAgo(av.fetchedAt) + " ago");
+    } else if (mine && av.loading) {
+        spinner(11.0f);
+    } else if (mine && !av.error.empty()) {
+        subtext(av.error.c_str());
+    } else {
+        subtext("NFTs from the Atomic Assets API load on the Assets page.");
+    }
+    openPageButton("OPEN ASSETS", state, Page::Assets);
+}
+
+void drawContractsTile(AppState& state) {
+    kvRow("Saved contracts", std::to_string(state.vault.savedContracts.size()));
+    kvRow("Saved actions", std::to_string(state.vault.savedActions.size()));
+    kvRow("Pinned tables", std::to_string(state.vault.pinnedQueries.size()));
+    if (!state.contracts.account.empty()) kvRow("Inspecting", state.contracts.account, true);
+    openPageButton("OPEN CONTRACTS", state, Page::Contracts);
+}
+
+void drawGovernanceTile(AppState& state, AccountData& data) {
+    const json& raw = data.snap.raw;
+    if (data.loaded && raw.contains("voter_info") && raw["voter_info"].is_object()) {
+        const json& voter = raw["voter_info"];
+        const std::string proxy = voter.value("proxy", std::string());
+        const size_t producers = voter.contains("producers") && voter["producers"].is_array()
+                                     ? voter["producers"].size()
+                                     : 0;
+        if (!proxy.empty())
+            kvRow("Vote", "proxied to " + proxy, true);
+        else if (producers > 0)
+            kvRow("Vote", std::to_string(producers) + " producer" + (producers == 1 ? "" : "s"));
+        else
+            kvRow("Vote", "not voting");
+    } else if (data.loading) {
+        spinner(11.0f);
+    } else {
+        subtext("Vote for producers or pick a proxy on the Governance page.");
+    }
+    openPageButton("OPEN GOVERNANCE", state, Page::Governance);
+}
+
+void drawMsigTile(AppState& state, const AccountRef& account) {
+    const MsigViewState& mv = state.msig;
+    const bool mine = mv.proposer == account.actor;
+    if (mine && mv.proposals.is_object() && mv.proposals.contains("rows") &&
+        mv.proposals["rows"].is_array()) {
+        kvRow("Open proposals", std::to_string(mv.proposals["rows"].size()));
+    } else if (mine && mv.loading) {
+        spinner(11.0f);
+    } else {
+        subtext("Proposals load on the Multisig page.");
+    }
+    kvRow("Templates", std::to_string(state.vault.msigTemplates.size()));
+    openPageButton("OPEN MULTISIG", state, Page::Msig);
+}
+
+void drawVaultTile(AppState& state) {
+    kvRow("Keys", std::to_string(state.vault.keys.size()));
+    kvRow("Accounts", std::to_string(state.vault.accounts.size()));
+    kvRow("Networks", std::to_string(state.vault.networks.size()));
+    kvRow("Last backup", state.vault.lastBackupAt > 0
+                             ? formatAgo(state.vault.lastBackupAt) + " ago"
+                             : std::string("never"));
+    openPageButton("OPEN VAULT", state, Page::Vault);
+}
+
+void drawCreateTile(AppState& state) {
+    subtext("Create an on-chain account (name, keys, RAM, stake) or port one in.");
+    kvRow("Keys in the vault", std::to_string(state.vault.keys.size()));
+    openPageButton("OPEN CREATE", state, Page::CreateAccount);
+}
+
+void drawSettingsTile(AppState& state, const NetworkDef* network) {
+    if (network) {
+        kvRow("Network", network->name + (network->testnet ? " (testnet)" : ""));
+        kvRow("RPC endpoints", std::to_string(network->rpc.nodes.size()));
+    }
+    kvRow("Version", TB_VERSION, true);
+    openPageButton("OPEN SETTINGS", state, Page::Settings);
+}
+
 int drawTileHeader(const std::string& title, int index, std::string* removeKind,
                    const std::string& kind) {
     int dropped = dragGrip("##dashtiles", index, title.c_str());
@@ -598,6 +723,22 @@ void drawDashboard(AppState& state, Controller& controller) {
                 drawPricesTile(state, controller, *account, network);
             else if (tile.kind == "schedules")
                 drawSchedulesTile(state);
+            else if (tile.kind == "transfer")
+                drawTransferTile(state, *account);
+            else if (tile.kind == "assets")
+                drawAssetsTile(state, *account);
+            else if (tile.kind == "contracts")
+                drawContractsTile(state);
+            else if (tile.kind == "governance")
+                drawGovernanceTile(state, data);
+            else if (tile.kind == "msig")
+                drawMsigTile(state, *account);
+            else if (tile.kind == "vault")
+                drawVaultTile(state);
+            else if (tile.kind == "create")
+                drawCreateTile(state);
+            else if (tile.kind == "settings")
+                drawSettingsTile(state, network);
             else if (pin)
                 drawPinTile(state, *pin);
         }
@@ -645,25 +786,47 @@ void drawDashboard(AppState& state, Controller& controller) {
     }
 
     // --- palette ------------------------------------------------------------
+    int addable = 0;
+    for (const auto& info : kTileCatalog) {
+        bool present = false;
+        for (const auto& tile : tiles) present |= tile.kind == info.kind;
+        if (!present) ++addable;
+    }
     bool addClicked = neonButton("ADD TILE +", BtnKind::Ghost, {130, 34});
-    // Anchor the palette just below the button (its own screen rect), so it
-    // opens in the right place whether clicked or force-opened by the tour.
-    ImGui::SetNextWindowPos({ImGui::GetItemRectMin().x, ImGui::GetItemRectMax().y + 4});
+    // Anchor the palette to the button (its own screen rect) so it opens in
+    // the right place whether clicked or force-opened by the tour. The button
+    // ends the board, often near the bottom edge, so when the rows would run
+    // past the visible page the palette opens upward instead of off-screen.
+    {
+        const ImGuiStyle& style = ImGui::GetStyle();
+        const ImVec2 buttonMin = ImGui::GetItemRectMin();
+        const ImVec2 buttonMax = ImGui::GetItemRectMax();
+        const float rows = static_cast<float>(addable > 0 ? addable : 2);  // the note is two lines
+        const float paletteH =
+            rows * ImGui::GetTextLineHeightWithSpacing() + style.WindowPadding.y * 2.0f;
+        const float gap = style.ItemSpacing.y;
+        const bool upward = buttonMax.y + gap + paletteH > pageBottom();
+        ImGui::SetNextWindowPos(upward ? ImVec2{buttonMin.x, buttonMin.y - gap}
+                                       : ImVec2{buttonMin.x, buttonMax.y + gap},
+                                ImGuiCond_Always,
+                                upward ? ImVec2{0.0f, 1.0f} : ImVec2{0.0f, 0.0f});
+    }
     if (addClicked || qa::forceOpen("add-tile")) ImGui::OpenPopup("##addtile");
     if (ImGui::BeginPopup("##addtile")) {
-        bool anyMissing = false;
         for (const auto& info : kTileCatalog) {
             bool present = false;
             for (const auto& tile : tiles) present |= tile.kind == info.kind;
             if (present) continue;
-            anyMissing = true;
             if (ImGui::Selectable(info.title)) {
                 controller.addDashboardTile(info.kind, info.span);
+                // The new tile lands at the end of the board, below this
+                // button: bring it into view rather than leaving it off-screen.
+                requestPageScroll(FLT_MAX);
                 ImGui::CloseCurrentPopup();
             }
             ::ui::HandOnHover();
         }
-        if (!anyMissing) {
+        if (addable == 0) {
             ImGui::PushFont(fonts().ui, kTextSm);
             ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Slate));
             ImGui::TextUnformatted("Everything is on the board. Pin contract tables\n"

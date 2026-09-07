@@ -63,7 +63,13 @@
   explicit `SetNextWindowPos` (no hovered trigger to anchor to; wrap it in
   `qa::active()`), steps that do not set a scroll offset start at the top,
   and cross-page modals (the rule editor) are reset in showShellPage so
-  steps stay isolated.
+  steps stay isolated. A surface that a pixel scroll offset cannot reach on
+  every form factor and text size (a card taller than a phone viewport)
+  calls `qa::anchorHere()` right before it, guarded by `qa::wantsOpen(tag)`,
+  which pins the page so that spot sits near the top of the view.
+* Text size is a user setting (Settings > Appearance, 90-130%). Run the
+  deck at the extremes too (`--text-size 130`) when touching layout: every
+  row must reflow from text metrics, never from a fixed offset.
 
 ## 6. Iteration protocol
 

@@ -2,6 +2,7 @@
 // macOS today; the same file drives the iOS/Android builds (GLES context,
 // touch, lifecycle) via TB_MOBILE.
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <optional>
 #include <string>
@@ -84,6 +85,8 @@ int main(int argc, char** argv) {
         if (!std::strcmp(argv[i], "--tablet")) tb::ui::layoutConfig().override_ = 1;
         if (!std::strcmp(argv[i], "--desktop")) tb::ui::layoutConfig().override_ = 2;
         if (!std::strcmp(argv[i], "--touch")) tb::ui::layoutConfig().forceTouch = true;
+        if (!std::strcmp(argv[i], "--text-size") && i + 1 < argc)
+            tb::ui::layoutConfig().textSizePct = std::atoi(argv[++i]);
         if (!std::strcmp(argv[i], "--qa-shots") && i + 1 < argc)
             tb::ui::qa::configure(argv[++i]);
         if (!std::strcmp(argv[i], "--data-dir") && i + 1 < argc)

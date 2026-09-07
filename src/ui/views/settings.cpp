@@ -1,5 +1,6 @@
 // Settings: networks & endpoints, security policy, appearance, vault password.
 #include <array>
+#include <cfloat>
 #include <cstring>
 #include <map>
 
@@ -273,8 +274,14 @@ void drawNetworks(AppState& state, Controller& controller) {
             ImGui::PopFont();
         }
         ImGui::SameLine();
+        // The action trio right-aligns beside the name when it fits; when the
+        // name (or a large text size) leaves no room it takes its own row.
+        const float actionsW = ::ui::S(238.0f);
         float endX = ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x;
-        ImGui::SetCursorPosX(endX - ::ui::S(238.0f));
+        if (ImGui::GetContentRegionAvail().x < actionsW + ::ui::S(12.0f))
+            ImGui::NewLine();
+        else
+            ImGui::SetCursorPosX(endX - actionsW);
         if (neonButton("PING & RANK", BtnKind::Subtle, {::ui::S(106.0f), 26}))
             controller.rankEndpoints(net.chainId);
         tooltip("Ping every enabled node and reorder each pool by latency;\n"
@@ -751,6 +758,9 @@ void drawSecurity(AppState& state, Controller& controller) {
 void drawAppearance(AppState& state, Controller& controller) {
     (void)state;
     (void)controller;
+    // The tour lands the card near the top of the view: it is taller than a
+    // phone viewport, so a page-bottom scroll alone cannot show every picker.
+    if (qa::wantsOpen("fps-focused") || qa::wantsOpen("fps-background")) qa::anchorHere();
     if (!beginCard("appearance")) {
         endCard();
         return;
@@ -770,6 +780,23 @@ void drawAppearance(AppState& state, Controller& controller) {
 
     // Framerate: separate caps for the focused window and the background so
     // background smoothness vs. battery is the user's call, not ours.
+    // Picker rows: label left, combo right. Phones stack the two and let the
+    // combo fill the card; a fixed-offset pair overflows their width.
+    const bool stackPickers = layout().phone();
+    auto pickerLabel = [&](const char* label) {
+        ImGui::AlignTextToFramePadding();
+        ImGui::PushFont(fonts().uiSemi, kTextSm);
+        ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+        ImGui::TextUnformatted(label);
+        ImGui::PopStyleColor();
+        ImGui::PopFont();
+        if (stackPickers) {
+            ImGui::SetNextItemWidth(-FLT_MIN);
+        } else {
+            ImGui::SameLine(::ui::S(150.0f));
+            ImGui::SetNextItemWidth(::ui::S(210.0f));
+        }
+    };
     ImGui::PushFont(fonts().uiMedium, kText);
     ImGui::TextUnformatted("Framerate");
     ImGui::PopFont();
@@ -786,28 +813,14 @@ void drawAppearance(AppState& state, Controller& controller) {
     };
     int fg = indexOf(kFgVals, 5, cosmetic.fpsFocused);
     int bg = indexOf(kBgVals, 5, cosmetic.fpsBackground);
-    ImGui::AlignTextToFramePadding();
-    ImGui::PushFont(fonts().uiSemi, kTextSm);
-    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
-    ImGui::TextUnformatted("While focused");
-    ImGui::PopStyleColor();
-    ImGui::PopFont();
-    ImGui::SameLine(::ui::S(150.0f));
-    ImGui::SetNextItemWidth(::ui::S(210.0f));
+    pickerLabel("While focused");
     if (qa::forceOpen("fps-focused")) qa::openCombo("##fpsfg");
     if (ImGui::Combo("##fpsfg", &fg, kFgNames, 5)) {
         cosmetic.fpsFocused = kFgVals[fg];
         changed = true;
     }
     ::ui::HandOnHover();
-    ImGui::AlignTextToFramePadding();
-    ImGui::PushFont(fonts().uiSemi, kTextSm);
-    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
-    ImGui::TextUnformatted("In the background");
-    ImGui::PopStyleColor();
-    ImGui::PopFont();
-    ImGui::SameLine(::ui::S(150.0f));
-    ImGui::SetNextItemWidth(::ui::S(210.0f));
+    pickerLabel("In the background");
     if (qa::forceOpen("fps-background")) qa::openCombo("##fpsbg");
     if (ImGui::Combo("##fpsbg", &bg, kBgNames, 5)) {
         cosmetic.fpsBackground = kBgVals[bg];
@@ -816,6 +829,32 @@ void drawAppearance(AppState& state, Controller& controller) {
     ::ui::HandOnHover();
     subtext("Background rendering keeps animations smooth while other windows have "
             "focus. Lower it to trade smoothness for battery and GPU headroom.");
+    vspace(6);
+
+    // Text size: one multiplier on every font size; layouts derive from text
+    // metrics, so the whole app reflows with it.
+    static const int kTextVals[] = {90, 100, 115, 130};
+    static const char* kTextNames[] = {"small (90%)", "default (100%)", "large (115%)",
+                                       "extra large (130%)"};
+    int textIdx = 1;
+    for (int i = 0; i < 4; ++i)
+        if (kTextVals[i] == cosmetic.textSizePct) textIdx = i;
+    // Anchored here rather than at the card: the card runs past a phone
+    // viewport at the larger sizes, and the step scrolls to the page bottom
+    // first, so this row is drawn (the card is partly visible) and can pin.
+    if (qa::wantsOpen("text-size")) qa::anchorHere();
+    ImGui::PushFont(fonts().uiMedium, kText);
+    ImGui::TextUnformatted("Text size");
+    ImGui::PopFont();
+    pickerLabel("Scale");
+    if (qa::forceOpen("text-size")) qa::openCombo("##textsize");
+    if (ImGui::Combo("##textsize", &textIdx, kTextNames, 4)) {
+        cosmetic.textSizePct = kTextVals[textIdx];
+        changed = true;
+    }
+    ::ui::HandOnHover();
+    subtext("Applies everywhere at once; pick a larger size if the default reads small "
+            "on this screen.");
     if (changed) saveCosmetics();
     endCard();
 }
@@ -915,7 +954,8 @@ void drawAbout(AppState& state, Controller& controller) {
         if (update.available) {
             ImGui::SameLine(0, 10);
             badgeFilled(("NEW: " + update.latestTag).c_str(), col::Success);
-            ImGui::SameLine(0, 8);
+            // Three items do not fit a phone row; the call to action wraps.
+            if (!layout().phone()) ImGui::SameLine(0, 8);
             if (neonButton("VIEW RELEASE", BtnKind::Primary, {::ui::S(130.0f), 30}))
                 SDL_OpenURL(update.releaseUrl.c_str());
             if (!update.notes.empty()) {

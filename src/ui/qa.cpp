@@ -1,5 +1,6 @@
 #include "ui/qa.hpp"
 
+#include <algorithm>
 #include <cstdio>
 #include <filesystem>
 #include <vector>
@@ -98,6 +99,10 @@ void injectFixtures(AppState& state) {
     v.dashboardTiles.push_back({"chaininfo", 1});
     v.dashboardTiles.push_back({"prices", 1});
     v.dashboardTiles.push_back({"schedules", 1});
+    // One tile per sidebar page, so the deck reviews every summary.
+    for (const char* kind : {"transfer", "assets", "contracts", "governance", "msig", "vault",
+                             "create", "settings"})
+        v.dashboardTiles.push_back({kind, 1});
 
     v.keys = {{"PUB_K1_6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV", "", "main key",
                now - 86400 * 30},
@@ -487,7 +492,7 @@ const Step kSteps[] = {
          // A pending update so the About card shows the notify-only flow.
          s.update.available = true;
          s.update.latestTag = "v9.9.9";
-         s.update.releaseUrl = "https://github.com/on-a-t-break/tacklebox/releases";
+         s.update.releaseUrl = "https://github.com/doyen-games/tacklebox/releases";
          s.update.notes = "QA fixture release: illustrative notes for the About card.";
          s.update.checkedAt = nowSec();
          g_pageScroll = ::ui::S(99999.0f);  // clamps to the page bottom
@@ -741,6 +746,25 @@ const Step kSteps[] = {
          g_forceOpenTag = "sched-anchored";
          g_pageScroll = ::ui::S(330.0f);  // scrolls the modal body to Timing
      }},
+    {"57-settings-text-size",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Settings);
+         if (s.vault.networks.size() > 1) s.vault.networks.resize(1);
+         g_forceOpenTag = "text-size";
+         g_pageScroll = ::ui::S(99999.0f);  // appearance card sits near the bottom
+     }},
+    {"58-ram-buy-amount",
+     [](AppState& s, Controller& c) {
+         // Buy RAM by a core-token spend: the amount field and its estimate.
+         showShellPage(s, c, Page::Resources);
+         g_forceOpenTag = "ram-buy-amount";
+     }},
+    {"59-dashboard-page-tiles",
+     [](AppState& s, Controller& c) {
+         // The per-page tiles sit below the classic ones and the pins.
+         showShellPage(s, c, Page::Dashboard);
+         g_pageScroll = ::ui::S(99999.0f);
+     }},
 };
 constexpr int kStepCount = static_cast<int>(sizeof(kSteps) / sizeof(kSteps[0]));
 constexpr int kSettleFrames = 6;
@@ -755,6 +779,15 @@ void configure(const std::string& outDir) {
 }
 
 bool active() { return g_active; }
+
+void anchorHere(float fraction) {
+    if (!g_active) return;
+    // The cursor in page-content coordinates, then the offset that puts it
+    // `fraction` down the visible page; the shell applies g_pageScroll every
+    // frame, so this converges by the next one.
+    const float contentY = ImGui::GetCursorScreenPos().y - pageTop() + pageScroll();
+    g_pageScroll = std::max(0.0f, contentY - (pageBottom() - pageTop()) * fraction);
+}
 
 float pageScrollY() { return g_pageScroll; }
 
