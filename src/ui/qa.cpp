@@ -341,11 +341,13 @@ void injectFixtures(AppState& state) {
     GovernanceViewState& gv = state.governance;
     gv.fetchedAt = now;
     gv.proxiesFetchedAt = now;
-    gv.proxies = {{"greymassvote", "Greymass Fuel", "", "https://greymass.com", 8.1e15, true},
-                  {"brockpierce1", "Brock Pierce", "", "", 4.9e15, true},
-                  {"colinproxy11", "Colin Talks Crypto", "", "", 2.2e15, true},
-                  {"investingwad", "Investing WAD", "", "", 9.5e14, true},
-                  {"sleepyproxy1", "Sleepy", "", "", 1.1e14, false}};
+    gv.proxies = {
+        {"greymassvote", "Greymass Fuel", "", "https://greymass.com", 8.1e15,
+         415651401.0, 21, true},
+        {"brockpierce1", "Brock Pierce", "", "", 4.9e15, 224299415.0, 22, true},
+        {"colinproxy11", "Colin Talks Crypto", "", "", 2.2e15, 48834349.0, 28, true},
+        {"investingwad", "Investing WAD", "", "", 9.5e14, 39748259.0, 8, true},
+        {"sleepyproxy1", "Sleepy", "", "", 1.1e14, 3985252.0, 24, false}};
     dwarfkit::json producerRows = dwarfkit::json::array();
     const char* producers[] = {"teamgreymass", "aus1genereos", "eosnationftw", "bp.defibox",
                                "newdex.bp",    "big.one",      "eoscannonchn", "atticlabeosb"};
@@ -426,6 +428,7 @@ void showShellPage(AppState& state, Controller& controller, Page page) {
     state.signPrompt.reset();
     state.pluginPrompt.reset();
     tb::ui::closeRuleEditor();
+    tb::ui::closeAutopilotModals();
     state.page = page;
     controller.noteActivity();
 }
@@ -573,8 +576,8 @@ const Step kSteps[] = {
     {"30-resources-stake",
      [](AppState& s, Controller& c) {
          showShellPage(s, c, Page::Resources);
-         g_forceOpenTag = "res-stake-tab";  // usage meters + delegations table
-         g_pageScroll = ::ui::S(99999.0f);  // the delegations card ends the page
+         g_forceOpenTag = "res-stake-tab";  // stake grid + delegations table
+         g_pageScroll = ::ui::S(300.0f);    // land on Self/Delegated + delband
      }},
     {"31-contacts-combo",
      [](AppState& s, Controller& c) {
@@ -702,6 +705,32 @@ const Step kSteps[] = {
                         "transaction.";
          prompt->lines = {"fee: 0.0150 EOS", "provider: fuel.example"};
          state.pluginPrompt = prompt;
+     }},
+    {"51-wizard-pipeline",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Autopilot);
+         tb::ui::openAutoStakeWizard(0);
+     }},
+    {"52-wizard-stake",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Autopilot);
+         tb::ui::openAutoStakeWizard(3);
+         g_forceOpenTag = "wiz-stake-res";  // the CPU/NET picker, open
+     }},
+    {"53-wizard-review",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Autopilot);
+         tb::ui::openAutoStakeWizard(5);
+     }},
+    {"54-whitelist-import-tx",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::Whitelist);
+         g_forceOpenTag = "wl-import-tx";
+     }},
+    {"55-create-authorities",
+     [](AppState& s, Controller& c) {
+         showShellPage(s, c, Page::CreateAccount);
+         g_forceOpenTag = "ca-advanced";  // expands both authority editors
      }},
 };
 constexpr int kStepCount = static_cast<int>(sizeof(kSteps) / sizeof(kSteps[0]));

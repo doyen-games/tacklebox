@@ -5,6 +5,7 @@
 #include <cctype>
 #include <cstring>
 
+#include "app/account_util.hpp"
 #include "app/autopilot_util.hpp"
 #include "core/util.hpp"
 #include "guard/rules.hpp"
@@ -335,12 +336,557 @@ void drawEditor(AppState& state, Controller& controller) {
     }
 }
 
+// --- Auto Stake Wizard -------------------------------------------------------
+// One guided flow that arms the whole earn loop in the right order: vote
+// through a proxy (rewards accrue) -> claim rewards daily -> stake the claim
+// -> optionally sweep surplus to cold storage. Every stage is a pinned
+// auto-sign whitelist rule plus a schedule; signing still happens ONLY
+// through the guard's auto-sign fast path - the wizard has no signing power.
+
+struct WizardStage {
+    std::string title;
+    guard::WhitelistRule rule;
+    Schedule schedule;
+    bool runNow = false;  // vote executes immediately once armed
+    int status = 0;       // 0 pending, 1 pinning rule, 2 armed, 3 failed
+    std::string error;
+};
+
+struct WizardState {
+    bool open = false;
+    int step = 0;  // 0 pipeline, 1 vote, 2 claim, 3 stake, 4 sweep, 5 review, 6 arming
+    // vote
+    bool voteOn = true;
+    char proxy[16] = {};
+    int voteDays = 7;
+    // claim
+    bool claimOn = true;
+    char claimContract[16] = "eosio";
+    char claimAction[16] = "claimgbmvote";
+    char claimData[256] = "{\"owner\":\"{actor}\"}";
+    char claimTime[12] = "09:00:00";
+    // stake
+    bool stakeOn = true;
+    char stakePercent[8] = "50";
+    int stakeResource = 0;  // 0 CPU, 1 NET
+    char stakeTime[12] = "09:10:00";
+    // sweep
+    bool sweepOn = false;
+    char sweepTo[16] = {};
+    char sweepPercent[8] = "75";
+    char sweepMemo[64] = "swept by TackleBox {date}";
+    // arming
+    bool flipAutoSign = true;
+    std::vector<WizardStage> stages;
+    bool armed = false;
+};
+WizardState wiz;
+
+void wizardArmStage(Controller& controller, size_t index) {
+    if (index >= wiz.stages.size()) {
+        // Everything armed: the vote executes right away (through its fresh
+        // pinned rule), the daily stages wait for their exact times.
+        wiz.armed = true;
+        for (const auto& stage : wiz.stages)
+            if (stage.runNow) controller.runScheduleNow(stage.schedule.id);
+        return;
+    }
+    WizardStage& stage = wiz.stages[index];
+    stage.status = 1;
+    stage.error.clear();
+    Controller* ctrl = &controller;  // outlives the app loop
+    controller.saveRule(stage.rule, /*pin=*/true,
+                        [ctrl, index](bool ok, std::string error) {
+                            if (index >= wiz.stages.size()) return;  // wizard reset
+                            WizardStage& s = wiz.stages[index];
+                            if (!ok) {
+                                s.status = 3;
+                                s.error = std::move(error);
+                                return;
+                            }
+                            ctrl->saveSchedule(s.schedule);
+                            s.status = 2;
+                            wizardArmStage(*ctrl, index + 1);
+                        });
+}
+
+// Build the stage list from the wizard inputs; ids are minted here ONCE so a
+// retry after a failure upserts instead of duplicating.
+bool wizardBuildStages(AppState& state, Controller& controller) {
+    const AccountRef* account = state.currentAccount();
+    const NetworkDef* net = state.currentNetwork();
+    if (!account || !net) return false;
+    std::string signer = account->display();
+    std::string coreCode = net->coreSymbolCode();
+    std::string zero = acct::formatStake("0", net->coreSymbol).value_or("0.0000 " + coreCode);
+
+    auto baseRule = [&](const char* what) {
+        guard::WhitelistRule rule;
+        rule.id = uuid4();
+        rule.chainId = account->chainId;
+        rule.signer = signer;
+        rule.autoSign = true;
+        rule.createdAt = nowSec();
+        rule.note = std::string("auto stake wizard: ") + what;
+        return rule;
+    };
+    auto baseSchedule = [&](const char* label) {
+        Schedule schedule;
+        schedule.id = uuid4();
+        schedule.label = label;
+        schedule.chainId = account->chainId;
+        schedule.actor = account->actor;
+        schedule.permission = account->permission;
+        return schedule;
+    };
+    auto exact = [](const json& value) {
+        guard::ParamConstraint constraint;
+        constraint.kind = guard::ConstraintKind::Exact;
+        constraint.values = {value};
+        return constraint;
+    };
+
+    wiz.stages.clear();
+    if (wiz.voteOn) {
+        WizardStage stage;
+        stage.title = std::string("Vote via proxy ") + wiz.proxy;
+        stage.rule = baseRule("keep the vote proxied");
+        stage.rule.contract = "eosio";
+        stage.rule.action = "voteproducer";
+        stage.rule.params["proxy"] = exact(json(toLower(trim(wiz.proxy))));
+        stage.rule.params["producers"] = exact(json::array());
+        stage.schedule = baseSchedule("wizard: keep vote proxied");
+        stage.schedule.contract = "eosio";
+        stage.schedule.action = "voteproducer";
+        stage.schedule.data = json{{"voter", "{actor}"},
+                                   {"proxy", toLower(trim(wiz.proxy))},
+                                   {"producers", json::array()}};
+        stage.schedule.intervalSec = int64_t(wiz.voteDays) * 86400;
+        stage.runNow = true;
+        wiz.stages.push_back(std::move(stage));
+    }
+    if (wiz.claimOn) {
+        auto tod = autopilot::parseTimeOfDay(wiz.claimTime);
+        auto data = json::parse(std::string(wiz.claimData), nullptr, false);
+        if (!tod || data.is_discarded() || !data.is_object()) return false;
+        WizardStage stage;
+        stage.title = std::string("Claim rewards daily at ") + wiz.claimTime;
+        stage.rule = baseRule("claim rewards");
+        stage.rule.contract = toLower(trim(wiz.claimContract));
+        stage.rule.action = toLower(trim(wiz.claimAction));
+        for (auto it = data.begin(); it != data.end(); ++it) {
+            if (it.value().is_string() &&
+                it.value().get<std::string>().find('{') != std::string::npos)
+                continue;  // run-time placeholder: leave unconstrained
+            stage.rule.params[it.key()] = exact(it.value());
+        }
+        stage.schedule = baseSchedule("wizard: claim rewards");
+        stage.schedule.contract = stage.rule.contract;
+        stage.schedule.action = stage.rule.action;
+        stage.schedule.data = data;
+        stage.schedule.timingMode = Schedule::TimeDaily;
+        stage.schedule.dailySec = *tod;
+        stage.schedule.intervalSec = 86400;
+        wiz.stages.push_back(std::move(stage));
+    }
+    if (wiz.stakeOn) {
+        auto tod = autopilot::parseTimeOfDay(wiz.stakeTime);
+        double percent = std::atof(wiz.stakePercent);
+        if (!tod || percent <= 0 || percent > 100) return false;
+        const char* dynField =
+            wiz.stakeResource == 0 ? "stake_cpu_quantity" : "stake_net_quantity";
+        const char* zeroField =
+            wiz.stakeResource == 0 ? "stake_net_quantity" : "stake_cpu_quantity";
+        WizardStage stage;
+        stage.title = std::string("Stake ") + trim(wiz.stakePercent) + "% to " +
+                      (wiz.stakeResource == 0 ? "CPU" : "NET") + " daily at " +
+                      wiz.stakeTime;
+        stage.rule = baseRule("stake the claim");
+        stage.rule.contract = "eosio";
+        stage.rule.action = "delegatebw";
+        stage.rule.params["transfer"] = exact(json(false));
+        stage.rule.params[zeroField] = exact(json(zero));
+        stage.schedule = baseSchedule("wizard: stake the claim");
+        stage.schedule.contract = "eosio";
+        stage.schedule.action = "delegatebw";
+        stage.schedule.data = json{{"from", "{actor}"},
+                                   {"receiver", "{actor}"},
+                                   {"stake_cpu_quantity", zero},
+                                   {"stake_net_quantity", zero},
+                                   {"transfer", false}};
+        stage.schedule.amountMode = Schedule::AmountPercent;
+        stage.schedule.amountPercent = percent;
+        stage.schedule.amountTokenContract = "eosio.token";
+        stage.schedule.amountTokenCode = coreCode;
+        stage.schedule.amountField = dynField;
+        stage.schedule.timingMode = Schedule::TimeDaily;
+        stage.schedule.dailySec = *tod;
+        stage.schedule.intervalSec = 86400;
+        wiz.stages.push_back(std::move(stage));
+    }
+    if (wiz.sweepOn) {
+        double percent = std::atof(wiz.sweepPercent);
+        std::string to = toLower(trim(wiz.sweepTo));
+        if (to.empty() || percent <= 0 || percent > 100) return false;
+        WizardStage stage;
+        stage.title = "Sweep " + trim(wiz.sweepPercent) + "% to " + to + " weekly";
+        stage.rule = baseRule("sweep to cold storage");
+        stage.rule.contract = "eosio.token";
+        stage.rule.action = "transfer";
+        stage.rule.params["to"] = exact(json(to));
+        stage.schedule = baseSchedule("wizard: sweep to cold storage");
+        stage.schedule.contract = "eosio.token";
+        stage.schedule.action = "transfer";
+        stage.schedule.data = json{{"from", "{actor}"},
+                                   {"to", to},
+                                   {"quantity", zero},
+                                   {"memo", wiz.sweepMemo}};
+        stage.schedule.amountMode = Schedule::AmountPercent;
+        stage.schedule.amountPercent = percent;
+        stage.schedule.amountTokenContract = "eosio.token";
+        stage.schedule.amountTokenCode = coreCode;
+        stage.schedule.amountField = "quantity";
+        stage.schedule.intervalSec = 7 * 86400;
+        wiz.stages.push_back(std::move(stage));
+    }
+    (void)controller;
+    return !wiz.stages.empty();
+}
+
+void drawAutoStakeWizard(AppState& state, Controller& controller) {
+    if (wiz.open) ImGui::OpenPopup("Auto Stake Wizard");
+    if (!beginAdaptiveModal("Auto Stake Wizard", 640.0f)) return;
+    if (!wiz.open) {
+        ImGui::CloseCurrentPopup();
+        endAdaptiveModal();
+        return;
+    }
+    if (ImGui::IsKeyPressed(ImGuiKey_Escape, false)) wiz.open = false;
+
+    static const char* kStepNames[] = {"PIPELINE", "VOTE",   "CLAIM",
+                                       "STAKE",    "SWEEP",  "REVIEW", "ARM"};
+    heading("Auto Stake Wizard", 24.0f);
+    ImGui::PushFont(fonts().uiSemi, kTextSm);
+    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::CyanDim));
+    ImGui::Text("step %d of 6  -  %s", wiz.step + 1, kStepNames[wiz.step]);
+    ImGui::PopStyleColor();
+    ImGui::PopFont();
+    vspace(6);
+    beginModalBody("##wizbody", ImGui::GetFrameHeight() * 2.4f + 60.0f);
+
+    const AccountRef* account = state.currentAccount();
+    const NetworkDef* net = state.currentNetwork();
+    std::string coreCode = net ? net->coreSymbolCode() : "EOS";
+
+    switch (wiz.step) {
+        case 0: {
+            subtext("Arms the whole earn loop in the correct order. Each stage is a "
+                    "schedule bound to a pinned auto-sign whitelist rule - the guard "
+                    "still checks every run.");
+            vspace(6);
+            if (account) kvRow("Account", account->display(), true);
+            if (net) kvRow("Chain", net->name);
+            vspace(6);
+            sectionTitle("The pipeline");
+            subtext("1. Vote through a proxy - rewards start accruing (runs "
+                    "immediately, then re-votes on an interval).");
+            subtext("2. Claim rewards - every day at an exact time.");
+            subtext("3. Stake the claim - a percent of the fresh liquid balance, "
+                    "shortly after the claim.");
+            subtext("4. Sweep surplus to cold storage - optional, weekly.");
+            break;
+        }
+        case 1: {
+            toggle("Include the vote stage", &wiz.voteOn,
+                   "Re-votes through the proxy so the vote never decays");
+            if (wiz.voteOn) {
+                // Prefill from the live vote once.
+                if (!wiz.proxy[0] && account) {
+                    AccountData& data = state.accountData[state.accountKey(*account)];
+                    if (data.loaded && data.snap.raw.contains("voter_info") &&
+                        data.snap.raw["voter_info"].is_object())
+                        std::snprintf(wiz.proxy, sizeof wiz.proxy, "%s",
+                                      data.snap.raw["voter_info"]
+                                          .value("proxy", std::string())
+                                          .c_str());
+                }
+                FieldOpts opts;
+                opts.mono = true;
+                opts.placeholder = "proxy account";
+                textField("Proxy", wiz.proxy, sizeof wiz.proxy, opts);
+                ImGui::AlignTextToFramePadding();
+                ImGui::PushFont(fonts().uiSemi, kTextSm);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+                ImGui::TextUnformatted("Re-vote every");
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+                ImGui::SameLine(0, 8);
+                ImGui::SetNextItemWidth(::ui::S(110.0f));
+                ImGui::InputInt("##votedays", &wiz.voteDays);
+                if (wiz.voteDays < 1) wiz.voteDays = 1;
+                ImGui::SameLine(0, 6);
+                subtext("days (the first vote fires as soon as the pipeline arms)");
+            }
+            break;
+        }
+        case 2: {
+            toggle("Include the claim stage", &wiz.claimOn,
+                   "Claims voter rewards on a daily clock");
+            if (wiz.claimOn) {
+                if (beginFieldPair("##claimrow")) {
+                    nextField();
+                    {
+                        FieldOpts opts;
+                        opts.mono = true;
+                        textField("Contract", wiz.claimContract,
+                                  sizeof wiz.claimContract, opts);
+                    }
+                    nextField();
+                    {
+                        FieldOpts opts;
+                        opts.mono = true;
+                        textField("Action", wiz.claimAction, sizeof wiz.claimAction,
+                                  opts);
+                    }
+                    endFieldPair();
+                }
+                {
+                    FieldOpts opts;
+                    opts.mono = true;
+                    opts.hint = "string values may use {actor}";
+                    textField("Data", wiz.claimData, sizeof wiz.claimData, opts);
+                }
+                {
+                    FieldOpts opts;
+                    opts.mono = true;
+                    opts.width = ::ui::S(120.0f);
+                    opts.hint = "local time, HH:MM:SS";
+                    textField("Daily at", wiz.claimTime, sizeof wiz.claimTime, opts);
+                }
+                subtext("WAX voters: eosio::claimgbmvote. Adjust for your chain's "
+                        "reward action.");
+            }
+            break;
+        }
+        case 3: {
+            toggle("Include the stake stage", &wiz.stakeOn,
+                   "Stakes a percent of the fresh liquid balance every day");
+            if (wiz.stakeOn) {
+                {
+                    FieldOpts opts;
+                    opts.mono = true;
+                    opts.width = ::ui::S(110.0f);
+                    opts.hint = "percent (0-100]";
+                    textField("Stake", wiz.stakePercent, sizeof wiz.stakePercent, opts);
+                }
+                ImGui::AlignTextToFramePadding();
+                ImGui::PushFont(fonts().uiSemi, kTextSm);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+                ImGui::TextUnformatted(("% of liquid " + coreCode + " into").c_str());
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+                ImGui::SameLine(0, 8);
+                ImGui::SetNextItemWidth(::ui::S(110.0f));
+                const char* resources[] = {"CPU", "NET"};
+                if (qa::forceOpen("wiz-stake-res")) qa::openCombo("##stakeres");
+                ImGui::Combo("##stakeres", &wiz.stakeResource, resources, 2);
+                ::ui::HandOnHover();
+                {
+                    FieldOpts opts;
+                    opts.mono = true;
+                    opts.width = ::ui::S(120.0f);
+                    opts.hint = "local time, HH:MM:SS";
+                    textField("Daily at", wiz.stakeTime, sizeof wiz.stakeTime, opts);
+                }
+                subtext("Runs just after the claim so the freshly claimed rewards are "
+                        "part of the balance.");
+            }
+            break;
+        }
+        case 4: {
+            toggle("Include the sweep stage (optional)", &wiz.sweepOn,
+                   "Weekly transfer of surplus liquid tokens to another wallet");
+            if (wiz.sweepOn) {
+                FieldOpts opts;
+                opts.mono = true;
+                opts.placeholder = "cold wallet account";
+                textField("To", wiz.sweepTo, sizeof wiz.sweepTo, opts);
+                opts.placeholder = "percent (0-100]";
+                opts.width = ::ui::S(110.0f);
+                textField("Sweep", wiz.sweepPercent, sizeof wiz.sweepPercent, opts);
+                FieldOpts memoOpts;
+                memoOpts.mono = true;
+                textField("Memo", wiz.sweepMemo, sizeof wiz.sweepMemo, memoOpts);
+            }
+            break;
+        }
+        case 5: {
+            sectionTitle("Review");
+            int order = 0;
+            auto line = [&](bool on, const std::string& text) {
+                if (!on) return;
+                ++order;
+                ImGui::PushFont(fonts().ui, kText);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Ice));
+                ImGui::Text("%d.", order);
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+                ImGui::SameLine(0, 8);
+                ImGui::PushFont(fonts().ui, kText);
+                ImGui::TextWrapped("%s", text.c_str());
+                ImGui::PopFont();
+            };
+            line(wiz.voteOn, "Vote via proxy " + std::string(wiz.proxy) +
+                                 " - immediately, then every " +
+                                 std::to_string(wiz.voteDays) + " days");
+            line(wiz.claimOn, std::string(wiz.claimContract) + "::" + wiz.claimAction +
+                                  " - daily at " + wiz.claimTime);
+            line(wiz.stakeOn, "Stake " + std::string(wiz.stakePercent) + "% of liquid " +
+                                  coreCode + " to " +
+                                  (wiz.stakeResource == 0 ? "CPU" : "NET") +
+                                  " - daily at " + wiz.stakeTime);
+            line(wiz.sweepOn, "Sweep " + std::string(wiz.sweepPercent) + "% to " +
+                                  wiz.sweepTo + " - weekly");
+            vspace(6);
+            subtext("Arming creates one pinned auto-sign whitelist rule per stage "
+                    "(fetching the live contract hashes) plus its schedule.");
+            if (!state.vault.security.allowAutoSign)
+                toggle("Enable the auto-sign master switch", &wiz.flipAutoSign,
+                       "Off, every run would be recorded as blocked. This flips "
+                       "Settings > Security policy > allow auto-sign");
+            break;
+        }
+        case 6: {
+            sectionTitle("Arming the pipeline");
+            for (const auto& stage : wiz.stages) {
+                switch (stage.status) {
+                    case 1: spinner(10.0f); break;
+                    case 2: statusDot(col::Success); break;
+                    case 3: statusDot(col::Danger); break;
+                    default: statusDot(col::Slate); break;
+                }
+                ImGui::SameLine(0, 8);
+                ImGui::PushFont(fonts().ui, kText);
+                ImGui::TextUnformatted(stage.title.c_str());
+                ImGui::PopFont();
+                if (!stage.error.empty()) {
+                    ImGui::PushFont(fonts().ui, kTextSm);
+                    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Danger));
+                    ImGui::TextWrapped("   %s", stage.error.c_str());
+                    ImGui::PopStyleColor();
+                    ImGui::PopFont();
+                }
+            }
+            if (wiz.armed) {
+                vspace(6);
+                ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Success));
+                ImGui::TextWrapped("Pipeline armed. The vote fired immediately; the "
+                                   "daily stages run at their exact times.");
+                ImGui::PopStyleColor();
+            }
+            break;
+        }
+    }
+
+    endModalBody();
+    vspace(6);
+
+    // Footer: BACK / NEXT (context-sensitive), CLOSE on the arming screen.
+    if (wiz.step == 6) {
+        bool failed = false;
+        size_t failedAt = 0;
+        for (size_t i = 0; i < wiz.stages.size(); ++i)
+            if (wiz.stages[i].status == 3) {
+                failed = true;
+                failedAt = i;
+            }
+        if (failed && neonButton("RETRY", BtnKind::Primary, {110, 40})) {
+            wizardArmStage(controller, failedAt);
+        }
+        if (failed) ImGui::SameLine(0, 8);
+        if (neonButton(wiz.armed ? "DONE" : "CLOSE", BtnKind::Ghost, {110, 40}))
+            wiz.open = false;
+    } else {
+        if (neonButton("BACK", BtnKind::Ghost, {90, 40}, wiz.step == 0)) --wiz.step;
+        ImGui::SameLine(0, 8);
+        bool last = wiz.step == 5;
+        if (neonButton(last ? "ARM PIPELINE" : "NEXT", BtnKind::Primary,
+                       {last ? 150.0f : 110.0f, 40})) {
+            // Per-step validation before advancing.
+            bool ok = true;
+            if (wiz.step == 1 && wiz.voteOn && !trim(wiz.proxy).size()) {
+                controller.toast(Toast::Error, "Name the proxy account (or exclude "
+                                               "the vote stage)");
+                ok = false;
+            }
+            if (wiz.step == 2 && wiz.claimOn &&
+                !autopilot::parseTimeOfDay(wiz.claimTime)) {
+                controller.toast(Toast::Error, "Claim time must be HH:MM:SS");
+                ok = false;
+            }
+            if (wiz.step == 3 && wiz.stakeOn) {
+                double percent = std::atof(wiz.stakePercent);
+                if (percent <= 0 || percent > 100 ||
+                    !autopilot::parseTimeOfDay(wiz.stakeTime)) {
+                    controller.toast(Toast::Error,
+                                     "Stake needs a percent in (0,100] and an "
+                                     "HH:MM:SS time");
+                    ok = false;
+                }
+            }
+            if (wiz.step == 4 && wiz.sweepOn && !trim(wiz.sweepTo).size()) {
+                controller.toast(Toast::Error, "Name the sweep recipient (or turn "
+                                               "the sweep off)");
+                ok = false;
+            }
+            if (ok && last) {
+                if (!wiz.voteOn && !wiz.claimOn && !wiz.stakeOn && !wiz.sweepOn) {
+                    controller.toast(Toast::Error, "Every stage is excluded - "
+                                                   "nothing to arm");
+                } else if (!wizardBuildStages(state, controller)) {
+                    controller.toast(Toast::Error,
+                                     "Check the stage inputs - something did not "
+                                     "parse");
+                } else {
+                    if (wiz.flipAutoSign && !state.vault.security.allowAutoSign) {
+                        SecurityPrefs prefs = state.vault.security;
+                        prefs.allowAutoSign = true;
+                        controller.updateSecurity(prefs);
+                    }
+                    wiz.step = 6;
+                    wizardArmStage(controller, 0);
+                }
+            } else if (ok) {
+                ++wiz.step;
+            }
+        }
+    }
+    endAdaptiveModal();
+}
+
 }  // namespace
 
-// QA hook: the tour opens the editor without a click.
+// QA hooks: the tour opens/closes these without a click.
 void openScheduleEditor() {
     editor = EditorState{};
     editor.open = true;
+}
+
+void closeAutopilotModals() {
+    editor = EditorState{};
+    wiz = WizardState{};
+}
+
+// Entry points for the Auto Stake Wizard (autopilot page button + QA tour).
+void openAutoStakeWizard(int step) {
+    wiz = WizardState{};
+    wiz.open = true;
+    wiz.step = step < 0 ? 0 : (step > 5 ? 5 : step);
+    if (step >= 4) {  // review demos read nicer with content
+        std::snprintf(wiz.proxy, sizeof wiz.proxy, "greymassvote");
+        wiz.sweepOn = true;
+        std::snprintf(wiz.sweepTo, sizeof wiz.sweepTo, "coldwallet.x");
+    }
 }
 
 void drawAutopilot(AppState& state, Controller& controller) {
@@ -387,23 +933,8 @@ void drawAutopilot(AppState& state, Controller& controller) {
                           coreCode.c_str());
         }
         ImGui::TableNextColumn();
-        if (neonButton("AUTO-STAKE", BtnKind::Ghost, {-FLT_MIN, 0})) {
-            editor = EditorState{};
-            editor.open = true;
-            std::snprintf(editor.label, sizeof editor.label, "auto-stake CPU");
-            std::snprintf(editor.contract, sizeof editor.contract, "eosio");
-            std::snprintf(editor.action, sizeof editor.action, "delegatebw");
-            std::snprintf(editor.dataBuf, sizeof editor.dataBuf,
-                          "{\"from\":\"{actor}\",\"receiver\":\"{actor}\","
-                          "\"stake_net_quantity\":\"0.%04d %s\","
-                          "\"stake_cpu_quantity\":\"\",\"transfer\":false}",
-                          0, coreCode.c_str());
-            editor.amountMode = 1;
-            std::snprintf(editor.tokenCode, sizeof editor.tokenCode, "%s",
-                          coreCode.c_str());
-            std::snprintf(editor.amountField, sizeof editor.amountField,
-                          "stake_cpu_quantity");
-        }
+        if (neonButton("AUTO STAKE WIZARD", BtnKind::Primary, {-FLT_MIN, 0}))
+            openAutoStakeWizard(0);
         ImGui::TableNextColumn();
         if (neonButton("AUTO-PROXY", BtnKind::Ghost, {-FLT_MIN, 0})) {
             editor = EditorState{};
@@ -603,6 +1134,7 @@ void drawAutopilot(AppState& state, Controller& controller) {
                                 static_cast<size_t>(schedTo));
 
     drawEditor(state, controller);
+    drawAutoStakeWizard(state, controller);
 }
 
 }  // namespace tb::ui

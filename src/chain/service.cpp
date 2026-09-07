@@ -1,6 +1,7 @@
 #include "chain/service.hpp"
 
 #include <chrono>
+#include <cmath>
 
 #include <dwarfkit/atomicassets/endpoints.hpp>
 #include <dwarfkit/resources.hpp>
@@ -311,7 +312,7 @@ Result<json> ChainService::fetchProducers(int limit) {
     return rpcCall("/v1/chain/get_producers", json{{"json", true}, {"limit", limit}});
 }
 
-Result<std::vector<ProxyInfo>> ChainService::fetchProxies(size_t maxProxies) {
+Result<std::vector<ProxyInfo>> ChainService::fetchProxyRegistry(size_t maxProxies) {
     // The community proxy registry (regproxyinfo) is itself an on-chain
     // table, so this stays inside the chain-endpoint policy.
     DK_TRY(reg, fetchTableRows(json{{"code", "regproxyinfo"},
@@ -334,33 +335,41 @@ Result<std::vector<ProxyInfo>> ChainService::fetchProxies(size_t maxProxies) {
         return dwarfkit::err(dwarfkit::ErrorKind::NotFound,
                              "this chain has no regproxyinfo registry; enter a proxy "
                              "account by hand");
-    // Rank by live proxied vote weight from the system voters table. A miss
-    // just leaves that proxy unranked - the registry row still shows.
-    for (auto& p : proxies) {
-        auto voter = fetchTableRows(json{{"code", "eosio"},
-                                         {"scope", "eosio"},
-                                         {"table", "voters"},
-                                         {"lower_bound", p.account},
-                                         {"limit", 1},
-                                         {"json", true}});
-        if (!voter || !voter->contains("rows") || !(*voter)["rows"].is_array() ||
-            (*voter)["rows"].empty())
-            continue;
-        const json& row = (*voter)["rows"][0];
-        if (row.value("owner", std::string()) != p.account) continue;
-        p.active = row.value("is_proxy", 0) != 0;
-        if (row.contains("proxied_vote_weight")) {
-            const json& w = row["proxied_vote_weight"];
-            p.weight = w.is_number() ? w.get<double>()
-                       : w.is_string() ? std::atof(w.get<std::string>().c_str())
-                                       : 0.0;
-        }
-    }
-    std::stable_sort(proxies.begin(), proxies.end(),
-                     [](const ProxyInfo& a, const ProxyInfo& b) {
-                         return a.weight > b.weight;
-                     });
     return proxies;
+}
+
+Result<ProxyInfo> ChainService::fetchProxyStanding(const std::string& account) {
+    DK_TRY(voter, fetchTableRows(json{{"code", "eosio"},
+                                      {"scope", "eosio"},
+                                      {"table", "voters"},
+                                      {"lower_bound", account},
+                                      {"limit", 1},
+                                      {"json", true}}));
+    ProxyInfo p;
+    p.account = account;
+    if (!voter.contains("rows") || !voter["rows"].is_array() || voter["rows"].empty())
+        return p;
+    const json& row = voter["rows"][0];
+    if (row.value("owner", std::string()) != account) return p;
+    p.active = row.value("is_proxy", 0) != 0;
+    if (row.contains("producers") && row["producers"].is_array())
+        p.votingFor = static_cast<int>(row["producers"].size());
+    if (row.contains("proxied_vote_weight")) {
+        const json& w = row["proxied_vote_weight"];
+        p.weight = w.is_number() ? w.get<double>()
+                   : w.is_string() ? std::atof(w.get<std::string>().c_str())
+                                   : 0.0;
+    }
+    // Undo the standard eosio.system vote decay (weight doubles every 52
+    // weeks from the 2000-01-01 epoch) to land back on core tokens.
+    int precision = 4;
+    if (auto comma = net_.coreSymbol.find(','); comma != std::string::npos)
+        precision = std::atoi(net_.coreSymbol.substr(0, comma).c_str());
+    double weeks = static_cast<double>(nowSec() - 946684800) / (86400.0 * 7.0);
+    double decay = std::pow(2.0, std::floor(weeks) / 52.0);  // eosio.system stake2vote
+    if (decay > 0)
+        p.coreTokens = p.weight / decay / std::pow(10.0, precision);
+    return p;
 }
 
 Result<json> ChainService::fetchDelegations(const std::string& actor) {

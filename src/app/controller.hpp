@@ -186,6 +186,10 @@ public:
     // rule was created from inside it) so verdict badges update in place.
     void reevaluateSignPrompt();
 
+    // Fetch a transaction by id and open the rule editor prefilled from its
+    // first action (params become Exact constraints).
+    void importTxAsRule(const std::string& txId);
+
     // --- pinned queries -----------------------------------------------------
     void savePinnedQuery(const PinnedQuery& query);
     void removePinnedQuery(const std::string& id);

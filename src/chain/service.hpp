@@ -53,14 +53,16 @@ struct AccountSnapshot {
     }
 };
 
-// One registered vote proxy, enriched with its live weight.
+// One registered vote proxy, enriched with its live voters-table standing.
 struct ProxyInfo {
     std::string account;
-    std::string name;     // registry display name
+    std::string name;       // registry display name
     std::string slogan;
     std::string website;
-    double weight = 0.0;  // proxied_vote_weight (chain-native decay units)
-    bool active = false;  // voter row still has is_proxy set
+    double weight = 0.0;    // proxied_vote_weight (chain-native decay units)
+    double coreTokens = 0.0;  // weight converted back to core tokens
+    int votingFor = 0;      // producers on the proxy's own vote
+    bool active = false;    // voter row still has is_proxy set
 };
 
 // RAM Bancor market snapshot.
@@ -137,10 +139,13 @@ public:
     Result<PowerUpQuote> quotePowerUp(double cpuMs, double netKb);
     // Raw get_producers rows (sorted by vote weight by the node).
     Result<json> fetchProducers(int limit);
-    // Registered vote proxies from the on-chain regproxyinfo registry,
-    // ranked by live proxied vote weight (descending). One voters-table
-    // lookup per proxy, so maxProxies caps the round trips.
-    Result<std::vector<ProxyInfo>> fetchProxies(size_t maxProxies);
+    // Registered vote proxies from the on-chain regproxyinfo registry
+    // (names/slogans only - no weights yet). The controller fans out one
+    // fetchProxyStanding per row across the worker pool.
+    Result<std::vector<ProxyInfo>> fetchProxyRegistry(size_t maxProxies);
+    // One proxy's voters-table standing: proxied weight (also converted to
+    // core tokens), producers voted for, and whether is_proxy still holds.
+    Result<ProxyInfo> fetchProxyStanding(const std::string& account);
     // Outgoing CPU/NET delegations: eosio delband rows scoped to the actor.
     Result<json> fetchDelegations(const std::string& actor);
 

@@ -1841,6 +1841,70 @@ guard::WhitelistRule Controller::draftRuleFromAction(const SignPrompt::ActionVie
     return rule;
 }
 
+void Controller::importTxAsRule(const std::string& txId) {
+    const AccountRef* accountPtr = state_.currentAccount();
+    auto svc = currentService();
+    if (!svc || txId.empty()) return;
+    std::string chainId = svc->net().chainId;
+    std::string fallbackSigner = accountPtr ? accountPtr->display() : "*@*";
+    toast(Toast::Info, "Fetching transaction " + middleEllipsis(txId, 10, 6) + "...");
+    runner_.run([this, svc, txId, chainId, fallbackSigner] {
+        auto trx = svc->fetchTransaction(txId, std::nullopt);
+        std::string error;
+        json actions = json::array();
+        if (!trx) {
+            error = trx.error().message;
+        } else if (trx->contains("actions") && (*trx)["actions"].is_array()) {
+            // Hyperion v2 shape: actions[].act carries the decoded action.
+            for (const json& wrap : (*trx)["actions"])
+                if (wrap.contains("act")) actions.push_back(wrap["act"]);
+        } else if (trx->contains("trx") && (*trx)["trx"].contains("trx") &&
+                   (*trx)["trx"]["trx"].contains("actions")) {
+            // v1 history shape.
+            actions = (*trx)["trx"]["trx"]["actions"];
+        }
+        runner_.postMain([this, txId, chainId, fallbackSigner, error,
+                          actions = std::move(actions)] {
+            if (!error.empty()) {
+                toast(Toast::Error, "Transaction lookup failed: " + error);
+                return;
+            }
+            // First real action becomes the draft (inline noise skipped).
+            for (const json& action : actions) {
+                std::string contract = action.value("account", std::string());
+                std::string name = action.value("name", std::string());
+                if (contract.empty() || contract == "eosio.null" || name.empty())
+                    continue;
+                SignPrompt::ActionView view;
+                view.contract = contract;
+                view.action = name;
+                if (action.contains("data") && action["data"].is_object())
+                    view.data = action["data"];
+                std::string signer = fallbackSigner;
+                if (action.contains("authorization") &&
+                    action["authorization"].is_array() &&
+                    !action["authorization"].empty()) {
+                    const json& auth = action["authorization"][0];
+                    signer = auth.value("actor", std::string()) + "@" +
+                             auth.value("permission", std::string("active"));
+                }
+                auto draft = draftRuleFromAction(view, chainId, signer);
+                draft.note = "from tx " + middleEllipsis(txId, 10, 6);
+                // The controller stays UI-free: the app-level rule editor
+                // consumes this on its next draw.
+                state_.pendingRuleDraft = draft;
+                if (actions.size() > 1)
+                    toast(Toast::Info,
+                          "Transaction has " + std::to_string(actions.size()) +
+                              " actions - drafted from the first; import again for "
+                              "the others");
+                return;
+            }
+            toast(Toast::Warn, "No whitelistable action found in that transaction");
+        });
+    });
+}
+
 void Controller::saveRule(guard::WhitelistRule rule, bool pin,
                           std::function<void(bool, std::string)> done) {
     state_.busyRule = true;
@@ -2173,18 +2237,56 @@ void Controller::loadProxies(bool force) {
     gv.proxiesLoading = true;
     gv.proxiesError.clear();
     runner_.run([this, svc] {
-        // One registry read plus a voters-table lookup per proxy: capped so
-        // the worst case stays a few dozen light RPCs on a worker thread.
-        auto proxies = svc->fetchProxies(48);
-        runner_.postMain([this, proxies = std::move(proxies)] {
-            GovernanceViewState& view = state_.governance;
-            view.proxiesLoading = false;
-            view.proxiesFetchedAt = nowSec();
-            if (proxies)
-                view.proxies = *proxies;
-            else
-                view.proxiesError = proxies.error().message;
-        });
+        // Registry first; then one voters-table lookup PER PROXY fanned out
+        // across the worker pool (sequential lookups took tens of seconds
+        // through slower nodes - this finishes in about one round trip).
+        auto registry = svc->fetchProxyRegistry(48);
+        if (!registry || registry->empty()) {
+            std::string error = registry ? std::string("no registered proxies")
+                                         : registry.error().message;
+            runner_.postMain([this, error] {
+                state_.governance.proxiesLoading = false;
+                state_.governance.proxiesFetchedAt = nowSec();
+                state_.governance.proxiesError = error;
+            });
+            return;
+        }
+        struct Shared {
+            std::mutex mutex;
+            std::vector<ProxyInfo> proxies;
+            size_t remaining = 0;
+        };
+        auto shared = std::make_shared<Shared>();
+        shared->proxies = std::move(*registry);
+        shared->remaining = shared->proxies.size();
+        for (size_t i = 0; i < shared->proxies.size(); ++i) {
+            runner_.run([this, svc, shared, i] {
+                auto standing = svc->fetchProxyStanding(shared->proxies[i].account);
+                bool last = false;
+                {
+                    std::lock_guard<std::mutex> lock(shared->mutex);
+                    if (standing) {
+                        ProxyInfo& p = shared->proxies[i];
+                        p.weight = standing->weight;
+                        p.coreTokens = standing->coreTokens;
+                        p.votingFor = standing->votingFor;
+                        p.active = standing->active;
+                    }
+                    last = --shared->remaining == 0;
+                }
+                if (!last) return;
+                std::stable_sort(shared->proxies.begin(), shared->proxies.end(),
+                                 [](const ProxyInfo& a, const ProxyInfo& b) {
+                                     return a.weight > b.weight;
+                                 });
+                runner_.postMain([this, shared] {
+                    GovernanceViewState& view = state_.governance;
+                    view.proxiesLoading = false;
+                    view.proxiesFetchedAt = nowSec();
+                    view.proxies = std::move(shared->proxies);
+                });
+            });
+        }
     });
 }
 

@@ -295,18 +295,18 @@ void drawIcon(ImDrawList* dl, Icon icon, ImVec2 c, float size, ImU32 color, floa
 }
 
 void drawTackleboxMark(ImDrawList* dl, ImVec2 center, float size, ImU32 color, float glow) {
-    float g = glow * cosmetics().glow;
-    if (g > 0.01f) {
-        for (int i = 3; i >= 1; --i)
-            dl->AddCircle(center, size * (0.62f + 0.05f * static_cast<float>(i)),
-                          col::alpha(color, g * 0.10f), 0, 3.0f);
-    }
-    dl->AddCircle(center, size * 0.62f, col::alpha(color, 0.85f), 0, 1.6f);
-
     // Geometry transcribed from assets/brand/tacklebox.svg (256 viewBox,
-    // content center ~(128,123)); u maps art units so the box's corners stay
-    // inside the ring. Fine detail drops out below ~36 px.
-    const float u = size / 224.0f;
+    // content center ~(128,123)), drawn bare - no enclosing ring. The glow
+    // is a soft halo behind the case. Fine detail drops out below ~36 px.
+    const float u = size / 168.0f;
+    float g = glow * cosmetics().glow;
+    if (g > 0.01f)
+        for (int i = 3; i >= 1; --i)
+            dl->AddRect({center.x - 103.0f * u - static_cast<float>(i) * 2.0f,
+                         center.y - 90.0f * u - static_cast<float>(i) * 2.0f},
+                        {center.x + 103.0f * u + static_cast<float>(i) * 2.0f,
+                         center.y + 90.0f * u + static_cast<float>(i) * 2.0f},
+                        col::alpha(color, g * 0.08f), 10.0f * u, 3.0f);
     auto P = [&](float x, float y) {
         return ImVec2(center.x + (x - 128.0f) * u, center.y + (y - 123.0f) * u);
     };

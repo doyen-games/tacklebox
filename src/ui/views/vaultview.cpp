@@ -243,35 +243,54 @@ void drawVaultView(AppState& state, Controller& controller) {
 
         static char wifBuf[128] = {};
         static char labelBuf[64] = {};
-        float avail = ImGui::GetContentRegionAvail().x;
-        ImGui::BeginGroup();
-        {
-            FieldOpts opts;
-            opts.password = true;
-            opts.placeholder = "5... / PVT_K1_...";
-            opts.width = avail * 0.5f;
-            textField("Import private key", wifBuf, sizeof wifBuf, opts);
+        // One row, four columns: both fields under an identical label line,
+        // both buttons matching the field height (same treatment as the
+        // add-account row below).
+        auto keyLabel = [](const char* text) {
+            ImGui::PushFont(fonts().uiSemi, kTextSm);
+            ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+            ImGui::TextUnformatted(text);
+            ImGui::PopStyleColor();
+            ImGui::PopFont();
+            ImGui::Dummy({0, 1});
+        };
+        if (ImGui::BeginTable("##importkey", 4, ImGuiTableFlags_SizingStretchProp)) {
+            ImGui::TableSetupColumn("wif", ImGuiTableColumnFlags_WidthStretch, 0.52f);
+            ImGui::TableSetupColumn("label", ImGuiTableColumnFlags_WidthStretch, 0.24f);
+            ImGui::TableSetupColumn("import", ImGuiTableColumnFlags_WidthFixed,
+                                    ::ui::S(96.0f));
+            ImGui::TableSetupColumn("gen", ImGuiTableColumnFlags_WidthFixed,
+                                    ::ui::S(140.0f));
+            ImGui::TableNextRow();
+            nextField();
+            {
+                FieldOpts opts;
+                opts.password = true;
+                opts.placeholder = "5... / PVT_K1_...";
+                textField("Import private key", wifBuf, sizeof wifBuf, opts);
+            }
+            nextField();
+            {
+                FieldOpts opts;
+                opts.placeholder = "label";
+                textField("Label", labelBuf, sizeof labelBuf, opts);
+            }
+            nextField();
+            keyLabel(" ");  // spacer so the buttons start level with the fields
+            if (neonButton("IMPORT", BtnKind::Primary,
+                           {-FLT_MIN, ImGui::GetFrameHeight()}) &&
+                wifBuf[0]) {
+                controller.importKey(wifBuf, labelBuf);
+                secureWipe(wifBuf, sizeof wifBuf);
+                labelBuf[0] = 0;
+            }
+            nextField();
+            keyLabel(" ");
+            if (neonButton("GENERATE NEW", BtnKind::Ghost,
+                           {-FLT_MIN, ImGui::GetFrameHeight()}))
+                controller.generateKey("generated");
+            ImGui::EndTable();
         }
-        ImGui::EndGroup();
-        ImGui::SameLine(0, 10);
-        ImGui::BeginGroup();
-        {
-            FieldOpts opts;
-            opts.placeholder = "label";
-            opts.width = avail * 0.22f;
-            textField("##keylabel", labelBuf, sizeof labelBuf, opts);
-        }
-        ImGui::EndGroup();
-        ImGui::SameLine(0, 10);
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 22);
-        if (neonButton("IMPORT", BtnKind::Primary, {90, 38}) && wifBuf[0]) {
-            controller.importKey(wifBuf, labelBuf);
-            secureWipe(wifBuf, sizeof wifBuf);
-            labelBuf[0] = 0;
-        }
-        ImGui::SameLine(0, 6);
-        if (neonButton("GENERATE NEW", BtnKind::Ghost, {130, 38}))
-            controller.generateKey("generated");
     }
     endCard();
     vspace(12);
@@ -447,7 +466,7 @@ void drawVaultView(AppState& state, Controller& controller) {
             ImGui::TableSetupColumn("add", ImGuiTableColumnFlags_WidthFixed,
                                     ::ui::S(92.0f));
             ImGui::TableNextRow();
-            ImGui::TableNextColumn();
+            nextField();
             fieldLabel("Network");
             ImGui::SetNextItemWidth(-FLT_MIN);
             if (ImGui::BeginCombo("##chain",
@@ -463,20 +482,20 @@ void drawVaultView(AppState& state, Controller& controller) {
                 ImGui::EndCombo();
             }
             ::ui::HandOnHover();
-            ImGui::TableNextColumn();
+            nextField();
             {
                 FieldOpts opts;
                 opts.mono = true;
                 opts.placeholder = "accountname";
                 textField("Account", actorBuf, sizeof actorBuf, opts);
             }
-            ImGui::TableNextColumn();
+            nextField();
             {
                 FieldOpts opts;
                 opts.mono = true;
                 textField("Permission", permBuf, sizeof permBuf, opts);
             }
-            ImGui::TableNextColumn();
+            nextField();
             fieldLabel(" ");  // spacer so the button starts level with the fields
             if (neonButton("ADD", BtnKind::Primary, {-FLT_MIN, ImGui::GetFrameHeight()}) &&
                 actorBuf[0] && !state.vault.networks.empty()) {

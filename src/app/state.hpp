@@ -183,6 +183,7 @@ struct GovernanceViewState {
     bool proxiesLoading = false;
     std::string proxiesError;
     int64_t proxiesFetchedAt = 0;
+    std::string selectedProxy;  // radio pick in the ranked table
 };
 
 // One pinned query's latest data.
@@ -261,6 +262,9 @@ struct AppState {
     std::vector<Toast> toasts;
     std::shared_ptr<SignPrompt> signPrompt;
     std::shared_ptr<PluginPrompt> pluginPrompt;
+    // A rule draft staged by the controller (tx import); the app-level rule
+    // editor consumes it on its next draw.
+    std::optional<guard::WhitelistRule> pendingRuleDraft;
 
     // transient busy flags / errors surfaced by views
     bool busyUnlock = false;

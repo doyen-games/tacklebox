@@ -505,7 +505,18 @@ bool beginFieldPair(const char* id) {
     return open;
 }
 
-bool nextField() { return ImGui::TableNextColumn(); }
+bool nextField() {
+    bool visible = ImGui::TableNextColumn();
+    // Neutralize the text baseline carried across cells from the previous
+    // column's framed widgets - it pushed this column's label ~a frame
+    // padding lower (the Chain/Signer sag). A zero-size item completes the
+    // carried line and resets the offset; the cursor then goes back to the
+    // cell top so no space is consumed.
+    float y = ImGui::GetCursorPosY();
+    ImGui::Dummy({0, 0});
+    ImGui::SetCursorPosY(y);
+    return visible;
+}
 
 void endFieldPair() {
     ImGui::EndTable();

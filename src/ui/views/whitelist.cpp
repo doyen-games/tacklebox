@@ -462,6 +462,12 @@ void closeRuleEditor() {
 // ("whitelist this, then approve"). App-level also keeps the popup id out of
 // the page hierarchy, so a resize that swaps the chrome cannot orphan it.
 void drawRuleEditorModal(AppState& state, Controller& controller) {
+    // Drafts staged by UI code (openRuleEditor) or by the controller
+    // (transaction import) both open here.
+    if (state.pendingRuleDraft) {
+        loadEditorFromRule(*state.pendingRuleDraft, true);
+        state.pendingRuleDraft.reset();
+    }
     if (pendingDraft) {
         loadEditorFromRule(*pendingDraft, true);
         pendingDraft.reset();
@@ -489,6 +495,39 @@ void drawWhitelist(AppState& state, Controller& controller) {
         loadEditorFromRule(blank, true);
         editor.ruleId.clear();
     }
+    ImGui::SameLine(0, 8);
+    // Import: paste a transaction id, get the editor prefilled from its
+    // first action.
+    if (neonButton("IMPORT TX", BtnKind::Subtle, {110, 38}) ||
+        qa::forceOpen("wl-import-tx"))
+        ImGui::OpenPopup("##importtx");
+    if (qa::active())
+        ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
+                                ImGuiCond_Appearing, {0.5f, 0.5f});
+    ImGui::SetNextWindowSizeConstraints({::ui::S(420.0f), 0}, {::ui::S(560.0f), FLT_MAX});
+    ImGui::PushStyleColor(ImGuiCol_PopupBg, col::vec(col::Bg));
+    if (ImGui::BeginPopup("##importtx")) {
+        sectionTitle("Whitelist from a transaction");
+        subtext("The transaction's first action prefills the rule editor; its "
+                "parameters arrive as exact-match constraints you can loosen.");
+        static char txBuf[72] = {};
+        FieldOpts opts;
+        opts.mono = true;
+        opts.placeholder = "transaction id (64 hex)";
+        bool entered = textField("##txid", txBuf, sizeof txBuf, opts);
+        vspace(4);
+        if ((neonButton("FETCH & DRAFT", BtnKind::Primary, {150, 34}, !txBuf[0]) ||
+             entered) &&
+            txBuf[0]) {
+            controller.importTxAsRule(trim(txBuf));
+            txBuf[0] = 0;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine(0, 8);
+        if (neonButton("CANCEL", BtnKind::Ghost, {100, 34})) ImGui::CloseCurrentPopup();
+        ImGui::EndPopup();
+    }
+    ImGui::PopStyleColor();
     vspace(10);
 
     // Stale rules first: they demand attention.

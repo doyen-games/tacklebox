@@ -195,13 +195,70 @@ void drawStakeTab(AppState& state, Controller& controller) {
     const NetworkDef* network = state.currentNetwork();
     std::string symbol = network ? network->coreSymbolCode() : "EOS";
 
+    // Ensure the delband rows are on hand for the Delegated column.
+    controller.loadDelegations(false);
     if (beginCard("stakecur")) {
         sectionTitle("Current stake");
         if (data.loaded && data.snap.raw.contains("self_delegated_bandwidth") &&
             data.snap.raw["self_delegated_bandwidth"].is_object()) {
-            const json& stake = data.snap.raw["self_delegated_bandwidth"];
-            kvAsset("CPU staked", stake.value("cpu_weight", std::string("-")));
-            kvAsset("NET staked", stake.value("net_weight", std::string("-")));
+            // Self vs delegated-to-others, split by resource. Amounts sum in
+            // raw units and display at a fixed 4 decimals.
+            auto units = [](const std::string& asset) -> int64_t {
+                auto parsed = guard::parseAsset(asset);
+                if (!parsed) return 0;
+                // Normalize any chain precision to 4 display decimals.
+                int shift = parsed->precision - 4;
+                int64_t value = parsed->amount;
+                for (; shift > 0; --shift) value /= 10;
+                for (; shift < 0; ++shift) value *= 10;
+                return value;
+            };
+            const json& self = data.snap.raw["self_delegated_bandwidth"];
+            int64_t selfCpu = units(self.value("cpu_weight", std::string()));
+            int64_t selfNet = units(self.value("net_weight", std::string()));
+            int64_t delCpu = 0, delNet = 0;
+            if (rv.delegations.contains("rows"))
+                for (const auto& row : rv.delegations["rows"]) {
+                    if (account && row.value("to", std::string()) == account->actor)
+                        continue;  // self stake counted above
+                    delCpu += units(row.value("cpu_weight", std::string()));
+                    delNet += units(row.value("net_weight", std::string()));
+                }
+            auto asset = [&](int64_t value) {
+                char buf[48];
+                std::snprintf(buf, sizeof buf, "%lld.%04lld %s",
+                              static_cast<long long>(value / 10000),
+                              static_cast<long long>(value % 10000), symbol.c_str());
+                return std::string(buf);
+            };
+            if (ImGui::BeginTable("##stakegrid", 3,
+                                  ImGuiTableFlags_SizingStretchSame |
+                                      ImGuiTableFlags_BordersInnerH |
+                                      ImGuiTableFlags_NoPadOuterX)) {
+                ImGui::TableSetupColumn("");
+                ImGui::TableSetupColumn("Self");
+                ImGui::TableSetupColumn("Delegated");
+                ImGui::PushFont(fonts().uiSemi, kTextSm);
+                ImGui::TableHeadersRow();
+                ImGui::PopFont();
+                auto row = [&](const char* label, int64_t selfUnits, int64_t delUnits) {
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::PushFont(fonts().uiSemi, kTextSm);
+                    ImGui::PushStyleColor(ImGuiCol_Text, col::vec(col::Steel));
+                    ImGui::TextUnformatted(label);
+                    ImGui::PopStyleColor();
+                    ImGui::PopFont();
+                    ImGui::TableNextColumn();
+                    assetText(asset(selfUnits), kMonoSm);
+                    ImGui::TableNextColumn();
+                    assetText(asset(delUnits), kMonoSm);
+                };
+                row("CPU", selfCpu, delCpu);
+                row("NET", selfNet, delNet);
+                row("TOTAL", selfCpu + selfNet, delCpu + delNet);
+                ImGui::EndTable();
+            }
         } else {
             subtext("No self-delegated stake (or the chain does not use staking).");
         }

@@ -45,6 +45,11 @@ void closeRuleEditor();  // discard any open draft (QA step isolation)
 // Autopilot schedule editor entry point (QA tour).
 void openScheduleEditor();
 
+// Auto Stake Wizard entry point (autopilot page + QA tour). step clamps to
+// [0, 5]; passing 4+ seeds demo values so review screenshots read well.
+void openAutoStakeWizard(int step);
+void closeAutopilotModals();  // QA step isolation (schedule editor + wizard)
+
 // Msig template editor entry point (QA tour).
 void openMsigTemplateEditor();
 

@@ -27,6 +27,10 @@ struct PermDraft {
     int threshold = 1;
     std::vector<acct::AccountEntry> accounts;
     bool advanced = false;
+    // Per-editor add-row buffers (they were shared statics: typing in the
+    // owner editor mirrored into the active one).
+    char addActor[16] = {};
+    char addPerm[16] = {};
 };
 
 char g_name[16] = {};
@@ -103,6 +107,7 @@ void drawPermEditor(AppState& state, const char* title, PermDraft& draft,
     }
 
     // Advanced: extra account@permission authorities + threshold.
+    if (qa::wantsOpen("ca-advanced")) draft.advanced = true;
     ImGui::Dummy({::ui::S(78.0f), 0});
     ImGui::SameLine();
     if (ImGui::Checkbox("advanced authorities##adv", &draft.advanced)) {}
@@ -133,28 +138,34 @@ void drawPermEditor(AppState& state, const char* title, PermDraft& draft,
                                          static_cast<ptrdiff_t>(i--));
                 ImGui::PopID();
             }
-            // Add row.
-            static char actorBuf[16] = {}, permBuf[16] = {};
+            // Add row: fields + a real ADD button on the same line (Enter in
+            // either field also adds).
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::TableNextColumn();
             float half = ImGui::GetContentRegionAvail().x * 0.5f;
             ImGui::SetNextItemWidth(half);
             ImGui::PushFont(fonts().mono, kMonoSm);
-            ImGui::InputTextWithHint("##aactor", "account", actorBuf, sizeof actorBuf);
+            bool addNow = ImGui::InputTextWithHint("##aactor", "account", draft.addActor,
+                                                   sizeof draft.addActor,
+                                                   ImGuiInputTextFlags_EnterReturnsTrue);
             ImGui::SameLine(0, 4);
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::InputTextWithHint("##aperm", "permission (active)", permBuf,
-                                     sizeof permBuf);
+            addNow |= ImGui::InputTextWithHint("##aperm", "permission (active)",
+                                               draft.addPerm, sizeof draft.addPerm,
+                                               ImGuiInputTextFlags_EnterReturnsTrue);
             ImGui::PopFont();
             ImGui::TableNextColumn();
+            addNow |= neonButton("+ ADD", BtnKind::Subtle,
+                                 {::ui::S(64.0f), ImGui::GetFrameHeight()},
+                                 !draft.addActor[0]);
             ImGui::TableNextColumn();
-            if (iconButton("##addauth", Icon::Plus, "Add authority", col::CyanDim, 13.0f) &&
-                actorBuf[0]) {
-                draft.accounts.push_back(
-                    {toLower(trim(actorBuf)),
-                     permBuf[0] ? toLower(trim(permBuf)) : std::string("active"), 1});
-                actorBuf[0] = permBuf[0] = 0;
+            if (addNow && draft.addActor[0]) {
+                draft.accounts.push_back({toLower(trim(draft.addActor)),
+                                          draft.addPerm[0] ? toLower(trim(draft.addPerm))
+                                                           : std::string("active"),
+                                          1});
+                draft.addActor[0] = draft.addPerm[0] = 0;
             }
             ImGui::EndTable();
         }
@@ -162,7 +173,8 @@ void drawPermEditor(AppState& state, const char* title, PermDraft& draft,
         // permission (required for deployed contracts with inline actions).
         ImGui::Dummy({::ui::S(78.0f), 0});
         ImGui::SameLine();
-        if (neonButton("+ @EOSIO.CODE", BtnKind::Subtle, {::ui::S(130.0f), 26})) {
+        if (neonButton("+ @EOSIO.CODE", BtnKind::Subtle,
+                       {::ui::S(130.0f), ImGui::GetFrameHeight()})) {
             std::string self = toLower(trim(g_name));
             bool present = false;
             for (const auto& entry : draft.accounts)
@@ -378,9 +390,14 @@ void drawCreateAccount(AppState& state, Controller& controller) {
             ImGui::PopFont();
             ImGui::EndTable();
         }
-        toggle("Gift the stake to the new account", &g_transfer,
-               "delegatebw transfer flag: the tokens become the new account's own "
-               "stake instead of remaining delegated from the creator");
+        // The label states the CURRENT mode, so the flag reads as a fact.
+        toggle(g_transfer ? "Transferring resources (the stake becomes the new "
+                            "account's own)"
+                          : "Delegating resources (the stake stays yours, reclaimable)",
+               &g_transfer,
+               "delegatebw transfer flag. Off: the creator delegates and can later "
+               "undelegate the tokens back. On: the tokens are transferred and become "
+               "the new account's own stake");
     }
     endCard();
     vspace(12);
