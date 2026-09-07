@@ -14,7 +14,7 @@ using dwarfkit::json;
 
 // Where releases live; the checker calls
 //   https://api.github.com/repos/<kRepo>/releases/latest
-inline constexpr const char* kRepo = "on-a-t-break/tacklebox";
+inline constexpr const char* kRepo = "doyen-games/tacklebox";
 
 struct ReleaseInfo {
     std::string tag;       // "v0.3.0"

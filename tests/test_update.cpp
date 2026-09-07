@@ -21,7 +21,7 @@ TEST_CASE("version comparison") {
 
 TEST_CASE("release feed parsing") {
     json good = {{"tag_name", "v0.3.0"},
-                 {"html_url", "https://github.com/on-a-t-break/tacklebox/releases/tag/v0.3.0"},
+                 {"html_url", "https://github.com/doyen-games/tacklebox/releases/tag/v0.3.0"},
                  {"body", "Fixes and features."},
                  {"published_at", "2026-09-15T12:00:00Z"},
                  {"draft", false}};

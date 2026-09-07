@@ -4,7 +4,7 @@
 
 A native C++ wallet and block explorer for [Antelope](https://antelope.io)
 blockchains (EOS/Vaulta, WAX, Telos, and friends) - the toolkit you carry onto
-the open sea. Built on [dwarfkit](https://github.com/on-a-t-break/dwarfkit)
+the open sea. Built on [dwarfkit](https://github.com/doyen-games/dwarfkit)
 (the native port of Greymass' Wharfkit SDK) with a Dear ImGui interface on an
 SDL3 shell that spans desktop and mobile.
 
