@@ -1,2 +1,37 @@
-// Application icon for the Windows executable (Explorer, taskbar, Alt-Tab).
+// Windows resources for the executable: the icon (Explorer, taskbar,
+// Alt-Tab) and the version block Explorer shows under Properties > Details,
+// which is where the publisher name lives for the app itself. The installer
+// carries its own copy (CPACK_NSIS_DEFINES in CMakeLists.txt).
+#include <windows.h>
+#include "tb_version.h"
+
 1 ICON "tacklebox.ico"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION TB_VERSION_MAJOR,TB_VERSION_MINOR,TB_VERSION_PATCH,0
+ PRODUCTVERSION TB_VERSION_MAJOR,TB_VERSION_MINOR,TB_VERSION_PATCH,0
+ FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+ FILEFLAGS 0
+ FILEOS VOS_NT_WINDOWS32
+ FILETYPE VFT_APP
+ FILESUBTYPE VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "Doyen Games"
+            VALUE "FileDescription", "TackleBox wallet"
+            VALUE "FileVersion", TB_VERSION
+            VALUE "InternalName", "tacklebox"
+            VALUE "LegalCopyright", "Copyright (c) 2026 TackleBox contributors"
+            VALUE "OriginalFilename", "tacklebox.exe"
+            VALUE "ProductName", "TackleBox"
+            VALUE "ProductVersion", TB_VERSION
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

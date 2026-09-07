@@ -162,9 +162,13 @@ if(WIN32)
 endif()
 
 # MinGW: fold the GCC runtime into the binary so the app runs without the
-# toolchain's DLLs next to it (single-file portability).
+# toolchain's DLLs next to it (single-file portability). A fully static link
+# rather than --whole-archive on libwinpthread: whole-archive also drags in
+# winpthread's own VERSIONINFO resource ("MinGW-W64 Project"), which then
+# shadows the app's version block from assets/brand/tacklebox.rc in
+# Explorer's Properties > Details.
 if(MINGW)
-  add_link_options(-static-libgcc -static-libstdc++ -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive,-Bdynamic)
+  add_link_options(-static -static-libgcc -static-libstdc++)
 endif()
 
 # Warnings for our own code only.
@@ -327,11 +331,14 @@ if(NOT TB_MOBILE AND NOT ANDROID AND NOT TB_BUILD_FUZZERS)
   install(DIRECTORY docs/ DESTINATION docs COMPONENT app)
 
   set(CPACK_PACKAGE_NAME "TackleBox")
-  set(CPACK_PACKAGE_VENDOR "TackleBox contributors")
+  # The publisher: Add/Remove Programs and the wizard read it from here; the
+  # "Verified publisher" line of SmartScreen and UAC dialogs comes only from
+  # the Authenticode certificate the release workflow signs with.
+  set(CPACK_PACKAGE_VENDOR "Doyen Games")
   set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
   set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
       "TackleBox - the toolkit for navigating Antelope blockchains")
-  set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/on-a-t-break/tacklebox")
+  set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/doyen-games/tacklebox")
   set(CPACK_PACKAGE_INSTALL_DIRECTORY "TackleBox")
   set(CPACK_PACKAGE_EXECUTABLES "tacklebox" "TackleBox")
   set(CPACK_CREATE_DESKTOP_LINKS "tacklebox")
@@ -344,11 +351,20 @@ if(NOT TB_MOBILE AND NOT ANDROID AND NOT TB_BUILD_FUZZERS)
     set(CPACK_GENERATOR "NSIS;ZIP")
     set(CPACK_NSIS_DISPLAY_NAME "TackleBox")
     set(CPACK_NSIS_PACKAGE_NAME "TackleBox")
-    set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/on-a-t-break/tacklebox")
+    set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/doyen-games/tacklebox")
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
     set(CPACK_NSIS_MODIFY_PATH OFF)
     # Per-user install: no elevation, matches the per-user vault in %APPDATA%.
-    set(CPACK_NSIS_DEFINES "RequestExecutionLevel user")
+    # The version block gives the installer itself a publisher and version in
+    # Explorer's Properties > Details, like the app's own resource script.
+    set(CPACK_NSIS_DEFINES "RequestExecutionLevel user
+VIProductVersion \"${PROJECT_VERSION}.0\"
+VIAddVersionKey \"ProductName\" \"TackleBox\"
+VIAddVersionKey \"CompanyName\" \"Doyen Games\"
+VIAddVersionKey \"FileDescription\" \"TackleBox installer\"
+VIAddVersionKey \"FileVersion\" \"${PROJECT_VERSION}\"
+VIAddVersionKey \"ProductVersion\" \"${PROJECT_VERSION}\"
+VIAddVersionKey \"LegalCopyright\" \"Copyright (c) 2026 TackleBox contributors\"")
     set(CPACK_NSIS_INSTALL_ROOT "$LOCALAPPDATA\\\\Programs")
     set(CPACK_NSIS_EXECUTABLES_DIRECTORY ".")
     # The wallet registers tacklebox:/esr: url handlers (HKCU) at runtime;
