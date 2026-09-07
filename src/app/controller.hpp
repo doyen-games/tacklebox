@@ -139,6 +139,9 @@ public:
     void loadRamMarket(bool force);
     void quotePowerUp(double cpuMs, double netKb);
     void buyRamBytes(const std::string& receiver, int64_t bytes);
+    // eosio::buyram: spend `quant` (a formatted core-token asset) on whatever
+    // RAM the market gives for it.
+    void buyRam(const std::string& receiver, const std::string& quant);
     void sellRam(int64_t bytes);
     void transferRam(const std::string& to, int64_t bytes, const std::string& memo);
     void stake(const std::string& receiver, const std::string& netQty,

@@ -2,6 +2,7 @@
 // and PowerUp rentals (chains that run it).
 #include <cstring>
 
+#include "app/account_util.hpp"
 #include "core/util.hpp"
 #include "guard/rules.hpp"
 #include "ui/app_ui.hpp"
@@ -116,30 +117,77 @@ void drawRamTab(AppState& state, Controller& controller) {
 
     float half = pairWidth();
     // Buy.
+    // The tour brings this card into view on phones, where it sits below the
+    // usage and market cards.
+    if (qa::wantsOpen("ram-buy-amount")) qa::anchorHere();
     if (beginCard("rambuy", half)) {
         sectionTitle("Buy RAM");
+        // Either an exact byte count (eosio::buyrambytes) or a spend in the
+        // core token that takes whatever the market gives (eosio::buyram).
+        static int buyMode = 0;  // 0 = bytes, 1 = amount
         static char buyBytes[24] = {};
+        static char buyAmount[24] = {};
         static char buyReceiver[16] = {};
+        static bool buyAmountBad = false;
+        const NetworkDef* buyNet = state.currentNetwork();
+        const std::string coreSymbol = buyNet ? buyNet->coreSymbol : "4,EOS";
+        const std::string code = buyNet ? buyNet->coreSymbolCode() : "EOS";
+        if (qa::forceOpen("ram-buy-amount")) buyMode = 1;
+        if (neonButton("BYTES", buyMode == 0 ? BtnKind::Primary : BtnKind::Ghost, {96, 30}))
+            buyMode = 0;
+        ImGui::SameLine(0, 8);
+        if (neonButton(("SPEND " + code).c_str(),
+                       buyMode == 1 ? BtnKind::Primary : BtnKind::Ghost, {130, 30}))
+            buyMode = 1;
+        vspace(4);
         FieldOpts opts;
         opts.mono = true;
-        opts.placeholder = "bytes (e.g. 8192)";
-        textField("Bytes", buyBytes, sizeof buyBytes, opts);
+        const std::string amountPlaceholder = "amount (e.g. 300 or 300 " + code + ")";
+        const std::string amountError = "enter a number, optionally followed by " + code;
+        if (buyMode == 0) {
+            opts.placeholder = "bytes (e.g. 8192)";
+            textField("Bytes", buyBytes, sizeof buyBytes, opts);
+        } else {
+            if (buyAmountBad && acct::formatStake(buyAmount, coreSymbol)) buyAmountBad = false;
+            opts.placeholder = amountPlaceholder.c_str();
+            opts.error = buyAmountBad ? amountError.c_str() : nullptr;
+            textField("Amount", buyAmount, sizeof buyAmount, opts);
+            opts.error = nullptr;
+        }
         opts.placeholder = "receiver (default: you)";
         textField("Receiver", buyReceiver, sizeof buyReceiver, opts);
-        // Live cost estimate off the market price.
-        if (buyBytes[0] && !rv.ram.pricePerKb.empty()) {
+        // Live estimate off the market price: the cost of a byte count, or
+        // the bytes a spend buys, both after the 0.5% fee.
+        if (!rv.ram.pricePerKb.empty()) {
             if (auto price = guard::parseAsset(rv.ram.pricePerKb)) {
-                double bytes = std::atof(buyBytes);
-                double cost = (bytes / 1000.0) * static_cast<double>(price->amount) /
-                              std::pow(10.0, price->precision) * 1.005;
+                const double perKb = static_cast<double>(price->amount) /
+                                     std::pow(10.0, price->precision) * 1.005;
                 char buf[64];
-                std::snprintf(buf, sizeof buf, "~%.4f %s incl. fee", cost,
-                              price->code.c_str());
-                subtext(buf);
+                if (buyMode == 0 && buyBytes[0]) {
+                    double bytes = std::atof(buyBytes);
+                    std::snprintf(buf, sizeof buf, "~%.4f %s incl. fee", (bytes / 1000.0) * perKb,
+                                  price->code.c_str());
+                    subtext(buf);
+                } else if (buyMode == 1 && buyAmount[0] && perKb > 0.0 &&
+                           std::atof(buyAmount) > 0.0) {
+                    std::snprintf(buf, sizeof buf, "~%s of RAM after the fee",
+                                  humanBytes(static_cast<int64_t>(std::atof(buyAmount) / perKb *
+                                                                  1000.0))
+                                      .c_str());
+                    subtext(buf);
+                }
             }
         }
-        if (neonButton("BUY", BtnKind::Primary, {120, 38}, rv.busyAction) && buyBytes[0])
-            controller.buyRamBytes(trim(buyReceiver), std::atoll(buyBytes));
+        if (neonButton("BUY", BtnKind::Primary, {120, 38}, rv.busyAction)) {
+            if (buyMode == 0) {
+                if (buyBytes[0]) controller.buyRamBytes(trim(buyReceiver), std::atoll(buyBytes));
+            } else if (auto quant = acct::formatStake(buyAmount, coreSymbol);
+                       quant && std::atof(buyAmount) > 0.0) {
+                controller.buyRam(trim(buyReceiver), *quant);
+            } else {
+                buyAmountBad = true;
+            }
+        }
     }
     endCard();
     maybeSameLine();
@@ -468,6 +516,7 @@ void drawResources(AppState& state, Controller& controller) {
 
     static int tab = 0;
     if (qa::forceOpen("res-stake-tab")) tab = 1;
+    if (qa::wantsOpen("ram-buy-amount")) tab = 0;  // the buy card consumes the tag
     const char* tabs[] = {"RAM", "STAKE", "POWERUP"};
     for (int i = 0; i < 3; ++i) {
         if (neonButton(tabs[i], tab == i ? BtnKind::Primary : BtnKind::Subtle, {110, 32}))

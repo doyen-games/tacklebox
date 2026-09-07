@@ -2141,6 +2141,17 @@ void Controller::buyRamBytes(const std::string& receiver, int64_t bytes) {
     transactAsync(*account, std::move(args), "RAM purchase", &state_.resources.busyAction);
 }
 
+void Controller::buyRam(const std::string& receiver, const std::string& quant) {
+    const AccountRef* account = state_.currentAccount();
+    if (!account || quant.empty()) return;
+    dk::TransactArgs args;
+    args.action = systemAction(*account, "buyram",
+                               {{"payer", account->actor},
+                                {"receiver", receiver.empty() ? account->actor : receiver},
+                                {"quant", quant}});
+    transactAsync(*account, std::move(args), "RAM purchase", &state_.resources.busyAction);
+}
+
 void Controller::sellRam(int64_t bytes) {
     const AccountRef* account = state_.currentAccount();
     if (!account || bytes <= 0) return;
