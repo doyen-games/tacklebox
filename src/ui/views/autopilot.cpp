@@ -165,6 +165,8 @@ void drawEditor(AppState& state, Controller& controller) {
         const char* timings[] = {"interval, counted from the last run",
                                  "fixed grid: start time + interval (no drift)",
                                  "daily at an exact time"};
+        if (qa::wantsOpen("sched-anchored"))
+            editor.timingMode = Schedule::TimeAnchored;  // show the interval row
         if (qa::forceOpen("sched-timing")) qa::openCombo("##timing");
         ImGui::Combo("##timing", &editor.timingMode, timings, 3);
         ::ui::HandOnHover();
@@ -192,12 +194,17 @@ void drawEditor(AppState& state, Controller& controller) {
             ImGui::PopStyleColor();
             ImGui::PopFont();
             ImGui::SameLine(0, 8);
-            ImGui::SetNextItemWidth(110);
-            ImGui::InputInt("##ival", &editor.intervalValue);
+            // Step 0 = a plain number box (no +/- squeezing the text away).
+            ImGui::SetNextItemWidth(::ui::S(72.0f));
+            ImGui::PushFont(fonts().mono, kMono);
+            ImGui::InputInt("##ival", &editor.intervalValue, 0);
+            ImGui::PopFont();
+            if (editor.intervalValue < 1) editor.intervalValue = 1;
             ImGui::SameLine(0, 6);
-            ImGui::SetNextItemWidth(110);
+            ImGui::SetNextItemWidth(::ui::S(110.0f));
             const char* units[] = {"minutes", "hours", "days"};
             ImGui::Combo("##iunit", &editor.intervalUnit, units, 3);
+            ::ui::HandOnHover();
             if (editor.timingMode == Schedule::TimeAnchored)
                 subtext("Runs land exactly on start, start + interval, start + 2x... "
                         "missed points roll forward to the next grid point.");
@@ -621,8 +628,10 @@ void drawAutoStakeWizard(AppState& state, Controller& controller) {
                 ImGui::PopStyleColor();
                 ImGui::PopFont();
                 ImGui::SameLine(0, 8);
-                ImGui::SetNextItemWidth(::ui::S(110.0f));
-                ImGui::InputInt("##votedays", &wiz.voteDays);
+                ImGui::SetNextItemWidth(::ui::S(72.0f));
+                ImGui::PushFont(fonts().mono, kMono);
+                ImGui::InputInt("##votedays", &wiz.voteDays, 0);
+                ImGui::PopFont();
                 if (wiz.voteDays < 1) wiz.voteDays = 1;
                 ImGui::SameLine(0, 6);
                 subtext("days (the first vote fires as soon as the pipeline arms)");

@@ -11,6 +11,7 @@
 #include "core/util.hpp"
 #include "guard/rules.hpp"
 #include "ui/layout.hpp"
+#include "ui/qa.hpp"
 #include "ui/ui_helpers.h"
 
 namespace tb::ui {
@@ -528,14 +529,17 @@ void beginModalBody(const char* id, float footerReserve) {
         // The sheet owns the whole screen; the body takes everything above
         // the footer so the form scrolls and the buttons never move.
         ImGui::BeginChild(id, {0, -footerReserve}, ImGuiChildFlags_NavFlattened);
-        return;
+    } else {
+        float cap = ImGui::GetMainViewport()->WorkSize.y * 0.9f - footerReserve -
+                    ImGui::GetCursorPosY();
+        if (cap < 160.0f) cap = 160.0f;
+        ImGui::SetNextWindowSizeConstraints({0, 0}, {FLT_MAX, cap});
+        ImGui::BeginChild(id, {0, 0},
+                          ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_NavFlattened);
     }
-    float cap = ImGui::GetMainViewport()->WorkSize.y * 0.9f - footerReserve -
-                ImGui::GetCursorPosY();
-    if (cap < 160.0f) cap = 160.0f;
-    ImGui::SetNextWindowSizeConstraints({0, 0}, {FLT_MAX, cap});
-    ImGui::BeginChild(id, {0, 0},
-                      ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_NavFlattened);
+    // QA tour steps can pin modal bodies at an offset (deep form sections),
+    // the same way the shell pins the routed page.
+    if (qa::active() && qa::pageScrollY() >= 0.0f) ImGui::SetScrollY(qa::pageScrollY());
 }
 
 void endModalBody() { ImGui::EndChild(); }

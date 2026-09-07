@@ -732,6 +732,15 @@ const Step kSteps[] = {
          showShellPage(s, c, Page::CreateAccount);
          g_forceOpenTag = "ca-advanced";  // expands both authority editors
      }},
+    {"56-schedule-interval",
+     [](AppState& s, Controller& c) {
+         // Anchored mode with no popup in the way: the Every value/unit row
+         // and the Start/End window get their design pass.
+         showShellPage(s, c, Page::Autopilot);
+         tb::ui::openScheduleEditor();
+         g_forceOpenTag = "sched-anchored";
+         g_pageScroll = ::ui::S(330.0f);  // scrolls the modal body to Timing
+     }},
 };
 constexpr int kStepCount = static_cast<int>(sizeof(kSteps) / sizeof(kSteps[0]));
 constexpr int kSettleFrames = 6;
