@@ -56,4 +56,10 @@ struct StakeBreakdown {
 };
 StakeBreakdown stakeBreakdown(const json& raw, const std::string& coreSymbol /*"4,EOS"*/);
 
+// "20740.80682753 WAX" -> "20740.8068 WAX": trims the fraction to at most
+// `maxDecimals` digits for display, truncating rather than rounding so a
+// balance never reads higher than what the chain holds. Strings without a
+// fraction, or with one already short enough, pass through unchanged.
+std::string displayAsset(const std::string& asset, int maxDecimals = 4);
+
 }  // namespace tb::acct

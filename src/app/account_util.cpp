@@ -1,6 +1,7 @@
 #include "app/account_util.hpp"
 
 #include <algorithm>
+#include <charconv>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -140,6 +141,21 @@ std::string formatUnits(int64_t units, int precision, const std::string& code) {
     return buf;
 }
 
+// A 64-bit integer field as nodeos spells it: fc's JSON writer quotes int64
+// values above 32 bits (to keep JavaScript callers exact), so on a
+// precision-8 chain every real stake arrives as a string of digits.
+std::optional<int64_t> int64Field(const json& value) {
+    if (value.is_number_integer()) return value.get<int64_t>();
+    if (value.is_string()) {
+        const std::string& text = value.get_ref<const std::string&>();
+        int64_t parsed = 0;
+        const char* end = text.data() + text.size();
+        auto [ptr, ec] = std::from_chars(text.data(), end, parsed);
+        if (ec == std::errc() && ptr == end) return parsed;
+    }
+    return std::nullopt;
+}
+
 }  // namespace
 
 StakeBreakdown stakeBreakdown(const json& raw, const std::string& coreSymbol) {
@@ -167,10 +183,11 @@ StakeBreakdown stakeBreakdown(const json& raw, const std::string& coreSymbol) {
     // others) in raw units; the delta beyond self stake is delegated out.
     int64_t stakedTotal = stakedSelf;
     if (raw.contains("voter_info") && raw["voter_info"].is_object() &&
-        raw["voter_info"].contains("staked") &&
-        raw["voter_info"]["staked"].is_number()) {
-        stakedTotal = raw["voter_info"]["staked"].get<int64_t>();
-        seen = true;
+        raw["voter_info"].contains("staked")) {
+        if (auto units = int64Field(raw["voter_info"]["staked"])) {
+            stakedTotal = *units;
+            seen = true;
+        }
     }
     int64_t stakedDelegated = stakedTotal > stakedSelf ? stakedTotal - stakedSelf : 0;
 
@@ -189,6 +206,16 @@ StakeBreakdown stakeBreakdown(const json& raw, const std::string& coreSymbol) {
     out.total =
         formatUnits(available + stakedSelf + stakedDelegated + refunding, precision, code);
     return out;
+}
+
+std::string displayAsset(const std::string& asset, int maxDecimals) {
+    size_t dot = asset.find('.');
+    if (dot == std::string::npos || maxDecimals < 0) return asset;
+    size_t end = dot + 1;
+    while (end < asset.size() && asset[end] >= '0' && asset[end] <= '9') ++end;
+    if (end - dot - 1 <= static_cast<size_t>(maxDecimals)) return asset;
+    size_t keep = maxDecimals == 0 ? dot : dot + 1 + static_cast<size_t>(maxDecimals);
+    return asset.substr(0, keep) + asset.substr(end);
 }
 
 }  // namespace tb::acct
