@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(TackleBox VERSION 0.2.0 LANGUAGES C CXX)
+project(TackleBox VERSION 0.3.0 LANGUAGES C CXX)
 
 # One source of truth for the version string (sidebar, About, updater, CPack).
 configure_file(cmake/tb_version.h.in ${CMAKE_BINARY_DIR}/generated/tb_version.h @ONLY)
@@ -223,6 +223,12 @@ if(ANDROID)
 else()
   add_executable(tacklebox ${TB_APP_SOURCES})
 endif()
+
+if(WIN32 AND NOT TB_MOBILE)
+  # Executable icon (Explorer, taskbar, Alt-Tab); the runtime window icon is
+  # the RGBA header generated from the same assets/brand/tacklebox.svg.
+  target_sources(tacklebox PRIVATE assets/brand/tacklebox.rc)
+endif()
 add_dependencies(tacklebox tb_embedded_assets)
 target_include_directories(tacklebox PRIVATE ${TB_EMBED_DIR})
 target_include_directories(tacklebox SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/vendor/stb)
@@ -353,9 +359,10 @@ if(NOT TB_MOBILE AND NOT ANDROID AND NOT TB_BUILD_FUZZERS)
       StrCmp $0 '\\\"$INSTDIR\\\\tacklebox.exe\\\" \\\"%1\\\"' 0 +2
       DeleteRegKey HKCU 'Software\\\\Classes\\\\esr'
     ")
-    # TODO(branding): point these at the real art once the logo pack lands.
-    #   set(CPACK_NSIS_MUI_ICON    ${CMAKE_CURRENT_SOURCE_DIR}/assets/brand/tacklebox.ico)
-    #   set(CPACK_NSIS_MUI_UNIICON ${CMAKE_CURRENT_SOURCE_DIR}/assets/brand/tacklebox.ico)
+    set(CPACK_NSIS_MUI_ICON    ${CMAKE_CURRENT_SOURCE_DIR}/assets/brand/tacklebox.ico)
+    set(CPACK_NSIS_MUI_UNIICON ${CMAKE_CURRENT_SOURCE_DIR}/assets/brand/tacklebox.ico)
+    set(CPACK_NSIS_INSTALLED_ICON_NAME "tacklebox.exe")
+    # TODO(branding): wizard art is still stock.
     #   set(CPACK_NSIS_MUI_WELCOMEFINISHPAGE_BITMAP .../wizard-side.bmp)  # 164x314 BMP
     #   set(CPACK_NSIS_MUI_HEADERIMAGE_BITMAP      .../wizard-header.bmp) # 150x57 BMP
   elseif(APPLE)

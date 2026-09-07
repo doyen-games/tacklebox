@@ -65,6 +65,9 @@ void drawIcon(ImDrawList* dl, Icon icon, ImVec2 center, float size, ImU32 color,
               float thickness = 1.8f);
 
 // The anchor mark with glow, used on the unlock screen and sidebar.
-void drawAnchorMark(ImDrawList* dl, ImVec2 center, float size, ImU32 color, float glow);
+// The brand mark: the tacklebox from assets/brand/tacklebox.svg, drawn as
+// vector chrome inside the glowing ring (crisp at any DPI). Sizes under ~36
+// drop the fine detail (seams, circuits, bobber) so small marks stay legible.
+void drawTackleboxMark(ImDrawList* dl, ImVec2 center, float size, ImU32 color, float glow);
 
 }  // namespace tb::ui

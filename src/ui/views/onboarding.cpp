@@ -37,7 +37,7 @@ void drawOnboarding(AppState& state, Controller& controller) {
     float centerX = min.x + size.x * 0.5f;
     float top = min.y + size.y * 0.14f;
 
-    drawAnchorMark(dl, {centerX, top}, 46.0f, col::Cyan, 0.9f);
+    drawTackleboxMark(dl, {centerX, top}, 46.0f, col::Cyan, 0.9f);
 
     float cardW = std::min(460.0f, size.x - 36.0f);
     ImGui::SetCursorScreenPos({centerX - cardW * 0.5f, top + 60.0f});

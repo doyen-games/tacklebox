@@ -10,7 +10,7 @@ namespace tb::ui {
 // Shared wordmark for unlock/onboarding.
 static void wordmark(float centerX, float y) {
     ImDrawList* dl = ImGui::GetWindowDrawList();
-    drawAnchorMark(dl, {centerX, y}, 46.0f, col::Cyan, 0.9f);
+    drawTackleboxMark(dl, {centerX, y}, 46.0f, col::Cyan, 0.9f);
 
     const char* name = "TACKLEBOX";
     ImGui::PushFont(fonts().uiBold, 34.0f);

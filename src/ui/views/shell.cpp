@@ -77,7 +77,7 @@ void drawSidebar(AppState& state, Controller& controller, float width, float hei
     dl->AddLine({barMax.x, origin.y}, barMax, col::Hairline, 1.0f);
 
     float x = origin.x + 20;
-    drawAnchorMark(dl, {x + 15, origin.y + 34}, 26.0f, col::Cyan, 0.5f);
+    drawTackleboxMark(dl, {x + 15, origin.y + 34}, 26.0f, col::Cyan, 0.5f);
     ImGui::PushFont(fonts().uiBold, 20.0f);
     dl->AddText({x + 40, origin.y + 22}, col::Ice, "TACKLEBOX");
     ImGui::PopFont();
@@ -134,7 +134,7 @@ void drawRail(AppState& state, Controller& controller, float width, float height
     dl->AddLine({origin.x + width, origin.y}, {origin.x + width, origin.y + height},
                 col::Hairline, 1.0f);
 
-    drawAnchorMark(dl, {origin.x + width * 0.5f, origin.y + 30}, 24.0f, col::Cyan, 0.5f);
+    drawTackleboxMark(dl, {origin.x + width * 0.5f, origin.y + 30}, 24.0f, col::Cyan, 0.5f);
 
     const float rowH = layout().hit();
     ImGui::SetCursorScreenPos({origin.x, origin.y + 60});

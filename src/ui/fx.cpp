@@ -294,7 +294,7 @@ void drawIcon(ImDrawList* dl, Icon icon, ImVec2 c, float size, ImU32 color, floa
     }
 }
 
-void drawAnchorMark(ImDrawList* dl, ImVec2 center, float size, ImU32 color, float glow) {
+void drawTackleboxMark(ImDrawList* dl, ImVec2 center, float size, ImU32 color, float glow) {
     float g = glow * cosmetics().glow;
     if (g > 0.01f) {
         for (int i = 3; i >= 1; --i)
@@ -302,7 +302,77 @@ void drawAnchorMark(ImDrawList* dl, ImVec2 center, float size, ImU32 color, floa
                           col::alpha(color, g * 0.10f), 0, 3.0f);
     }
     dl->AddCircle(center, size * 0.62f, col::alpha(color, 0.85f), 0, 1.6f);
-    drawIcon(dl, Icon::Anchor, center, size * 0.72f, color, 2.2f);
+
+    // Geometry transcribed from assets/brand/tacklebox.svg (256 viewBox,
+    // content center ~(128,123)); u maps art units so the box's corners stay
+    // inside the ring. Fine detail drops out below ~36 px.
+    const float u = size / 224.0f;
+    auto P = [&](float x, float y) {
+        return ImVec2(center.x + (x - 128.0f) * u, center.y + (y - 123.0f) * u);
+    };
+    auto T = [&](float w) { return w * u < 1.1f ? 1.1f : w * u; };
+    const bool fine = size >= 36.0f;
+    const ImU32 navy = col::BrandNavy;
+    const ImU32 teal = col::BrandTeal;
+
+    // Body silhouette (handle block + flared case), rounded by a fat stroke.
+    const ImVec2 body[] = {P(100, 73), P(100, 43), P(110, 33), P(146, 33), P(156, 43),
+                           P(156, 73), P(208, 73), P(231, 102), P(231, 196), P(214, 213),
+                           P(42, 213),  P(25, 196), P(25, 102),  P(48, 73)};
+    dl->AddConcavePolyFilled(body, 14, navy);
+    dl->AddPolyline(body, 14, navy, T(12.0f), ImDrawFlags_Closed);
+
+    // Handle.
+    const ImVec2 handle[] = {P(99, 72),  P(99, 45),  P(109, 35),
+                             P(147, 35), P(157, 45), P(157, 72)};
+    dl->AddPolyline(handle, 6, color, T(8.0f));
+
+    // Lid.
+    const ImVec2 lid[] = {P(48, 75),  P(208, 75), P(229, 103),
+                          P(229, 124), P(27, 124), P(27, 103)};
+    dl->AddConvexPolyFilled(lid, 6, teal);
+    dl->AddPolyline(lid, 6, color, T(7.0f), ImDrawFlags_Closed);
+
+    // Lower case.
+    const ImVec2 lower[] = {P(27, 122),  P(229, 122), P(229, 195),
+                            P(212, 212), P(44, 212),  P(27, 195)};
+    dl->AddConvexPolyFilled(lower, 6, navy);
+    dl->AddPolyline(lower, 6, color, T(7.0f), ImDrawFlags_Closed);
+
+    if (fine) {
+        // Lid seams.
+        dl->AddLine(P(48, 99), P(97, 99), color, T(5.0f));
+        dl->AddLine(P(159, 99), P(208, 99), color, T(5.0f));
+    }
+
+    // Twin latches bridging the lid seam.
+    dl->AddRectFilled(P(62, 112), P(84, 146), color);
+    dl->AddRectFilled(P(172, 112), P(194, 146), color);
+    if (fine) {
+        dl->AddRect(P(62, 112), P(84, 146), navy, 0.0f, T(7.0f));
+        dl->AddRect(P(172, 112), P(194, 146), navy, 0.0f, T(7.0f));
+    }
+
+    if (fine) {
+        // Interior circuit trace.
+        const ImVec2 left[] = {P(46, 156), P(46, 184), P(56, 194), P(93, 194)};
+        const ImVec2 right[] = {P(163, 194), P(200, 194), P(210, 184), P(210, 156)};
+        dl->AddPolyline(left, 4, teal, T(6.0f));
+        dl->AddPolyline(right, 4, teal, T(6.0f));
+    }
+
+    // The fishing-hook emblem.
+    dl->PathLineTo(P(139, 151));
+    dl->PathLineTo(P(139, 175));
+    dl->PathArcTo(P(122, 175), 17.0f * u, 0.0f, 3.14159265f);
+    dl->PathLineTo(P(105, 169));
+    dl->PathLineTo(P(115, 176));
+    dl->PathStroke(color, T(8.0f));
+    if (fine) {
+        // Bobber eyelet capping the hook shank.
+        dl->AddCircleFilled(P(139, 145), 7.0f * u, navy);
+        dl->AddCircle(P(139, 145), 7.0f * u, color, 0, T(5.0f));
+    }
 }
 
 }  // namespace tb::ui

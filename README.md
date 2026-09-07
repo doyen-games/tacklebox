@@ -1,3 +1,5 @@
+<img src="assets/brand/tacklebox.svg" alt="TackleBox" width="128" align="right">
+
 # TackleBox
 
 A native C++ wallet and block explorer for [Antelope](https://antelope.io)

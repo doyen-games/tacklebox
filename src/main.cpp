@@ -30,6 +30,7 @@
 #include "core/paths.hpp"
 #include "core/task_runner.hpp"
 #include "ui/app_ui.hpp"
+#include "ui/brand_icon.hpp"
 #include "ui/layout.hpp"
 #include "ui/qa.hpp"
 #include "ui/theme.hpp"
@@ -156,6 +157,13 @@ int main(int argc, char** argv) {
     }
 #ifndef TB_MOBILE
     SDL_SetWindowMinimumSize(window, 360, 600);
+    // Window/taskbar icon, rasterized from assets/brand/tacklebox.svg.
+    if (SDL_Surface* icon = SDL_CreateSurfaceFrom(
+            tb::brand::kIconWidth, tb::brand::kIconHeight, SDL_PIXELFORMAT_RGBA32,
+            const_cast<unsigned char*>(tb::brand::kIconRgba), tb::brand::kIconWidth * 4)) {
+        SDL_SetWindowIcon(window, icon);
+        SDL_DestroySurface(icon);
+    }
 #endif
 
 #ifdef _WIN32

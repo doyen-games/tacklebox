@@ -38,6 +38,11 @@ inline const ImU32 Violet    = rgba(0xB44BFF);  // auto-sign accent
 inline const ImU32 Amount    = rgba(0xEAFBFF);
 inline const ImU32 Ticker    = rgba(0xFFC845);
 
+// Brand-mark fills, matching assets/brand/tacklebox.svg (the box body and
+// lid). Only fx.cpp drawTackleboxMark uses these; accents take theme Cyan.
+inline const ImU32 BrandNavy = rgba(0x07182E);
+inline const ImU32 BrandTeal = rgba(0x0B6977);
+
 inline ImU32 alpha(ImU32 color, float a) {
     unsigned v = static_cast<unsigned>((color >> IM_COL32_A_SHIFT & 0xFF) * a);
     return (color & ~IM_COL32_A_MASK) | (v << IM_COL32_A_SHIFT);

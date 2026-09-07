@@ -1,0 +1,2 @@
+// Application icon for the Windows executable (Explorer, taskbar, Alt-Tab).
+1 ICON "tacklebox.ico"
