@@ -60,6 +60,25 @@ elseif(APPLE AND CMAKE_SYSTEM_NAME STREQUAL "iOS")
   set(CURL_USE_OPENSSL OFF CACHE BOOL "" FORCE)
 endif()
 
+# libcurl: dwarfkit builds it from source when the system has none - Windows,
+# and the Linux release image (Ubuntu 22.04's 7.81 predates the WebSocket
+# API the transport uses). The first FetchContent_Declare for a name wins,
+# so the release is pinned here: current, and a hash-checked tarball instead
+# of dwarfkit's git clone of 8.10.1. Update the version and hash together
+# (`gh api repos/curl/curl/releases/latest` prints both).
+include(FetchContent)
+FetchContent_Declare(curl
+  URL https://github.com/curl/curl/releases/download/curl-8_22_0/curl-8.22.0.tar.xz
+  URL_HASH SHA256=f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  # OpenSSL from the builder (shared, so a .deb install keeps receiving the
+  # distro's libssl updates); when the compiled-in CA bundle path is absent
+  # on the host, fall back to OpenSSL's own defaults (core/ca_bundle.hpp
+  # covers the rest).
+  set(CURL_USE_OPENSSL ON CACHE BOOL "" FORCE)
+  set(CURL_CA_FALLBACK ON CACHE BOOL "" FORCE)
+endif()
+
 add_subdirectory(vendor/dwarfkit)
 
 if(NOT TB_BUILD_FUZZERS)
@@ -304,7 +323,9 @@ else()
     # A bundled libcurl carries its builder's CA-bundle path; route every
     # curl_easy_init through src/platform/linux_tls.cpp, which points the
     # handle at a bundle that exists on the host (core/ca_bundle.hpp).
-    find_package(CURL REQUIRED)
+    if(NOT TARGET CURL::libcurl)
+      find_package(CURL REQUIRED)
+    endif()
     target_sources(tacklebox PRIVATE src/platform/linux_tls.cpp)
     target_link_libraries(tacklebox PRIVATE CURL::libcurl)
     target_link_options(tacklebox PRIVATE -Wl,--wrap=curl_easy_init)

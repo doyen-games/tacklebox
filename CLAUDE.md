@@ -108,6 +108,11 @@ ui::gScale is set in tb::ui::initTheme (same value as tb::ui::dpiScale()).
 ## Build / test (this machine: Windows 11, MinGW GCC 16, Ninja)
 
 * Configure: `cmake -S . -B build -G Ninja -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++`
+* The winlibs CMake has no TLS trust store, so a fresh configure cannot download
+  the pinned libcurl tarball (FetchContent URL). Add
+  `-DCMAKE_TLS_CAINFO="C:/Program Files/Git/mingw64/etc/ssl/certs/ca-bundle.crt"`
+  (Git for Windows' bundle) to the configure line, or point
+  `-DFETCHCONTENT_SOURCE_DIR_CURL` at an extracted, hash-checked copy.
 * Build: `cmake --build build` (kill a running tacklebox.exe first; Windows locks the image at link time)
 * Tests: `./build/tacklebox_tests.exe` (doctest; must stay green)
 * Form factors: `tacklebox --phone --touch | --tablet | --desktop`

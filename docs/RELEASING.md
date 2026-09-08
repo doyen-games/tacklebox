@@ -126,11 +126,18 @@ Two things the binary does for itself on Linux:
   `tests/test_deeplink_registration.cpp`). Second launches forward their uri
   over a unix socket in `$XDG_RUNTIME_DIR`, scoped by data dir like the
   Windows pipe.
-- **CA bundle.** The bundled libcurl carries Ubuntu's compiled-in CA path;
-  on Fedora, SUSE or Alpine that file does not exist and every https call
-  fails. `src/platform/linux_tls.cpp` wraps `curl_easy_init` at link time
+- **libcurl.** Ubuntu 22.04's libcurl (7.81) predates the WebSocket API
+  dwarfkit's transport uses, so the builders install no libcurl and dwarfkit
+  builds the release pinned in `CMakeLists.txt` (`FetchContent_Declare(curl
+  URL ... URL_HASH ...)`, declared ahead of dwarfkit's own so it wins) as a
+  static library against the image's shared OpenSSL 3 and zlib. The same
+  pin serves the Windows build, which has no system libcurl either.
+- **CA bundle.** That libcurl carries Ubuntu's compiled-in CA path; on
+  Fedora, SUSE or Alpine the file does not exist and every https call would
+  fail. `src/platform/linux_tls.cpp` wraps `curl_easy_init` at link time
   (`-Wl,--wrap`) and points each handle at the first bundle that exists
-  (`core/ca_bundle.hpp`), so the vendored transport stays untouched.
+  (`core/ca_bundle.hpp`); curl's own `CURL_CA_FALLBACK` is on as a second
+  net. The vendored transport stays untouched.
 
 Local check without a Linux box: the `linux` job in `ci.yml` is the recipe
 (`apt-get` line, configure flags, the two `cpack`/`appimage.sh` steps); an

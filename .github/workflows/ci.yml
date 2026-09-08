@@ -58,7 +58,10 @@ jobs:
           # libstdc++ is linked statically, so the host needs nothing newer.
           sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
           sudo apt-get update
-          sudo apt-get install -y ninja-build g++-13 libcurl4-openssl-dev libgl1-mesa-dev \
+          # No libcurl4-openssl-dev: 22.04's 7.81 lacks the WebSocket API, so
+          # dwarfkit builds the libcurl pinned in CMakeLists.txt from source
+          # against the image's OpenSSL and zlib.
+          sudo apt-get install -y ninja-build g++-13 libssl-dev zlib1g-dev libgl1-mesa-dev \
             libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev \
             libwayland-dev libxkbcommon-dev libegl1-mesa-dev libdecor-0-dev \
             desktop-file-utils dpkg-dev
