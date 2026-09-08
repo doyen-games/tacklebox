@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(TackleBox VERSION 0.3.0 LANGUAGES C CXX)
+project(TackleBox VERSION 0.3.1 LANGUAGES C CXX)
 
 # One source of truth for the version string (sidebar, About, updater, CPack).
 configure_file(cmake/tb_version.h.in ${CMAKE_BINARY_DIR}/generated/tb_version.h @ONLY)
@@ -326,7 +326,11 @@ endif()
 if(NOT TB_MOBILE AND NOT ANDROID AND NOT TB_BUILD_FUZZERS)
   # Everything ships under the "app" component so the vendored projects'
   # own install rules (curl headers, etc.) stay out of the packages.
-  install(TARGETS tacklebox RUNTIME DESTINATION . BUNDLE DESTINATION . COMPONENT app)
+  # COMPONENT first so it covers every artifact kind: trailing it bound only
+  # to BUNDLE, leaving the RUNTIME exe in the "Unspecified" component that
+  # the component-aware NSIS generator never packaged (v0.3.0 shipped an
+  # installer holding nothing but the docs).
+  install(TARGETS tacklebox COMPONENT app RUNTIME DESTINATION . BUNDLE DESTINATION .)
   install(FILES README.md EULA.txt LICENSE DESTINATION . COMPONENT app)
   install(DIRECTORY docs/ DESTINATION docs COMPONENT app)
 
@@ -345,7 +349,11 @@ if(NOT TB_MOBILE AND NOT ANDROID AND NOT TB_BUILD_FUZZERS)
   # The EULA page of the install wizard.
   set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/EULA.txt")
   set(CPACK_PACKAGE_FILE_NAME "tacklebox-${PROJECT_VERSION}-${CMAKE_SYSTEM_NAME}")
-  set(CPACK_COMPONENTS_ALL app)
+  # Install only the "app" component, but WITHOUT CPACK_COMPONENTS_ALL: that
+  # flips the NSIS generator into component mode, where PackageFiles
+  # overwrites CPACK_NSIS_DEFINES with its own download flags and the
+  # RequestExecutionLevel/version block below silently disappears.
+  set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_BINARY_DIR};TackleBox;app;/")
 
   if(WIN32)
     set(CPACK_GENERATOR "NSIS;ZIP")
@@ -357,14 +365,16 @@ if(NOT TB_MOBILE AND NOT ANDROID AND NOT TB_BUILD_FUZZERS)
     # Per-user install: no elevation, matches the per-user vault in %APPDATA%.
     # The version block gives the installer itself a publisher and version in
     # Explorer's Properties > Details, like the app's own resource script.
+    # NSIS strings stay single-quoted: a double quote inside this value
+    # breaks the generated CPackConfig.cmake and the whole block is dropped.
     set(CPACK_NSIS_DEFINES "RequestExecutionLevel user
-VIProductVersion \"${PROJECT_VERSION}.0\"
-VIAddVersionKey \"ProductName\" \"TackleBox\"
-VIAddVersionKey \"CompanyName\" \"Doyen Games\"
-VIAddVersionKey \"FileDescription\" \"TackleBox installer\"
-VIAddVersionKey \"FileVersion\" \"${PROJECT_VERSION}\"
-VIAddVersionKey \"ProductVersion\" \"${PROJECT_VERSION}\"
-VIAddVersionKey \"LegalCopyright\" \"Copyright (c) 2026 TackleBox contributors\"")
+VIProductVersion '${PROJECT_VERSION}.0'
+VIAddVersionKey 'ProductName' 'TackleBox'
+VIAddVersionKey 'CompanyName' 'Doyen Games'
+VIAddVersionKey 'FileDescription' 'TackleBox installer'
+VIAddVersionKey 'FileVersion' '${PROJECT_VERSION}'
+VIAddVersionKey 'ProductVersion' '${PROJECT_VERSION}'
+VIAddVersionKey 'LegalCopyright' 'Copyright (c) 2026 TackleBox contributors'")
     set(CPACK_NSIS_INSTALL_ROOT "$LOCALAPPDATA\\\\Programs")
     set(CPACK_NSIS_EXECUTABLES_DIRECTORY ".")
     # The wallet registers tacklebox:/esr: url handlers (HKCU) at runtime;
