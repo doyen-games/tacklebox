@@ -171,25 +171,74 @@ changes it (`CPACK_PACKAGE_VENDOR`, the `.rc` company name and the
 installer's version block only feed Properties > Details and Installed
 apps). The workflow signs both `tacklebox.exe` and the installer when one of
 two sets of secrets exists; without them it ships unsigned and prints a
-notice.
+notice. "Run workflow" on the `release` workflow is a dry run that builds
+and signs without touching a release - use it to prove new secrets.
 
-**Route 1 - Azure Trusted Signing (recommended).** Microsoft's own signing
-service: the certificate names the publisher exactly as validated, keys never
-leave Microsoft's HSM, ~US$10/month, and SmartScreen trusts it from the first
-release. Setup, once:
+**Route 1 - Azure Artifact Signing (recommended).** Microsoft's managed
+signing service (renamed from Trusted Signing in 2026): the certificate
+names the publisher exactly as validated, keys stay in Microsoft's HSM
+(FIPS 140-3 L3), certificates are three-day and auto-renewed (signatures
+outlive them through the `timestamp.acs.microsoft.com` timestamp), Basic
+tier is a small monthly fee billed in full each month.
 
-1. Azure subscription > create a *Trusted Signing account* (East US or West
-   Europe endpoint).
-2. *Identity validation*: organisation (a registered legal entity) or
-   individual (government ID); this is what "Doyen Games" must pass to appear
-   as the publisher. Takes a few days.
-3. Create a *certificate profile* of type Public Trust.
-4. Microsoft Entra > *App registration* with a client secret; give that app
-   the **Trusted Signing Certificate Profile Signer** role on the account.
-5. Repository secrets: `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`,
-   `AZURE_CLIENT_SECRET`, `TRUSTED_SIGNING_ENDPOINT`
-   (`https://eus.codesigning.azure.net` or `https://weu.codesigning.azure.net`),
-   `TRUSTED_SIGNING_ACCOUNT`, `TRUSTED_SIGNING_PROFILE`.
+Who the publisher can be:
+
+- *Organization* validation puts the legal entity's name on the certificate
+  (`CN=Doyen Games`). It requires a registered business (business
+  identifier), a website on a domain the business owns, a monitored mailbox
+  on that domain, and a personal ID check of the representative. Available
+  to organisations in the US, Canada, EU, UK, Australia, New Zealand, Japan,
+  South Korea, Singapore, Switzerland, Norway and Israel. 1-20 business
+  days; Microsoft may ask for registration documents (three upload
+  attempts).
+- *Individual* validation puts the developer's own legal name on the
+  certificate (city/state/country too), sourced from the Azure billing
+  account, which must match the government ID. US and Canada only.
+  Verification is done on a phone (Microsoft Authenticator Verified ID via
+  AU10TIX) and completes in minutes.
+- The CN cannot be customised (CA/Browser Forum rule), and free/trial/
+  sponsored Azure subscriptions are refused: it needs pay-as-you-go.
+
+Setup, once:
+
+1. Azure portal > Subscriptions > your subscription > Resource providers >
+   `Microsoft.CodeSigning` > Register.
+2. Search "Artifact Signing Accounts" > Create: new resource group, a
+   globally unique account name (3-24 alphanumerics), a region (East US ->
+   endpoint `https://eus.codesigning.azure.net`, West Europe ->
+   `https://weu.codesigning.azure.net`; the full table is in the quickstart),
+   pricing tier Basic.
+3. On the account > Access control (IAM) > Add role assignment > **Artifact
+   Signing Identity Verifier** > yourself (you also need Reader on the
+   subscription).
+4. Account > Identity validations > New identity > Public > Organization
+   (or Individual): fill it exactly as the legal records read, create,
+   then complete the personal verification link that arrives by email
+   (expires in seven days) and wait for **Completed**.
+5. Account > Certificate profiles > Create > **Public Trust** > name it
+   (5-100 chars), pick the completed validation under "Verified CN and O",
+   check the certificate subject preview, create.
+6. Microsoft Entra ID > App registrations > New registration (single
+   tenant) > note the Application (client) ID and Directory (tenant) ID >
+   Certificates & secrets > New client secret > copy the value now.
+7. Account (or the certificate profile, for the narrowest scope) > Access
+   control (IAM) > Add role assignment > **Artifact Signing Certificate
+   Profile Signer** > Members: "User, group, or service principal" > the app
+   registration.
+8. Repository secrets: `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`,
+   `AZURE_CLIENT_SECRET`, `ARTIFACT_SIGNING_ENDPOINT` (the region URL),
+   `ARTIFACT_SIGNING_ACCOUNT` (account name), `ARTIFACT_SIGNING_PROFILE`
+   (certificate profile name).
+9. Actions > release > Run workflow on `main`, download the
+   `release-windows` artifact, and check Properties > Digital Signatures on
+   the installer. Then tag.
+
+Renew the identity validation when Azure's reminders start (60 days before
+it expires); an expired validation stops certificate renewal and therefore
+signing. SmartScreen's "Windows protected your PC" interstitial is separate
+from the publisher line: it fades as download reputation accrues to the
+publisher, and a signed file can be submitted to Microsoft Security
+Intelligence for review.
 
 **Route 2 - your own certificate as a PFX.** `WINDOWS_CERT_PFX_B64` (base64
 of the .pfx, `base64 -w0 signing.pfx`) + `WINDOWS_CERT_PASSWORD`. Since June

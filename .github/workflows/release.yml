@@ -7,13 +7,19 @@
 # makes wallets start offering the new version.
 #
 # Signing is optional per platform and switched on by repository secrets
-# (docs/RELEASING.md "Code signing"): Windows through Azure Trusted Signing
-# or a PFX, macOS through a Developer ID certificate + notarization.
+# (docs/RELEASING.md "Code signing"): Windows through Azure Artifact Signing
+# (the service formerly called Trusted Signing) or a PFX, macOS through a
+# Developer ID certificate + notarization.
+#
+# "Run workflow" on a branch is a dry run: same build, signing and checks,
+# artifacts kept on the run, nothing attached to a release. Use it to prove
+# a freshly configured signing secret before cutting a tag.
 name: release
 
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -25,6 +31,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: seanmiddleditch/gha-setup-ninja@v5
       - name: Check tag matches PROJECT_VERSION
+        if: github.ref_type == 'tag'
         shell: bash
         run: |
           cmake_version=$(grep -oP 'project\(TackleBox VERSION \K[0-9.]+' CMakeLists.txt)
@@ -42,17 +49,17 @@ jobs:
       - name: Test
         shell: bash
         run: ./build/tacklebox_tests.exe
-      # Which signing route is configured. Trusted Signing (Microsoft's
-      # cloud service, the certificate names the publisher) is preferred;
-      # a PFX only works for certificates issued before the 2023 hardware
-      # key mandate or from a CA that lets you export one.
+      # Which signing route is configured. Artifact Signing (Microsoft's
+      # cloud service, the certificate names the validated publisher) is
+      # preferred; a PFX only works for certificates issued before the 2023
+      # hardware key mandate or from a CA that lets you export one.
       - name: Detect signing configuration
         id: sign
         shell: bash
         env:
           PFX_B64: ${{ secrets.WINDOWS_CERT_PFX_B64 }}
           TS_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          TS_ACCOUNT: ${{ secrets.TRUSTED_SIGNING_ACCOUNT }}
+          TS_ACCOUNT: ${{ secrets.ARTIFACT_SIGNING_ACCOUNT }}
         run: |
           if [ -n "$TS_CLIENT_ID" ] && [ -n "$TS_ACCOUNT" ]; then
             echo "route=trusted" >> "$GITHUB_OUTPUT"
@@ -63,16 +70,16 @@ jobs:
             echo "route=none" >> "$GITHUB_OUTPUT"
             echo "::notice::No Windows signing configured - the installer ships unsigned (SmartScreen shows 'Unknown publisher')."
           fi
-      - name: Sign the application binary (Trusted Signing)
+      - name: Sign the application binary (Artifact Signing)
         if: steps.sign.outputs.route == 'trusted'
-        uses: azure/trusted-signing-action@v0
+        uses: azure/artifact-signing-action@v2
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ secrets.TRUSTED_SIGNING_ENDPOINT }}
-          trusted-signing-account-name: ${{ secrets.TRUSTED_SIGNING_ACCOUNT }}
-          certificate-profile-name: ${{ secrets.TRUSTED_SIGNING_PROFILE }}
+          endpoint: ${{ secrets.ARTIFACT_SIGNING_ENDPOINT }}
+          signing-account-name: ${{ secrets.ARTIFACT_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ secrets.ARTIFACT_SIGNING_PROFILE }}
           files: build/tacklebox.exe
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
@@ -105,16 +112,16 @@ jobs:
           size=$(stat -c %s "$exe")
           echo "$exe: $size bytes"
           [ "$size" -gt 3000000 ] || { echo "::error::installer is too small to contain tacklebox.exe (the v0.3.0 hollow-installer fault)"; exit 1; }
-      - name: Sign the installer (Trusted Signing)
+      - name: Sign the installer (Artifact Signing)
         if: steps.sign.outputs.route == 'trusted'
-        uses: azure/trusted-signing-action@v0
+        uses: azure/artifact-signing-action@v2
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ secrets.TRUSTED_SIGNING_ENDPOINT }}
-          trusted-signing-account-name: ${{ secrets.TRUSTED_SIGNING_ACCOUNT }}
-          certificate-profile-name: ${{ secrets.TRUSTED_SIGNING_PROFILE }}
+          endpoint: ${{ secrets.ARTIFACT_SIGNING_ENDPOINT }}
+          signing-account-name: ${{ secrets.ARTIFACT_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ secrets.ARTIFACT_SIGNING_PROFILE }}
           files-folder: build
           files-folder-filter: exe
           files-folder-recurse: false
@@ -145,6 +152,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check tag matches PROJECT_VERSION
+        if: github.ref_type == 'tag'
         run: |
           cmake_version=$(grep -oP 'project\(TackleBox VERSION \K[0-9.]+' CMakeLists.txt)
           tag=${GITHUB_REF_NAME#v}
@@ -198,6 +206,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: seanmiddleditch/gha-setup-ninja@v5
       - name: Check tag matches PROJECT_VERSION
+        if: github.ref_type == 'tag'
         run: |
           cmake_version=$(grep -oE 'project\(TackleBox VERSION [0-9.]+' CMakeLists.txt | grep -oE '[0-9.]+$')
           tag=${GITHUB_REF_NAME#v}
@@ -272,6 +281,7 @@ jobs:
 
   publish:
     needs: [windows, linux, macos]
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
