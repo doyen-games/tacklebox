@@ -360,9 +360,21 @@ if(NOT TB_MOBILE AND NOT ANDROID AND NOT TB_BUILD_FUZZERS)
     set(CPACK_NSIS_DISPLAY_NAME "TackleBox")
     set(CPACK_NSIS_PACKAGE_NAME "TackleBox")
     set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/doyen-games/tacklebox")
+    # Vendored NSIS template (cmake/Internal/CPack/NSIS.template.in, header
+    # lists the changes): per-user install whatever token runs the wizard,
+    # and previous-version removal that copes with the elevated v0.3.0 entry
+    # (its admin-only uninstaller made the stock template abort with
+    # "Uninstall failed"). CMake versions differ in the name they look the
+    # template up by (with or without an Internal/CPack/ prefix); listing
+    # both directories serves either. The release and CI workflows fail when
+    # the generated project.nsi lacks the template's marker comment.
+    set(CPACK_MODULE_PATH
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_CURRENT_SOURCE_DIR}/cmake/Internal/CPack")
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
     set(CPACK_NSIS_MODIFY_PATH OFF)
     # Per-user install: no elevation, matches the per-user vault in %APPDATA%.
+    # (The vendored template says "user" too; this define keeps the stock
+    # template honest if CPACK_MODULE_PATH is ever lost.)
     # The version block gives the installer itself a publisher and version in
     # Explorer's Properties > Details, like the app's own resource script.
     # NSIS strings stay single-quoted: a double quote inside this value

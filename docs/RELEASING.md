@@ -49,6 +49,43 @@ Sanity checks before trusting a release build:
   admin`, which they override).
 - The workflow builds the tag's commit, not `main`: a tag cut before a
   workflow fix runs the old workflow (that was the missing-NSIS run).
+- `ci.yml` now compiles the installer on every push and keeps it as the
+  `tacklebox-windows-installer` artifact; both workflows fail when the
+  installer is under 3 MB or when the generated `project.nsi` lacks the
+  vendored template's marker comment.
+
+## The installer template is vendored
+
+`cmake/Internal/CPack/NSIS.template.in` is CMake 4.3.3's stock template with
+three changes (its header lists them; `NSIS.template.in.orig` is the pristine
+copy, so `diff` shows exactly what we own):
+
+1. **Per-user, always.** `RequestExecutionLevel user` and
+   `SetShellVarContext current` in both `.onInit` and `un.onInit`. The stock
+   template asks `UserInfo::GetAccountType` and switches an admin token to
+   all-users mode: files under `C:\ProgramData\Programs`, registration under
+   `HKLM`, all-users Start menu. That is what the (elevated) v0.3.0 installer
+   did, and it is why an "as administrator" run of any stock installer would
+   do it again.
+2. **Default folder** is `CPACK_NSIS_INSTALL_ROOT\TackleBox` for everyone.
+   Stock sends a non-admin token to `My Documents\TackleBox`.
+3. **Upgrades never abort.** Stock `.onInit` runs the previous
+   `Uninstall.exe` with `ExecWait` and shows "Uninstall failed." + Abort on
+   any launch error. An uninstaller left by an elevated install carries an
+   admin manifest, and CreateProcess from an un-elevated process fails with
+   ERROR_ELEVATION_REQUIRED, so every v0.3.0 user was stuck. The vendored
+   `.onInit` looks at both `HKLM` (elevated, launched through the shell's
+   `runas` verb: one UAC prompt) and `HKCU` (per-user, run inline), waits
+   for each (`_?=`), deletes the leftover `Uninstall.exe` that an in-place
+   uninstaller cannot remove itself, and on failure only tells the user the
+   old entry stays listed under Installed apps.
+
+`CPACK_MODULE_PATH` lists both `cmake` and `cmake/Internal/CPack` because
+CMake versions differ in the name they look the template up by. Re-vendoring
+for a newer CMake: copy the new stock file over `.orig`, re-apply the diff.
+
+No `makensis` on the dev box: stage with the stub (above) and read the
+generated `project.nsi`; the CI artifact is the compiled proof.
 
 ## Code signing (Windows)
 

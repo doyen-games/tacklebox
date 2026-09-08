@@ -20,6 +20,31 @@ jobs:
       - name: Test
         shell: bash
         run: ./build/tacklebox_tests.exe
+      # The installer is built on every push so a template or packaging
+      # fault shows up here, not in the release run.
+      - name: Install NSIS
+        shell: pwsh
+        run: choco install nsis -y --no-progress
+      - name: Package (NSIS installer)
+        shell: bash
+        run: cd build && cpack -G NSIS
+      - name: Check the installer
+        shell: bash
+        run: |
+          set -e
+          nsi=build/_CPack_Packages/win64/NSIS/project.nsi
+          grep -q "TackleBox: vendored copy" "$nsi" || { echo "::error::the stock NSIS template was used (CPACK_MODULE_PATH lost): no per-user/upgrade fixes"; exit 1; }
+          grep -q "^  RequestExecutionLevel user" "$nsi" || { echo "::error::installer would ask for elevation"; exit 1; }
+          exe=$(ls build/tacklebox-*-Windows.exe)
+          size=$(stat -c %s "$exe")
+          echo "$exe: $size bytes"
+          [ "$size" -gt 3000000 ] || { echo "::error::installer is too small to contain tacklebox.exe (the v0.3.0 hollow-installer fault)"; exit 1; }
+      - name: Keep the installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: tacklebox-windows-installer
+          path: build/tacklebox-*-Windows.exe
+          retention-days: 14
 
   linux:
     runs-on: ubuntu-latest
