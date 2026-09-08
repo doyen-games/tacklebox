@@ -116,14 +116,13 @@ std::string desktopEntry(const std::string& execPath) {
     std::string out;
     out += "[Desktop Entry]\n";
     out += "Type=Application\n";
-    out += "Version=1.5\n";
     out += "Name=TackleBox\n";
     out += "GenericName=Antelope wallet\n";
     out += "Comment=Wallet, signer and block explorer for Antelope chains\n";
     out += "Exec=" + execQuote(execPath) + " %u\n";
     out += "Icon=tacklebox\n";
     out += "Terminal=false\n";
-    out += "Categories=Finance;Network;Utility;\n";
+    out += "Categories=Office;Finance;\n";
     out += "Keywords=wallet;blockchain;antelope;eos;wax;esr;\n";
     out += "MimeType=x-scheme-handler/tacklebox;x-scheme-handler/esr;\n";
     out += "StartupNotify=true\n";

@@ -3,14 +3,13 @@
 # (desktopEntry) with its own path in Exec; keep the two in step.
 [Desktop Entry]
 Type=Application
-Version=1.5
 Name=TackleBox
 GenericName=Antelope wallet
 Comment=Wallet, signer and block explorer for Antelope chains
 Exec=@TB_DESKTOP_EXEC@ %u
 Icon=tacklebox
 Terminal=false
-Categories=Finance;Network;Utility;
+Categories=Office;Finance;
 Keywords=wallet;blockchain;antelope;eos;wax;esr;
 MimeType=x-scheme-handler/tacklebox;x-scheme-handler/esr;
 StartupNotify=true

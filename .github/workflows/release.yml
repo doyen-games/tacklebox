@@ -178,7 +178,7 @@ jobs:
       - name: Check the packages
         run: |
           set -e
-          tar tzf build/tacklebox-*-Linux-*.tar.gz | grep -q "bin/tacklebox$"
+          [ "$(tar tzf build/tacklebox-*-Linux-*.tar.gz | grep -c "bin/tacklebox$")" = "1" ] || { echo "::error::tarball has no binary"; exit 1; }
           dpkg-deb --info build/tacklebox_*.deb | grep -E "Package|Version|Depends"
           desktop-file-validate build/AppDir/usr/share/applications/tacklebox.desktop
           size=$(stat -c %s build/TackleBox-*.AppImage)

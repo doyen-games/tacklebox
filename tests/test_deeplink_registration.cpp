@@ -31,7 +31,7 @@ TEST_CASE("the desktop entry quotes the program path and declares both schemes")
     CHECK(contains(entry, "Exec=\"/home/me/Apps/Tackle Box.AppImage\" %u\n"));
     CHECK(contains(entry, "MimeType=x-scheme-handler/tacklebox;x-scheme-handler/esr;\n"));
     CHECK(contains(entry, "Icon=tacklebox\n"));
-    CHECK(contains(entry, "Categories=Finance;"));
+    CHECK(contains(entry, "Categories=Office;Finance;\n"));
 }
 
 TEST_CASE("reserved characters inside the path are escaped for the Exec key") {
