@@ -106,8 +106,9 @@ Three artifacts come out of one GNU-layout install tree (`bin/tacklebox`,
   the `app` component into an AppDir and runs linuxdeploy, which bundles the
   shared libraries the binary needs (libcurl and its tail) and leaves glibc,
   X11, Wayland and Mesa to the host. The glibc floor is the builder's, which
-  is why both workflows build on `ubuntu-22.04` (glibc 2.35, GCC 12) and the
-  binary links libstdc++/libgcc statically. `LDAI_UPDATE_INFORMATION` points
+  is why both workflows build on `ubuntu-22.04` (glibc 2.35; GCC 13 from the
+  `ubuntu-toolchain-r/test` PPA, since 22.04's GCC 12 cannot compile
+  dwarfkit) and the binary links libstdc++/libgcc statically. `LDAI_UPDATE_INFORMATION` points
   AppImageUpdate at this repository's latest release.
 - **.deb** - CPack's DEB generator with `dpkg-shlibdeps` computing `Depends`.
 - **tarball** - the same tree, for any distro.
@@ -139,8 +140,9 @@ the same artifacts.
 ## macOS packaging
 
 `TackleBox.app` is built universal (`-DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
--DCMAKE_OSX_DEPLOYMENT_TARGET=11.0` - pass both, the plist's
-`LSMinimumSystemVersion` is filled from the latter) and CPack's DragNDrop
+-DCMAKE_OSX_DEPLOYMENT_TARGET=13.3` - pass both, the plist's
+`LSMinimumSystemVersion` is filled from the latter; 13.3 is where libc++
+gained the floating-point `std::to_chars` dwarfkit's serializer uses) and CPack's DragNDrop
 generator turns it into a drag-to-Applications disk image. The plist
 template `packaging/macos/Info.plist.in` declares the `tacklebox:` and `esr:`
 schemes; LaunchServices delivers an opened url to the running app as an Apple

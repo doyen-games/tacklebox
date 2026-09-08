@@ -151,15 +151,19 @@ jobs:
           [ "$cmake_version" = "$tag" ] || { echo "::error::tag v$tag != CMakeLists PROJECT_VERSION $cmake_version"; exit 1; }
       - name: Dependencies
         run: |
+          # GCC 13 from Ubuntu's toolchain PPA: 22.04's GCC 12 rejects dwarfkit
+          # (APIResponse::json "changes meaning", no -Wno-changes-meaning yet);
+          # libstdc++ is linked statically, so the host needs nothing newer.
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
           sudo apt-get update
-          sudo apt-get install -y ninja-build g++-12 libcurl4-openssl-dev libgl1-mesa-dev \
+          sudo apt-get install -y ninja-build g++-13 libcurl4-openssl-dev libgl1-mesa-dev \
             libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev \
             libwayland-dev libxkbcommon-dev libegl1-mesa-dev libdecor-0-dev \
             desktop-file-utils dpkg-dev
       - name: Configure
         run: >
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
-          -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12
+          -DCMAKE_C_COMPILER=gcc-13 -DCMAKE_CXX_COMPILER=g++-13
       - name: Build
         run: cmake --build build
       - name: Test
@@ -198,7 +202,7 @@ jobs:
       - name: Configure (universal)
         run: >
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
-          -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+          -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=13.3
       - name: Build
         run: cmake --build build
       - name: Test

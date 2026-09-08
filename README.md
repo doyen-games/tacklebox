@@ -160,7 +160,7 @@ Tagged releases ship every desktop platform, with SHA-256 checksums in
   start), `tacklebox_<version>_amd64.deb` for Debian/Ubuntu, or the tarball.
   glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+, Fedora 36+).
 - **macOS** - `tacklebox-<version>-macOS.dmg`: drag TackleBox to
-  Applications. Universal (Apple silicon + Intel), macOS 11+. Unsigned for
+  Applications. Universal (Apple silicon + Intel), macOS 13.3+. Unsigned for
   now: right-click > Open on the first launch.
 
 Cutting a release: bump `project(TackleBox VERSION ...)` in CMakeLists.txt,
