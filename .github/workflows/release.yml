@@ -1,7 +1,14 @@
-# Tag vX.Y.Z -> build, test, package the Windows installer (NSIS wizard with
-# the EULA page) + portable ZIP, and attach both to the GitHub release. The
-# in-app updater reads /releases/latest, so publishing the release is what
+# Tag vX.Y.Z -> build, test and package every platform, then attach all of
+# it to one draft GitHub release:
+#   Windows  NSIS installer (per-user wizard with the EULA page) + portable ZIP
+#   Linux    AppImage + .deb + tarball (built on ubuntu-22.04 for a glibc 2.35 floor)
+#   macOS    universal (arm64 + x86_64) drag-to-Applications disk image
+# The in-app updater reads /releases/latest, so publishing the draft is what
 # makes wallets start offering the new version.
+#
+# Signing is optional per platform and switched on by repository secrets
+# (docs/RELEASING.md "Code signing"): Windows through Azure Trusted Signing
+# or a PFX, macOS through a Developer ID certificate + notarization.
 name: release
 
 on:
@@ -12,7 +19,7 @@ permissions:
   contents: write
 
 jobs:
-  windows-installer:
+  windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,24 +42,43 @@ jobs:
       - name: Test
         shell: bash
         run: ./build/tacklebox_tests.exe
-      # Optional Authenticode signing: set WINDOWS_CERT_PFX_B64 (base64 of a
-      # .pfx) and WINDOWS_CERT_PASSWORD as repo secrets and both the app and
-      # the installer get signed; without them the release ships unsigned.
-      - name: Prepare signing certificate
-        id: cert
+      # Which signing route is configured. Trusted Signing (Microsoft's
+      # cloud service, the certificate names the publisher) is preferred;
+      # a PFX only works for certificates issued before the 2023 hardware
+      # key mandate or from a CA that lets you export one.
+      - name: Detect signing configuration
+        id: sign
         shell: bash
         env:
           PFX_B64: ${{ secrets.WINDOWS_CERT_PFX_B64 }}
+          TS_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          TS_ACCOUNT: ${{ secrets.TRUSTED_SIGNING_ACCOUNT }}
         run: |
-          if [ -n "$PFX_B64" ]; then
+          if [ -n "$TS_CLIENT_ID" ] && [ -n "$TS_ACCOUNT" ]; then
+            echo "route=trusted" >> "$GITHUB_OUTPUT"
+          elif [ -n "$PFX_B64" ]; then
             printf '%s' "$PFX_B64" | base64 -d > "$RUNNER_TEMP/signing.pfx"
-            echo "have=true" >> "$GITHUB_OUTPUT"
+            echo "route=pfx" >> "$GITHUB_OUTPUT"
           else
-            echo "have=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::No signing certificate configured - artifacts ship unsigned (SmartScreen will warn)."
+            echo "route=none" >> "$GITHUB_OUTPUT"
+            echo "::notice::No Windows signing configured - the installer ships unsigned (SmartScreen shows 'Unknown publisher')."
           fi
-      - name: Sign the application binary
-        if: steps.cert.outputs.have == 'true'
+      - name: Sign the application binary (Trusted Signing)
+        if: steps.sign.outputs.route == 'trusted'
+        uses: azure/trusted-signing-action@v0
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: ${{ secrets.TRUSTED_SIGNING_ENDPOINT }}
+          trusted-signing-account-name: ${{ secrets.TRUSTED_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ secrets.TRUSTED_SIGNING_PROFILE }}
+          files: build/tacklebox.exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+      - name: Sign the application binary (PFX)
+        if: steps.sign.outputs.route == 'pfx'
         shell: pwsh
         env:
           CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
@@ -79,8 +105,24 @@ jobs:
           size=$(stat -c %s "$exe")
           echo "$exe: $size bytes"
           [ "$size" -gt 3000000 ] || { echo "::error::installer is too small to contain tacklebox.exe (the v0.3.0 hollow-installer fault)"; exit 1; }
-      - name: Sign the installer
-        if: steps.cert.outputs.have == 'true'
+      - name: Sign the installer (Trusted Signing)
+        if: steps.sign.outputs.route == 'trusted'
+        uses: azure/trusted-signing-action@v0
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: ${{ secrets.TRUSTED_SIGNING_ENDPOINT }}
+          trusted-signing-account-name: ${{ secrets.TRUSTED_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ secrets.TRUSTED_SIGNING_PROFILE }}
+          files-folder: build
+          files-folder-filter: exe
+          files-folder-recurse: false
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+      - name: Sign the installer (PFX)
+        if: steps.sign.outputs.route == 'pfx'
         shell: pwsh
         env:
           CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
@@ -90,18 +132,155 @@ jobs:
           $installer = Get-ChildItem build\tacklebox-*-Windows.exe | Select-Object -First 1
           & $signtool.FullName sign /f "$env:RUNNER_TEMP\signing.pfx" /p $env:CERT_PASSWORD `
             /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 $installer.FullName
-      - name: Checksums
-        shell: bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: |
+            build/tacklebox-*-Windows.exe
+            build/tacklebox-*-Windows.zip
+
+  linux:
+    # Oldest supported image: the AppImage's glibc floor is the builder's.
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check tag matches PROJECT_VERSION
         run: |
-          cd build
-          sha256sum tacklebox-*-Windows.exe tacklebox-*-Windows.zip > SHA256SUMS.txt
+          cmake_version=$(grep -oP 'project\(TackleBox VERSION \K[0-9.]+' CMakeLists.txt)
+          tag=${GITHUB_REF_NAME#v}
+          [ "$cmake_version" = "$tag" ] || { echo "::error::tag v$tag != CMakeLists PROJECT_VERSION $cmake_version"; exit 1; }
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build g++-12 libcurl4-openssl-dev libgl1-mesa-dev \
+            libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev \
+            libwayland-dev libxkbcommon-dev libegl1-mesa-dev libdecor-0-dev \
+            desktop-file-utils dpkg-dev
+      - name: Configure
+        run: >
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12
+      - name: Build
+        run: cmake --build build
+      - name: Test
+        run: ./build/tacklebox_tests
+      - name: Package (tarball + deb)
+        run: cd build && cpack -G "TGZ;DEB"
+      - name: Package (AppImage)
+        run: packaging/linux/appimage.sh build build
+      - name: Check the packages
+        run: |
+          set -e
+          tar tzf build/tacklebox-*-Linux-*.tar.gz | grep -q "bin/tacklebox$"
+          dpkg-deb --info build/tacklebox_*.deb | grep -E "Package|Version|Depends"
+          desktop-file-validate build/AppDir/usr/share/applications/tacklebox.desktop
+          size=$(stat -c %s build/TackleBox-*.AppImage)
+          [ "$size" -gt 4000000 ] || { echo "::error::AppImage is too small to hold the app"; exit 1; }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-linux
+          path: |
+            build/tacklebox-*-Linux-*.tar.gz
+            build/tacklebox_*.deb
+            build/TackleBox-*.AppImage
+            build/TackleBox-*.AppImage.zsync
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: seanmiddleditch/gha-setup-ninja@v5
+      - name: Check tag matches PROJECT_VERSION
+        run: |
+          cmake_version=$(grep -oE 'project\(TackleBox VERSION [0-9.]+' CMakeLists.txt | grep -oE '[0-9.]+$')
+          tag=${GITHUB_REF_NAME#v}
+          [ "$cmake_version" = "$tag" ] || { echo "::error::tag v$tag != CMakeLists PROJECT_VERSION $cmake_version"; exit 1; }
+      - name: Configure (universal)
+        run: >
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+      - name: Build
+        run: cmake --build build
+      - name: Test
+        run: ./build/tacklebox_tests
+      # Optional Developer ID signing + notarization. Secrets:
+      #   APPLE_CERTIFICATE_P12_B64  base64 of the "Developer ID Application" .p12
+      #   APPLE_CERTIFICATE_PASSWORD its password
+      #   APPLE_SIGNING_IDENTITY     e.g. "Developer ID Application: Doyen Games (TEAMID)"
+      #   APPLE_ID / APPLE_TEAM_ID / APPLE_APP_PASSWORD   notarytool credentials
+      - name: Detect signing configuration
+        id: sign
+        env:
+          P12_B64: ${{ secrets.APPLE_CERTIFICATE_P12_B64 }}
+          P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          if [ -n "$P12_B64" ]; then
+            keychain="$RUNNER_TEMP/signing.keychain-db"
+            printf '%s' "$P12_B64" | base64 -d > "$RUNNER_TEMP/signing.p12"
+            security create-keychain -p "" "$keychain"
+            security set-keychain-settings -lut 21600 "$keychain"
+            security unlock-keychain -p "" "$keychain"
+            security import "$RUNNER_TEMP/signing.p12" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$keychain"
+            security set-key-partition-list -S apple-tool:,apple: -s -k "" "$keychain"
+            security list-keychains -d user -s "$keychain" login.keychain
+            echo "have=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "have=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No Apple signing certificate configured - the disk image ships unsigned (Gatekeeper: right-click > Open on first launch)."
+          fi
+      - name: Sign the app bundle
+        if: steps.sign.outputs.have == 'true'
+        env:
+          IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+        run: |
+          codesign --force --deep --options runtime --timestamp --sign "$IDENTITY" build/TackleBox.app
+          codesign --verify --deep --strict --verbose=2 build/TackleBox.app
+      - name: Package (disk image)
+        run: cd build && cpack -G DragNDrop
+      - name: Sign, notarize and staple the disk image
+        if: steps.sign.outputs.have == 'true'
+        env:
+          IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          dmg=$(ls build/tacklebox-*-macOS.dmg)
+          codesign --force --timestamp --sign "$IDENTITY" "$dmg"
+          xcrun notarytool submit "$dmg" --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_APP_PASSWORD" --wait
+          xcrun stapler staple "$dmg"
+          spctl --assess --type open --context context:primary-signature -v "$dmg"
+      - name: Check the bundle
+        run: |
+          set -e
+          app=build/TackleBox.app
+          lipo -archs "$app/Contents/MacOS/TackleBox"
+          plutil -lint "$app/Contents/Info.plist"
+          ls -l build/tacklebox-*-macOS.dmg
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-macos
+          path: build/tacklebox-*-macOS.dmg
+
+  publish:
+    needs: [windows, linux, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          merge-multiple: true
+          path: dist
+      - name: Checksums
+        run: |
+          cd dist
+          rm -f SHA256SUMS.txt
+          sha256sum * > SHA256SUMS.txt
           cat SHA256SUMS.txt
-      - name: Attach to release
+      - name: Attach to the draft release
         uses: softprops/action-gh-release@v2
         with:
           draft: true
           generate_release_notes: true
-          files: |
-            build/tacklebox-*-Windows.exe
-            build/tacklebox-*-Windows.zip
-            build/SHA256SUMS.txt
+          files: dist/*

@@ -1,0 +1,17 @@
+# Installed by packages (deb, tarball, AppImage payload) to share/applications.
+# A portable copy writes the same entry per user from deeplink.cpp
+# (desktopEntry) with its own path in Exec; keep the two in step.
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name=TackleBox
+GenericName=Antelope wallet
+Comment=Wallet, signer and block explorer for Antelope chains
+Exec=@TB_DESKTOP_EXEC@ %u
+Icon=tacklebox
+Terminal=false
+Categories=Finance;Network;Utility;
+Keywords=wallet;blockchain;antelope;eos;wax;esr;
+MimeType=x-scheme-handler/tacklebox;x-scheme-handler/esr;
+StartupNotify=true
+StartupWMClass=io.tacklebox.wallet

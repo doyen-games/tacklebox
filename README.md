@@ -147,12 +147,21 @@ bottom tab bar + sheet modals on phones - try them anywhere with
 
 ## Installing
 
-Tagged releases ship a Windows install wizard (`tacklebox-<version>-Windows.exe`,
-per-user install with the EULA page, Start-menu and desktop shortcuts) and a
-portable ZIP - both built by CI from the tag and attached to the GitHub
-release with SHA-256 checksums. Verify the checksum before running. To
-package locally: `cmake --build build && cd build && cpack -G "NSIS;ZIP"`
-(NSIS generator needs makensis; ZIP works everywhere).
+Tagged releases ship every desktop platform, with SHA-256 checksums in
+`SHA256SUMS.txt`. Verify a download before running it.
+
+- **Windows** - `tacklebox-<version>-Windows.exe`: per-user install wizard
+  (EULA page, Start-menu and desktop shortcuts, no elevation), or the
+  portable `tacklebox-<version>-Windows.zip`. The installer is not yet
+  code-signed, so SmartScreen says "Unknown publisher" (More info > Run
+  anyway).
+- **Linux** - `TackleBox-<version>-x86_64.AppImage` (`chmod +x`, run; it
+  registers its launcher entry and the `tacklebox:`/`esr:` schemes on first
+  start), `tacklebox_<version>_amd64.deb` for Debian/Ubuntu, or the tarball.
+  glibc 2.35 or newer (Ubuntu 22.04+, Debian 12+, Fedora 36+).
+- **macOS** - `tacklebox-<version>-macOS.dmg`: drag TackleBox to
+  Applications. Universal (Apple silicon + Intel), macOS 11+. Unsigned for
+  now: right-click > Open on the first launch.
 
 Cutting a release: bump `project(TackleBox VERSION ...)` in CMakeLists.txt,
 tag `v<version>`, push the tag - the release workflow builds, tests,

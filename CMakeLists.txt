@@ -120,6 +120,9 @@ tb_embed_font(font_rajdhani_medium   assets/fonts/Rajdhani-Medium.ttf)
 tb_embed_font(font_rajdhani_semibold assets/fonts/Rajdhani-SemiBold.ttf)
 tb_embed_font(font_rajdhani_bold     assets/fonts/Rajdhani-Bold.ttf)
 tb_embed_font(font_sharetech_mono    assets/fonts/ShareTechMono-Regular.ttf)
+# Same tool, not a font: the 256 px mark a portable Linux copy writes next to
+# its per-user launcher entry (deeplink::registerSchemes).
+tb_embed_font(brand_png_256          assets/brand/tacklebox-256.png)
 
 add_custom_target(tb_embedded_assets DEPENDS ${TB_EMBED_HEADERS})
 endif()  # NOT TB_BUILD_FUZZERS
@@ -129,6 +132,7 @@ endif()  # NOT TB_BUILD_FUZZERS
 # application controller. UI-free so the test binary can link it.
 # ---------------------------------------------------------------------------
 add_library(tacklebox_core STATIC
+  src/core/ca_bundle.cpp
   src/core/clipboard.cpp
   src/core/deeplink.cpp
   src/core/log.cpp
@@ -169,6 +173,13 @@ endif()
 # Explorer's Properties > Details.
 if(MINGW)
   add_link_options(-static -static-libgcc -static-libstdc++)
+endif()
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  # The AppImage/tarball run on distros whose libstdc++ may predate the
+  # builder's compiler; carry the C++ runtime inside the binary (glibc,
+  # X11, Mesa stay dynamic - the AppImage exclude list leaves them to the
+  # host).
+  add_link_options(-static-libstdc++ -static-libgcc)
 endif()
 
 # Warnings for our own code only.
@@ -265,15 +276,36 @@ elseif(APPLE)
   find_library(OPENGL_LIB OpenGL)
   find_library(IOKIT_LIB IOKit)
   target_link_libraries(tacklebox PRIVATE ${COCOA_LIB} ${OPENGL_LIB} ${IOKIT_LIB})
+  # TackleBox.app: the plist template declares the tacklebox:/esr: url
+  # schemes (packaging/macos), the icns rides in Resources.
+  set_source_files_properties(assets/brand/tacklebox.icns PROPERTIES
+    MACOSX_PACKAGE_LOCATION Resources)
+  target_sources(tacklebox PRIVATE assets/brand/tacklebox.icns)
+  if(NOT CMAKE_OSX_DEPLOYMENT_TARGET)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0")
+  endif()
   set_target_properties(tacklebox PROPERTIES
+    OUTPUT_NAME "TackleBox"
     MACOSX_BUNDLE TRUE
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/Info.plist.in
     MACOSX_BUNDLE_BUNDLE_NAME "TackleBox"
     MACOSX_BUNDLE_GUI_IDENTIFIER "io.tacklebox.wallet"
+    MACOSX_BUNDLE_ICON_FILE "tacklebox.icns"
+    MACOSX_BUNDLE_COPYRIGHT "Copyright (c) 2026 TackleBox contributors"
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION})
 else()
   find_package(OpenGL REQUIRED)
   target_link_libraries(tacklebox PRIVATE OpenGL::GL)
+  if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # A bundled libcurl carries its builder's CA-bundle path; route every
+    # curl_easy_init through src/platform/linux_tls.cpp, which points the
+    # handle at a bundle that exists on the host (core/ca_bundle.hpp).
+    find_package(CURL REQUIRED)
+    target_sources(tacklebox PRIVATE src/platform/linux_tls.cpp)
+    target_link_libraries(tacklebox PRIVATE CURL::libcurl)
+    target_link_options(tacklebox PRIVATE -Wl,--wrap=curl_easy_init)
+  endif()
 endif()
 
 endif()  # NOT TB_BUILD_FUZZERS (application)
@@ -303,8 +335,10 @@ if(TB_BUILD_TESTS)
     tests/test_account.cpp
     tests/main.cpp
     tests/test_autopilot.cpp
+    tests/test_ca_bundle.cpp
     tests/test_cipher.cpp
     tests/test_deeplink.cpp
+    tests/test_deeplink_registration.cpp
     tests/test_guard.cpp
     tests/test_kdf.cpp
     tests/test_link.cpp
@@ -330,9 +364,31 @@ if(NOT TB_MOBILE AND NOT ANDROID AND NOT TB_BUILD_FUZZERS)
   # to BUNDLE, leaving the RUNTIME exe in the "Unspecified" component that
   # the component-aware NSIS generator never packaged (v0.3.0 shipped an
   # installer holding nothing but the docs).
-  install(TARGETS tacklebox COMPONENT app RUNTIME DESTINATION . BUNDLE DESTINATION .)
-  install(FILES README.md EULA.txt LICENSE DESTINATION . COMPONENT app)
-  install(DIRECTORY docs/ DESTINATION docs COMPONENT app)
+  if(APPLE)
+    # The DMG holds the bundle and an Applications link, nothing else.
+    install(TARGETS tacklebox COMPONENT app BUNDLE DESTINATION .)
+  elseif(WIN32)
+    install(TARGETS tacklebox COMPONENT app RUNTIME DESTINATION .)
+    install(FILES README.md EULA.txt LICENSE DESTINATION . COMPONENT app)
+    install(DIRECTORY docs/ DESTINATION docs COMPONENT app)
+  else()
+    # GNU layout: what the deb/tarball unpack to and what linuxdeploy expects
+    # in an AppDir (packaging/linux/appimage.sh).
+    include(GNUInstallDirs)
+    install(TARGETS tacklebox COMPONENT app RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    set(TB_DESKTOP_EXEC "tacklebox")
+    configure_file(packaging/linux/tacklebox.desktop.in
+                   ${CMAKE_BINARY_DIR}/tacklebox.desktop @ONLY)
+    install(FILES ${CMAKE_BINARY_DIR}/tacklebox.desktop
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/applications COMPONENT app)
+    install(FILES assets/brand/tacklebox-256.png RENAME tacklebox.png
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps COMPONENT app)
+    install(FILES assets/brand/tacklebox.svg
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps COMPONENT app)
+    install(FILES README.md EULA.txt LICENSE
+            DESTINATION ${CMAKE_INSTALL_DOCDIR} COMPONENT app)
+    install(DIRECTORY docs/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/docs COMPONENT app)
+  endif()
 
   set(CPACK_PACKAGE_NAME "TackleBox")
   # The publisher: Add/Remove Programs and the wizard read it from here; the
@@ -348,7 +404,13 @@ if(NOT TB_MOBILE AND NOT ANDROID AND NOT TB_BUILD_FUZZERS)
   set(CPACK_CREATE_DESKTOP_LINKS "tacklebox")
   # The EULA page of the install wizard.
   set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/EULA.txt")
-  set(CPACK_PACKAGE_FILE_NAME "tacklebox-${PROJECT_VERSION}-${CMAKE_SYSTEM_NAME}")
+  if(WIN32)
+    set(CPACK_PACKAGE_FILE_NAME "tacklebox-${PROJECT_VERSION}-Windows")
+  elseif(APPLE)
+    set(CPACK_PACKAGE_FILE_NAME "tacklebox-${PROJECT_VERSION}-macOS")
+  else()
+    set(CPACK_PACKAGE_FILE_NAME "tacklebox-${PROJECT_VERSION}-Linux-${CMAKE_SYSTEM_PROCESSOR}")
+  endif()
   # Install only the "app" component, but WITHOUT CPACK_COMPONENTS_ALL: that
   # flips the NSIS generator into component mode, where PackageFiles
   # overwrites CPACK_NSIS_DEFINES with its own download flags and the
@@ -404,9 +466,28 @@ VIAddVersionKey 'LegalCopyright' 'Copyright (c) 2026 TackleBox contributors'")
     #   set(CPACK_NSIS_MUI_WELCOMEFINISHPAGE_BITMAP .../wizard-side.bmp)  # 164x314 BMP
     #   set(CPACK_NSIS_MUI_HEADERIMAGE_BITMAP      .../wizard-header.bmp) # 150x57 BMP
   elseif(APPLE)
+    # Drag-to-Applications disk image; the release workflow signs and
+    # notarizes it when the Apple secrets exist.
     set(CPACK_GENERATOR "DragNDrop")
+    set(CPACK_DMG_VOLUME_NAME "TackleBox")
+    set(CPACK_DMG_FORMAT "UDZO")
   else()
-    set(CPACK_GENERATOR "TGZ")
+    # Tarball for any distro plus a .deb; the AppImage comes from
+    # packaging/linux/appimage.sh on top of the same install tree.
+    set(CPACK_GENERATOR "TGZ;DEB")
+    set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+    set(CPACK_DEBIAN_PACKAGE_NAME "tacklebox")
+    set(CPACK_DEBIAN_PACKAGE_SECTION "utils")
+    set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+    # dpkg-shlibdeps derives Depends from the linked libraries.
+    set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER
+        "Doyen Games <https://github.com/doyen-games/tacklebox/issues>")
+    set(CPACK_DEBIAN_PACKAGE_DESCRIPTION
+        "TackleBox - the toolkit for navigating Antelope blockchains\n"
+        " Wallet, signer, autopilot and block explorer for Antelope chains\n"
+        " (EOS, WAX, Telos and friends). Registers the tacklebox: and esr:\n"
+        " url schemes for signing requests from dapps.")
   endif()
   include(CPack)
 endif()

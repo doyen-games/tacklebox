@@ -11,10 +11,20 @@
    git push origin vX.Y.Z
    ```
 
-3. The `release` workflow verifies the tag matches `PROJECT_VERSION`, builds,
-   runs the tests, packages the NSIS installer + portable ZIP, signs them if a
-   certificate is configured (below), writes `SHA256SUMS.txt`, and attaches
-   everything to a **draft** GitHub release.
+3. The `release` workflow verifies the tag matches `PROJECT_VERSION`, then
+   builds, tests and packages on three runners in parallel, signs what the
+   configured secrets allow (below), and a final `publish` job writes one
+   `SHA256SUMS.txt` and attaches everything to a **draft** GitHub release:
+
+   | Platform | Assets |
+   |---|---|
+   | Windows | `tacklebox-<v>-Windows.exe` (per-user NSIS wizard), `tacklebox-<v>-Windows.zip` (portable) |
+   | Linux | `TackleBox-<v>-x86_64.AppImage` (+ `.zsync`), `tacklebox_<v>_amd64.deb`, `tacklebox-<v>-Linux-x86_64.tar.gz` |
+   | macOS | `tacklebox-<v>-macOS.dmg` (universal arm64 + x86_64, drag to Applications) |
+
+   `ci.yml` builds the very same packages on every push (unsigned) and keeps
+   them as workflow artifacts for two weeks, so a packaging fault surfaces
+   before a tag does.
 4. Review and publish the draft. Publishing is the trigger for running
    wallets: the in-app update check reads `/releases/latest` and starts
    offering the new version the moment the release is public.
@@ -87,21 +97,115 @@ for a newer CMake: copy the new stock file over `.orig`, re-apply the diff.
 No `makensis` on the dev box: stage with the stub (above) and read the
 generated `project.nsi`; the CI artifact is the compiled proof.
 
+## Linux packaging
+
+Three artifacts come out of one GNU-layout install tree (`bin/tacklebox`,
+`share/applications/tacklebox.desktop`, hicolor icons, `share/doc`):
+
+- **AppImage** - `packaging/linux/appimage.sh <build-dir> [out-dir]` installs
+  the `app` component into an AppDir and runs linuxdeploy, which bundles the
+  shared libraries the binary needs (libcurl and its tail) and leaves glibc,
+  X11, Wayland and Mesa to the host. The glibc floor is the builder's, which
+  is why both workflows build on `ubuntu-22.04` (glibc 2.35, GCC 12) and the
+  binary links libstdc++/libgcc statically. `LDAI_UPDATE_INFORMATION` points
+  AppImageUpdate at this repository's latest release.
+- **.deb** - CPack's DEB generator with `dpkg-shlibdeps` computing `Depends`.
+- **tarball** - the same tree, for any distro.
+
+Two things the binary does for itself on Linux:
+
+- **URL schemes.** A packaged install ships `tacklebox.desktop` with
+  `MimeType=x-scheme-handler/tacklebox;x-scheme-handler/esr;`. A portable
+  copy (AppImage, tarball in `$HOME`) writes the same entry to
+  `~/.local/share/applications` with its own path in `Exec` (`$APPIMAGE` for
+  an AppImage), drops the 256 px mark into the hicolor theme, and refreshes
+  the launcher cache. Either way `~/.config/mimeapps.list` gets
+  `x-scheme-handler/tacklebox` pointed at us, and `esr` only when no other
+  handler is set (`deeplink::registerSchemes`; the pure halves are tested in
+  `tests/test_deeplink_registration.cpp`). Second launches forward their uri
+  over a unix socket in `$XDG_RUNTIME_DIR`, scoped by data dir like the
+  Windows pipe.
+- **CA bundle.** The bundled libcurl carries Ubuntu's compiled-in CA path;
+  on Fedora, SUSE or Alpine that file does not exist and every https call
+  fails. `src/platform/linux_tls.cpp` wraps `curl_easy_init` at link time
+  (`-Wl,--wrap`) and points each handle at the first bundle that exists
+  (`core/ca_bundle.hpp`), so the vendored transport stays untouched.
+
+Local check without a Linux box: the `linux` job in `ci.yml` is the recipe
+(`apt-get` line, configure flags, the two `cpack`/`appimage.sh` steps); an
+Ubuntu 22.04 container running those commands against the checkout produces
+the same artifacts.
+
+## macOS packaging
+
+`TackleBox.app` is built universal (`-DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+-DCMAKE_OSX_DEPLOYMENT_TARGET=11.0` - pass both, the plist's
+`LSMinimumSystemVersion` is filled from the latter) and CPack's DragNDrop
+generator turns it into a drag-to-Applications disk image. The plist
+template `packaging/macos/Info.plist.in` declares the `tacklebox:` and `esr:`
+schemes; LaunchServices delivers an opened url to the running app as an Apple
+event, SDL surfaces it as `SDL_EVENT_DROP_FILE`, and `handleDrop` in
+`main.cpp` hands anything that parses as a deep link to the controller. The
+icon is `assets/brand/tacklebox.icns` (generated from the 256 px mark; the
+512/1024 slots wait for a larger render of the SVG).
+
+Without a Developer ID signature Gatekeeper refuses the app on first launch
+("cannot be opened because the developer cannot be verified"); the workaround
+is right-click > Open once, or `xattr -d com.apple.quarantine
+/Applications/TackleBox.app`. Signing (next section) removes that.
+
 ## Code signing (Windows)
 
-Unsigned installers trip SmartScreen ("unrecognized app"), which loses most
-downloads. The workflow signs both `tacklebox.exe` and the installer when two
-repository secrets exist; with no secrets it ships unsigned and prints a
+"Unknown publisher" in the SmartScreen / UAC / Open File dialogs has one
+cause: the binary carries no Authenticode signature. No amount of metadata
+changes it (`CPACK_PACKAGE_VENDOR`, the `.rc` company name and the
+installer's version block only feed Properties > Details and Installed
+apps). The workflow signs both `tacklebox.exe` and the installer when one of
+two sets of secrets exists; without them it ships unsigned and prints a
 notice.
 
-- `WINDOWS_CERT_PFX_B64` - your Authenticode certificate + key as a base64
-  encoded PFX: `base64 -w0 signing.pfx`
-- `WINDOWS_CERT_PASSWORD` - the PFX password
+**Route 1 - Azure Trusted Signing (recommended).** Microsoft's own signing
+service: the certificate names the publisher exactly as validated, keys never
+leave Microsoft's HSM, ~US$10/month, and SmartScreen trusts it from the first
+release. Setup, once:
 
-Any OV code-signing certificate works; timestamping uses DigiCert's public
-server so signatures outlive the certificate. If you move to Azure Trusted
-Signing later, replace the two `Sign the ...` steps in
-`.github/workflows/release.yml` with the `azure/trusted-signing-action`.
+1. Azure subscription > create a *Trusted Signing account* (East US or West
+   Europe endpoint).
+2. *Identity validation*: organisation (a registered legal entity) or
+   individual (government ID); this is what "Doyen Games" must pass to appear
+   as the publisher. Takes a few days.
+3. Create a *certificate profile* of type Public Trust.
+4. Microsoft Entra > *App registration* with a client secret; give that app
+   the **Trusted Signing Certificate Profile Signer** role on the account.
+5. Repository secrets: `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`,
+   `AZURE_CLIENT_SECRET`, `TRUSTED_SIGNING_ENDPOINT`
+   (`https://eus.codesigning.azure.net` or `https://weu.codesigning.azure.net`),
+   `TRUSTED_SIGNING_ACCOUNT`, `TRUSTED_SIGNING_PROFILE`.
+
+**Route 2 - your own certificate as a PFX.** `WINDOWS_CERT_PFX_B64` (base64
+of the .pfx, `base64 -w0 signing.pfx`) + `WINDOWS_CERT_PASSWORD`. Since June
+2023 CAs issue OV/EV certificates only on hardware tokens or in cloud HSMs,
+so a fresh certificate cannot be exported to a PFX; this route fits a
+certificate issued before that or a CA-hosted signer with its own action.
+
+For an open-source project the SignPath Foundation signs releases for free,
+but the publisher line then reads "SignPath Foundation", not Doyen Games.
+
+## Code signing (macOS)
+
+Needs an Apple Developer Program membership (US$99/year) and a *Developer ID
+Application* certificate. Export it with its key as a `.p12`, then set:
+
+- `APPLE_CERTIFICATE_P12_B64` (base64 of the .p12) and
+  `APPLE_CERTIFICATE_PASSWORD`
+- `APPLE_SIGNING_IDENTITY` - the certificate's common name, e.g.
+  `Developer ID Application: Doyen Games (TEAMID)`
+- `APPLE_ID`, `APPLE_TEAM_ID`, `APPLE_APP_PASSWORD` (an app-specific
+  password from appleid.apple.com) for `notarytool`
+
+The workflow then signs the bundle with the hardened runtime, builds the
+disk image, signs it, submits it for notarization, waits, and staples the
+ticket, so the app opens on any Mac without warnings.
 
 ## Fuzzing
 

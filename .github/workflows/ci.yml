@@ -47,21 +47,78 @@ jobs:
           retention-days: 14
 
   linux:
-    runs-on: ubuntu-latest
+    # The same image the release AppImage is built on (glibc 2.35 floor).
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build libcurl4-openssl-dev libgl1-mesa-dev \
+          sudo apt-get install -y ninja-build g++-12 libcurl4-openssl-dev libgl1-mesa-dev \
             libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev \
-            libwayland-dev libxkbcommon-dev libegl1-mesa-dev
+            libwayland-dev libxkbcommon-dev libegl1-mesa-dev libdecor-0-dev \
+            desktop-file-utils dpkg-dev
       - name: Configure
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+        run: >
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12
       - name: Build
         run: cmake --build build
       - name: Test
         run: ./build/tacklebox_tests
+      - name: Package (tarball + deb)
+        run: cd build && cpack -G "TGZ;DEB"
+      - name: Package (AppImage)
+        run: packaging/linux/appimage.sh build build
+      - name: Check the packages
+        run: |
+          set -e
+          ls -l build/tacklebox-*-Linux-*.tar.gz build/tacklebox_*.deb build/TackleBox-*.AppImage
+          tar tzf build/tacklebox-*-Linux-*.tar.gz | grep -q "bin/tacklebox$" || { echo "::error::tarball has no binary"; exit 1; }
+          dpkg-deb --info build/tacklebox_*.deb | grep -E "Package|Version|Depends"
+          desktop-file-validate build/AppDir/usr/share/applications/tacklebox.desktop
+          size=$(stat -c %s build/TackleBox-*.AppImage)
+          [ "$size" -gt 4000000 ] || { echo "::error::AppImage is too small to hold the app"; exit 1; }
+      - name: Keep the packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: tacklebox-linux-packages
+          path: |
+            build/tacklebox-*-Linux-*.tar.gz
+            build/tacklebox_*.deb
+            build/TackleBox-*.AppImage
+          retention-days: 14
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: seanmiddleditch/gha-setup-ninja@v5
+      - name: Configure (universal)
+        run: >
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+      - name: Build
+        run: cmake --build build
+      - name: Test
+        run: ./build/tacklebox_tests
+      - name: Package (disk image)
+        run: cd build && cpack -G DragNDrop
+      - name: Check the bundle
+        run: |
+          set -e
+          app=build/TackleBox.app
+          test -x "$app/Contents/MacOS/TackleBox"
+          lipo -archs "$app/Contents/MacOS/TackleBox"
+          plutil -lint "$app/Contents/Info.plist"
+          grep -q "tacklebox" "$app/Contents/Info.plist"
+          ls -l build/tacklebox-*-macOS.dmg
+      - name: Keep the disk image
+        uses: actions/upload-artifact@v4
+        with:
+          name: tacklebox-macos-dmg
+          path: build/tacklebox-*-macOS.dmg
+          retention-days: 14
 
   fuzz:
     runs-on: ubuntu-latest

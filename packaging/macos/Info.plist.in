@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>      <string>en</string>
+    <key>CFBundleDisplayName</key>            <string>TackleBox</string>
+    <key>CFBundleExecutable</key>             <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
+    <key>CFBundleIconFile</key>               <string>${MACOSX_BUNDLE_ICON_FILE}</string>
+    <key>CFBundleIdentifier</key>             <string>${MACOSX_BUNDLE_GUI_IDENTIFIER}</string>
+    <key>CFBundleInfoDictionaryVersion</key>  <string>6.0</string>
+    <key>CFBundleName</key>                   <string>${MACOSX_BUNDLE_BUNDLE_NAME}</string>
+    <key>CFBundlePackageType</key>            <string>APPL</string>
+    <key>CFBundleShortVersionString</key>     <string>${MACOSX_BUNDLE_SHORT_VERSION_STRING}</string>
+    <key>CFBundleVersion</key>                <string>${MACOSX_BUNDLE_BUNDLE_VERSION}</string>
+    <key>NSHumanReadableCopyright</key>       <string>${MACOSX_BUNDLE_COPYRIGHT}</string>
+    <key>LSMinimumSystemVersion</key>         <string>${CMAKE_OSX_DEPLOYMENT_TARGET}</string>
+    <key>LSApplicationCategoryType</key>      <string>public.app-category.finance</string>
+    <key>NSHighResolutionCapable</key>        <true/>
+    <key>NSSupportsAutomaticGraphicsSwitching</key> <true/>
+    <!-- Deep links: LaunchServices opens these in the running app (or
+         launches it) and delivers the url as an Apple event; SDL turns that
+         into a drop event that main.cpp routes to the deep-link handler.
+         esr: is shared with other Antelope wallets; the user's choice of
+         default handler wins. -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>        <string>TackleBox request</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>tacklebox</string>
+            </array>
+            <key>CFBundleTypeRole</key>       <string>Viewer</string>
+        </dict>
+        <dict>
+            <key>CFBundleURLName</key>        <string>EOSIO signing request</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>esr</string>
+            </array>
+            <key>CFBundleTypeRole</key>       <string>Viewer</string>
+        </dict>
+    </array>
+</dict>
+</plist>
