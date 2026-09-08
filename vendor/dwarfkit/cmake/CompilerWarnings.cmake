@@ -19,12 +19,16 @@ function(dk_warnings target)
       # json in dwarfkit TUs, plus version-specific pedantic errors:
       # -Wchanges-meaning (GCC 13 rejects APIResponse::json shadowing the
       # json alias; later GCCs accept it) and -Wformat-truncation (GCC 13
-      # flags a provably-sized snprintf in time.cpp). Clang keeps the rest.
+      # flags a provably-sized snprintf in time.cpp). -Wrestrict: GCC 12
+      # (Ubuntu 22.04, the Linux release builder) reports impossible memcpy
+      # overlaps inside libstdc++'s char_traits for ordinary std::string
+      # appends in integer.cpp/abi.cpp (GCC bug 105329). Clang keeps the rest.
       target_compile_options(${target} PRIVATE -Wno-array-bounds
                                                -Wno-stringop-overflow
                                                -Wno-stringop-overread
                                                -Wno-format-truncation
-                                               -Wno-changes-meaning)
+                                               -Wno-changes-meaning
+                                               -Wno-restrict)
     endif()
   endif()
 endfunction()

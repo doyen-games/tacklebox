@@ -5,6 +5,8 @@
 #include <chrono>
 #include <cstdio>
 #include <ctime>
+#include <locale>
+#include <sstream>
 
 #include "core/rng.hpp"
 
@@ -128,6 +130,38 @@ std::string uuid4() {
 std::string middleEllipsis(const std::string& s, size_t head, size_t tail) {
     if (s.size() <= head + tail + 3) return s;
     return s.substr(0, head) + "..." + s.substr(s.size() - tail);
+}
+
+bool parseDouble(std::string_view text, double& out) {
+    const size_t n = text.size();
+    size_t i = 0;
+    auto digit = [&](size_t at) {
+        return at < n && text[at] >= '0' && text[at] <= '9';
+    };
+    if (i < n && (text[i] == '+' || text[i] == '-')) ++i;
+    size_t digits = 0;
+    for (; digit(i); ++i) ++digits;
+    if (i < n && text[i] == '.') {
+        ++i;
+        for (; digit(i); ++i) ++digits;
+    }
+    if (digits == 0) return false;
+    if (i < n && (text[i] == 'e' || text[i] == 'E')) {
+        ++i;
+        if (i < n && (text[i] == '+' || text[i] == '-')) ++i;
+        size_t exponentDigits = 0;
+        for (; digit(i); ++i) ++exponentDigits;
+        if (exponentDigits == 0) return false;
+    }
+    if (i != n) return false;
+
+    std::istringstream in{std::string(text)};
+    in.imbue(std::locale::classic());
+    double value = 0;
+    in >> value;
+    if (in.fail()) return false;
+    out = value;
+    return true;
 }
 
 }  // namespace tb

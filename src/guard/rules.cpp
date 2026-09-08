@@ -1,7 +1,6 @@
 #include "guard/rules.hpp"
 
 #include <cctype>
-#include <charconv>
 #include <cmath>
 #include <cstdio>
 
@@ -36,8 +35,7 @@ static std::optional<double> asNumber(const json& v) {
         const auto& s = v.get_ref<const std::string&>();
         if (s.empty()) return std::nullopt;
         double out{};
-        auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), out);
-        if (ec == std::errc() && ptr == s.data() + s.size()) return out;
+        if (parseDouble(s, out)) return out;
     }
     if (v.is_boolean()) return v.get<bool>() ? 1.0 : 0.0;
     return std::nullopt;

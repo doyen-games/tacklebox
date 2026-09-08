@@ -27,6 +27,12 @@ std::string toLower(std::string s);
 std::string trim(const std::string& s);
 bool startsWith(std::string_view s, std::string_view prefix);
 
+// Strict decimal parse of the whole string ([-+]digits[.digits][e[-+]digits])
+// into a double, independent of the C locale. Neither std::from_chars (no
+// floating-point overloads in libc++ before macOS 26) nor strtod (follows
+// LC_NUMERIC) fits a wallet that must read "1.5" the same everywhere.
+bool parseDouble(std::string_view text, double& out);
+
 // RFC 4122 v4 UUID from the OS CSPRNG.
 std::string uuid4();
 

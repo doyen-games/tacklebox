@@ -346,6 +346,7 @@ if(TB_BUILD_TESTS)
     tests/test_risk.cpp
     tests/test_runner.cpp
     tests/test_update.cpp
+    tests/test_util.cpp
     tests/test_vault.cpp)
   target_link_libraries(tacklebox_tests PRIVATE tacklebox_core dk_doctest)
   tb_warnings(tacklebox_tests)

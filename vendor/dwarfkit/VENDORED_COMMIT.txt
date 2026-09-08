@@ -10,6 +10,10 @@ buffer is provably large enough for any real time_point.
 embed >64KB string literals; pedantic-only noise.
 -Wno-changes-meaning (GCC block): GCC 13 hard-errors on APIResponse::json
 shadowing the json type alias; later GCCs accept the code.
+-Wno-restrict (GCC block): GCC 12 (Ubuntu 22.04, the Linux release
+builder) reports impossible memcpy overlaps in libstdc++ char_traits for
+plain std::string appends in antelope/chain/integer.cpp and abi.cpp (GCC
+bug 105329); GCC 13+ is quiet.
 
 SECURITY PATCH (upstream this to dwarfkit): serializer/decoder.hpp gains
 remaining(), and serializer/traits.hpp bounds the std::vector fromABI
