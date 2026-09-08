@@ -19,6 +19,37 @@
    wallets: the in-app update check reads `/releases/latest` and starts
    offering the new version the moment the release is public.
 
+## Packaging gotchas (learned the hard way in v0.3.0)
+
+The v0.3.0 installer was 378 KB against a 7.5 MB ZIP: it contained no
+`tacklebox.exe`. Two CPack traps, both now guarded in `CMakeLists.txt`:
+
+- In `install(TARGETS ...)`, `COMPONENT` applies to the artifact-kind clause
+  it follows. Trailing it after `BUNDLE DESTINATION .` put only the (absent)
+  bundle in `app`; the RUNTIME exe fell into "Unspecified", which the
+  component-aware NSIS generator never packages. `COMPONENT app` leads the
+  rule so it covers every kind.
+- Never set `CPACK_COMPONENTS_ALL`: it switches NSIS into component mode,
+  where the generator overwrites `CPACK_NSIS_DEFINES` with its own download
+  flags and our `RequestExecutionLevel user` + version block vanish (the
+  wizard then demands admin). The `app` filter lives in
+  `CPACK_INSTALL_CMAKE_PROJECTS` instead, and the defines use single-quoted
+  NSIS strings (a double quote inside breaks the generated
+  `CPackConfig.cmake`).
+
+Sanity checks before trusting a release build:
+
+- The installer must be a few MB (LZMA of the exe), never a fraction of the
+  ZIP. Compare the two assets' sizes on the release page.
+- Stage locally without NSIS: point `cpack` at a stub `makensis` that only
+  answers `/VERSION` (`cpack -G NSIS -D CPACK_NSIS_EXECUTABLE=stub.exe`),
+  then inspect `build/_CPack_Packages/win64/NSIS/<pkg>/` for the exe and
+  `project.nsi` for `RequestExecutionLevel user` + the `VIAddVersionKey`
+  block (they sit right after the template's own `RequestExecutionLevel
+  admin`, which they override).
+- The workflow builds the tag's commit, not `main`: a tag cut before a
+  workflow fix runs the old workflow (that was the missing-NSIS run).
+
 ## Code signing (Windows)
 
 Unsigned installers trip SmartScreen ("unrecognized app"), which loses most
@@ -50,9 +81,12 @@ cmake --build build-fuzz
 
 Keep any crash artifacts (`crash-*`) - they reproduce the input exactly.
 
-## Branding checklist (when the logo pack lands)
+## Branding
 
-- `CPACK_NSIS_MUI_ICON` / `CPACK_NSIS_MUI_UNIICON` - `.ico`
+Done: `CPACK_NSIS_MUI_ICON` / `MUI_UNIICON` (`assets/brand/tacklebox.ico`),
+the executable's icon + version resource (`assets/brand/tacklebox.rc`), the
+runtime window/taskbar icon (`src/ui/brand_icon.hpp`), and the in-app mark
+(`drawTackleboxMark`). Still stock:
+
 - `CPACK_NSIS_MUI_WELCOMEFINISHPAGE_BITMAP` - 164x314 BMP
 - `CPACK_NSIS_MUI_HEADERIMAGE_BITMAP` - 150x57 BMP
-- Window/taskbar icon (SDL_SetWindowIcon) + the About card wordmark
