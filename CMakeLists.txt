@@ -281,8 +281,11 @@ elseif(APPLE)
   set_source_files_properties(assets/brand/tacklebox.icns PROPERTIES
     MACOSX_PACKAGE_LOCATION Resources)
   target_sources(tacklebox PRIVATE assets/brand/tacklebox.icns)
+  # Floor: libc++'s floating-point std::to_chars (dwarfkit's serializer)
+  # exists from 13.3. Pass -DCMAKE_OSX_DEPLOYMENT_TARGET on the command line
+  # for it to reach the compiler; this default only feeds the plist.
   if(NOT CMAKE_OSX_DEPLOYMENT_TARGET)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "13.3")
   endif()
   set_target_properties(tacklebox PROPERTIES
     OUTPUT_NAME "TackleBox"
